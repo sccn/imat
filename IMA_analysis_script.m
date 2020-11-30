@@ -4,9 +4,14 @@
 % addpath('/Volumes/Drive/IMAT_project/IMAT_plugin/mfiles/IMAT/')
 
 % Launch EEGLAB
-eeglab
+[ALLEEG EEG CURRENTSET ALLCOM] = eeglab;
 
 % Load sample data
+filepath = '/Users/amon-ra/WORK/Data/IMAT_data/';
+filename = 'RestEC_S03_ContAMICAdip.set';
+
+EEG = pop_loadset('filename',filename,'filepath',filepath);
+[ALLEEG, EEG, CURRENTSET] = eeg_store( ALLEEG, EEG, 0 );
 
 %% Single subject analysis
 %--------------------------------------------------------------------------
@@ -17,7 +22,7 @@ eeglab
                              'pcfac', 8,...
                              'cycles', [6 0.5],...
                              'selectICs', {'brain'},...
-                             'icatype', 'amica');
+                             'icatype', 'infomax');
 
 %% Plotting Options here
 %--------------------------------------------------------------------------
