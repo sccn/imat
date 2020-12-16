@@ -114,7 +114,7 @@
 % IMA.subjfilepath - filepath of the EEG data the IMA has been computed on
 
 
-function [STUDY] = pop_runIMA_study(STUDY,varargin)
+function [STUDY] = pop_runIMA_study(STUDY,ALLEEG, varargin)
 
 
 g = finputcheck(varargin, {'frqlim'        'real'       []             []; ...
@@ -378,7 +378,7 @@ for iko = 1:nsubj
     STUDY.etc.IMA.imafilepath(iko,:) = IMA.subjfilepath;
     
     
-    [STUDY] = pop_savestudy( STUDY,'savemode','resave');
+    [STUDY] = pop_savestudy( STUDY, ALLEEG, 'savemode','resave');
      
     clear EEGtmp EEGcurr
     
