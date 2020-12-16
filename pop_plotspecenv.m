@@ -40,16 +40,44 @@
 % setmimax - [min max] set minimum / maximum of spectrum yscale
 
 function [IMA] = pop_plotspecenv(EEG,varargin);
+IMA = [];
 
-
-g = finputcheck(varargin, { 'comps'     'integer'   []             []; ...
-                           'factors'       'integer'    []             []; ...
-                           'frqlim'        'real'       []             []; ...
-                           'plotenv'      'string'     { 'env' 'upper' 'lower'}           'env'; ...
-                           'plotperc'      'real'       []           [0.95]; ...
-                           'setminmax'        'real'      []             [];...
-                                               }, 'inputgui');
+g = finputcheck(varargin, { 'comps'        'integer'    []                           []; ...
+                            'factors'      'integer'    []                           []; ...
+                            'frqlim'       'real'       []                           []; ...
+                            'plotenv'      'string'     { 'env' 'upper' 'lower'}     'env'; ...
+                            'plotperc'     'real'       []                           [0.95]; ...
+                            'setminmax'    'real'       []                           [];...
+                           }, 'inputgui');
 if isstr(g), error(g); end;
+
+if nargin ==1
+    EnvtTypes2funtc = {'env' 'upper' 'lower'};
+    envTypes = {'Envelope                 ', 'Upper envelope      ', 'Lower envelope     '};
+               
+    freqLim = EEG.etc.IMA.freqlim;
+    ic_list = sprintfc('%d',EEG.etc.IMA.complist);
+    im_list = sprintfc('%d',[1:EEG.etc.IMA.npcs]);
+    
+    uilist = {{'style' 'text' 'string' 'Envelope type'} {'style' 'popupmenu'  'string' envTypes 'tag' 'plottype' 'value' 1}...
+              {'style' 'text' 'string' 'Freq. limits'} {'style' 'edit' 'string' num2str(freqLim) 'tag' 'freqlimits'}...
+              {'style' 'text' 'string' 'Select ICs', }     {'style' 'text' 'string' 'Select IMs'} ...
+              {'style'  'list'  'string' ic_list 'max',200,'min',1,'Tag','icindx'} {'style'  'list'  'string' im_list 'max',200,'min',1,'Tag','imindx' } {}};
+    
+    ht = 6; wt = 2 ;
+    geom = {{wt ht [0 0]  [1 1]} {wt ht [1 0]  [1 1]}...
+            {wt ht [0 1]  [1 1]} {wt ht [1 1]  [1 1]}...
+            {wt ht [0 2]  [1 1]} {wt ht [1 2]  [1 1]}...
+            {wt ht [0 3]  [1 3]} {wt ht [1 3]  [1 3]}...
+            {wt ht [0 5]  [1 3]}};
+   
+    [result, ~, ~, resstruct, ~] = inputgui('title','Plot spectral envelope -- pop_plotspecenv', 'geom', geom, 'uilist',uilist, 'helpcom','pophelp(''pop_plotspecenv'');');
+    if isempty(result), return; end;
+    g.comps = EEG.etc.IMA.complist(resstruct.icindx);
+    g.factors = resstruct.imindx;
+    g.plotenv = EnvtTypes2funtc{resstruct.plottype};
+    g.frqlim = str2num(resstruct.freqlimits);
+end
 
 load([EEG.etc.IMA.filepath '/' EEG.etc.IMA.filename], '-mat');
 
@@ -66,12 +94,7 @@ if isempty(g.factors)
 end
 
 
-    fprintf('\n Plotting overall data and meanspec...');
-    dataport = IMA.timepntCond;
-    meanspec = IMA.meanpwr;
-    plotspecenv(IMA, 'comps', g.comps, 'factors', g.factors, 'frqlim', g.frqlim, 'plotenv', g.plotenv, 'plotperc', g.plotperc, 'setminmax', g.setminmax, 'dataport', dataport, 'meanspec', meanspec);
-
-
-
-   
-%
+fprintf('\n Plotting overall data and meanspec...');
+dataport = IMA.timepntCond;
+meanspec = IMA.meanpwr;
+plotspecenv(IMA, 'comps', g.comps, 'factors', g.factors, 'frqlim', g.frqlim, 'plotenv', g.plotenv, 'plotperc', g.plotperc, 'setminmax', g.setminmax, 'dataport', dataport, 'meanspec', meanspec);
