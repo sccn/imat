@@ -31,19 +31,49 @@
 % maps -- ['on','off'] if 'on', then will plot scalp maps.
 
 function [IMA] = pop_plotspecdecomp(EEG,varargin);
+IMA = [];
+
+if ~isfield(EEG.etc, 'IMA'), return; end
 
 % checking inputs
 % ---------------
-g = finputcheck(varargin, { 'comps'     'integer'   []             []; ...
-    'factors'       'integer'    []             []; ...
-    'frqlim'        'real'       []             []; ...
-    'freqscale'     'string'     {'log' 'linear'}         'log';...
-    'plottype'      'string'     {'ics' 'ims' 'comb'}           'comb'; ...
-    'maps'          'string'     {'on', 'off'}  'on';...
-    }, 'inputgui');
+g = finputcheck(varargin, { 'comps'         'integer'    []                         []; ...
+                            'factors'       'integer'    []                         []; ...
+                            'frqlim'        'real'       []                         []; ...
+                            'freqscale'     'string'     {'log' 'linear'}           'log';...
+                            'plottype'      'string'     {'ics' 'ims' 'comb'}       'comb'; ...
+                            'maps'          'string'     {'on', 'off'}              'on';...
+                            }, 'inputgui');
 if isstr(g), error(g); end;
 
-
+if nargin ==1
+    plotTypes2funtc = {'comb', 'ics', 'ims'};
+     plotTypes = {'IM spectral decomposition', 'Superimposed ICs', 'Superimposed IMs'};
+    freqLim = EEG.etc.IMA.freqlim;
+    ic_list = sprintfc('%d',EEG.etc.IMA.complist);
+    im_list = sprintfc('%d',[1:EEG.etc.IMA.npcs]);
+    
+    uilist = {{'style' 'text' 'string' 'Plot type'} {'style' 'popupmenu'  'string' plotTypes 'tag' 'plottype' 'value' 1}...
+              {'style' 'text' 'string' 'Freq. limits'} {'style' 'edit' 'string' num2str(freqLim) 'tag' 'freqlimits'}...
+              {'style' 'text' 'string' 'Select ICs', }     {'style' 'text' 'string' 'Select IMs'} ...
+              {'style'  'list'  'string' ic_list 'max',200,'min',1,'Tag','icindx'} {'style'  'list'  'string' im_list 'max',200,'min',1,'Tag','imindx' } {}};
+    
+    ht = 6; wt = 2 ;
+    geom = {{wt ht [0 0]  [1 1]} {wt ht [1 0]  [1 1]}...
+            {wt ht [0 1]  [1 1]} {wt ht [1 1]  [1 1]}...
+            {wt ht [0 2]  [1 1]} {wt ht [1 2]  [1 1]}...
+            {wt ht [0 3]  [1 3]} {wt ht [1 3]  [1 3]}...
+            {wt ht [0 5]  [1 3]}};
+   
+    [result, ~, ~, resstruct, ~] = inputgui('title','Plot IM decomposition -- pop_plotspecdecomp', 'geom', geom, 'uilist',uilist, 'helpcom','pophelp(''pop_plotspecdecomp'');');
+    if isempty(result), return; end;
+    g.comps = EEG.etc.IMA.complist(resstruct.icindx);
+    g.factors = resstruct.imindx;
+    g.plottype = plotTypes2funtc{resstruct.plottype};
+    g.frqlim = str2num(resstruct.freqlimits);
+    
+end
+    
 load([EEG.etc.IMA.filepath '/' EEG.etc.IMA.filename], '-mat');
 
 if isempty(g.frqlim)
@@ -51,7 +81,7 @@ if isempty(g.frqlim)
 end
 
 if isempty(g.comps)
-    g.plotcomps = IMA.complist;
+    g.comps = IMA.complist;
 end
 
 if isempty(g.factors)
@@ -61,5 +91,6 @@ end
 
 plotspecdecomp(IMA, 'comps', g.comps, 'factors', g.factors, 'frqlim', g.frqlim,...
     'freqscale', g.freqscale, 'plottype', g.plottype, 'maps', g.maps);
+
 
 

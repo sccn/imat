@@ -121,7 +121,7 @@ cols(9,:) = [.4 .6 0]; % army green
 cols(10,:) = [1 .8 0]; % mustard
 
 taglist = {'line1' 'line2' 'line3' 'line4' 'line5' 'line6' 'line7'...
-    'line7' 'line8' 'line9' 'line10' 'line11' 'line12' 'line13' 'line14' 'line15'}
+           'line7' 'line8' 'line9' 'line10' 'line11' 'line12' 'line13' 'line14' 'line15'};
 
 
 %% check how many columns/rows are needed for subplots
@@ -190,7 +190,7 @@ for cp = 1:length(g.comps)
     %% plot enevlope of trimmed data
     if ~isempty(rawbkgd)
         if strcmp(freqscale,'linear') %% -- plot as linear spaced frequencies
-            f1 = [freqs,[freqs(end):-1:1]];
+            f1 = [freqs,[freqs(length(freqs):-1:1)]];
             f2 = [plotdata2(1,:),[plotdata2(2,end:-1:1)]];
             ph = fill(f1,f2,rawbkgd);hold on;
         elseif strcmp(freqscale,'log') %%  --- log-spaced freqs
@@ -234,7 +234,7 @@ for cp = 1:length(g.comps)
     %% plot the trimmed data
     if ~isempty(pcabkgd) % only plot if given a color
         if strcmp(freqscale,'linear') %% -- plot as linear spaced frequencies
-            f1 = [freqs,[freqs(end):-1:1]];
+            f1 = [freqs,[freqs(length(freqs):-1:1)]];
             f2 = [pcaproj2(1,:),[pcaproj2(2,end:-1:1)]];
             ph = fill(f1,f2,pcabkgd);hold on;
         elseif strcmp(freqscale,'log') %% -- plot as log spaced frequencies
@@ -315,7 +315,7 @@ for cp = 1:length(g.comps)
             end;
         else   %% plot all IMs
             if strcmp(freqscale,'linear') % plot in linear frequency scale
-                ph = plot(freqs,envdata2(:,fr),'k-','linewidth',lnwdth); hold on;
+                ph1 = plot(freqs,envdata2(:,fr),'k-','linewidth',lnwdth); hold on;
             elseif strcmp(freqscale,'log') % plot in log frequency scale
                 ph1 = semilogx(freqs,envdata2(:,fr)', 'LineWidth', 2,'Color','m');hold on
                 set(gca,'FontSize',12)
