@@ -97,7 +97,7 @@
 function [IMAweights,IMAsphere, meanpwr, freqvec ,n_trials, ntw_trial,...
     pcs, eigvec, pc, pwr, meanpwrCond] = runIMA(eegdata,frames, tlimits, srate, varargin);
 
-if length(eegdata) > 1
+if length(eegdata) > 1,
     tempdat = eegdata{1};
 else
     tempdat = eegdata;
