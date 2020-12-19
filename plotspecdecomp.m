@@ -130,9 +130,9 @@ if strcmp(g.plottype,'ics') % superimpose ic templates
         set(gca,'box','off');
         set(gca,'xgrid','on');
         if pl == (row-1)*col+1
-            xlabel('frequency (Hz)'); ylabel('Relative Power');
+            xlabel('Frequency (Hz)'); ylabel('Relative Power');
         elseif pl > (row-1)*col+1
-            xlabel('frequency (Hz)');
+            xlabel('Frequency (Hz)');
         end;
         if pl <= col*(row-1)
             set(gca,'xticklabel',[]);
@@ -161,7 +161,7 @@ elseif strcmp(g.plottype,'ims')  % superimpose IM templates for each IC
         rcp = find(g.comps(cp) == IMA.complist);
         sbplot(row,col,pl); pl = pl+1;
         topoplot(EEG.icawinv(:,g.comps(cp)),EEG.chanlocs(EEG.icachansind),'electrodes','off');
-        set(gca,'fontsize',12);  title(['IC ',int2str(g.comps(cp))]);
+        set(gca,'fontsize',20);  title(['IC ',int2str(g.comps(cp))]);
         sbplot(row,col,pl);
         for tpp = 1:length(g.factors)
             tp = g.factors(tpp);
@@ -170,7 +170,7 @@ elseif strcmp(g.plottype,'ims')  % superimpose IM templates for each IC
                 set(gca,'FontSize',12)
                 set(gca,'xtick',[3 6 10 20 40 80])
                 xlim([g.frqlim(1) g.frqlim(end)])
-                set(ph,'color',cols(tp,:));
+                set(ph,'color',cols(tpp,:));
             else % otherwise linear
                 ph = plot(freqvec,activations(tp,length(freqvec)*(rcp-1)+1:length(freqvec)*rcp),'linewidth',lnwdth);
                 xlim([g.frqlim(1) g.frqlim(end)])
@@ -178,12 +178,15 @@ elseif strcmp(g.plottype,'ims')  % superimpose IM templates for each IC
                 set(ph,'color',cols(tpp,:));
             end;
         end;
-        set(gca,'ylim',[minl maxl]); title(['IM templates']);
+        set(gca,'ylim',[minl maxl]); 
         set(gca,'xgrid','on');
+        if cp <= round(col/2)
+            title(['IM templates'],'fontsize',20);
+        end
         if pl == (row-1)*col+2
-            xlabel('frequency (Hz)'); ylabel('Relative Power');
+            xlabel('Frequency (Hz)'); ylabel('Relative Power');
         elseif pl > (row-1)*col+1
-            xlabel('frequency (Hz)');
+            xlabel('Frequency (Hz)');
         end;
         if pl <= col*(row-1)
             set(gca,'xticklabel',[]);
@@ -211,7 +214,7 @@ else
         for cp = 1:length(g.comps)
             sbplot(row,col,pl)
             topoplot(EEG.icawinv(:,g.comps(cp)),EEG.chanlocs(EEG.icachansind),'electrodes','off','plotrad',.7); pl = pl+1;
-            set(gca,'fontsize',7);  title(int2str(g.comps(cp)));
+            set(gca,'fontsize',16);  title(int2str(g.comps(cp)));
         end;
     else
         pl = 1;
@@ -235,7 +238,7 @@ else
                 for cp = 1:length(g.comps)
                     sbplot(row,col,pl)
                     topoplot(EEG.icawinv(:,g.comps(cp)),EEG.chanlocs(EEG.icachansind),'electrodes','off'); pl = pl+1;
-                    set(gca,'fontsize',7);  title(int2str(g.comps(cp)));
+                    set(gca,'fontsize',16);  title(int2str(g.comps(cp)));
                 end;
             else
                 pl = 1;
@@ -247,7 +250,7 @@ else
         set(gca,'fontsize',7);
         plot([0 0],[get(gca,'ylim')],'r-');
         set(gca,'yticklabel',[]);   set(gca,'xticklabel',[]);
-        title(['IM ',int2str(tp)]);
+        title(['IM ',int2str(tp)], 'fontsize',12);
         
         % plot template spectra
         for cp = 1:length(g.comps)
@@ -271,7 +274,7 @@ else
             set(gca,'ticklength',[.03 .03]);
             plot([get(gca,'xlim')],[0 0],'r-');
             if cp == round(length(g.comps)/2)
-                xlabel('frequency (Hz)')
+                xlabel('Frequency (Hz)')
             end
             set(gca,'fontsize', 12)
             if pl <= (row-1)*col+1
@@ -279,6 +282,8 @@ else
                     set(gca,'xticklabel',[]);
                     set(gca,'yticklabel',[]);
                     xlabel('')
+                elseif tpp ~= length(g.factors) & cp ~= 1;
+                    set(gca,'yticklabel',[]);
                 end;
             end;
             if ~strcmp(g.maps,'on') & pl <= (col+1)

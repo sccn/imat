@@ -121,7 +121,9 @@ cols(9,:) = [.4 .6 0]; % army green
 cols(10,:) = [1 .8 0]; % mustard
 
 taglist = {'line1' 'line2' 'line3' 'line4' 'line5' 'line6' 'line7'...
-           'line7' 'line8' 'line9' 'line10' 'line11' 'line12' 'line13' 'line14' 'line15'};
+           'line7' 'line8' 'line9' 'line10' 'line11' 'line12' 'line13' 'line14' 'line15'...
+           'line16' 'line17' 'line18' 'line19' 'line20' 'line21' 'line22' 'line23' 'line24'...
+           'line25' 'line26' 'line27' 'line28'};
 
 
 %% check how many columns/rows are needed for subplots
@@ -315,7 +317,7 @@ for cp = 1:length(g.comps)
             end;
         else   %% plot all IMs
             if strcmp(freqscale,'linear') % plot in linear frequency scale
-                ph1 = plot(freqs,envdata2(:,fr),'k-','linewidth',lnwdth); hold on;
+                ph1 = plot(freqs,envdata2(:,fr),'k-','linewidth',2); hold on;
             elseif strcmp(freqscale,'log') % plot in log frequency scale
                 ph1 = semilogx(freqs,envdata2(:,fr)', 'LineWidth', 2,'Color','m');hold on
                 set(gca,'FontSize',12)
