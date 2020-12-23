@@ -451,7 +451,7 @@ for iko = 1:nsubj
     STUDY.etc.IMA.subjfilepath(iko,:) = IMA.subjfilepath;
     STUDY.etc.IMA.imafilename(iko,:) = [IMA.subj{1} '_' newfilename '.ima'];
     STUDY.etc.IMA.imafilepath(iko,:) = IMA.subjfilepath{1};
-    
+    STUDY.etc.IMA.subject(iko,:) = IMA.subj{1};
     
     [STUDY] = pop_savestudy( STUDY, ALLEEG, 'savemode','resave');
      
