@@ -50,6 +50,7 @@ pop_plotIMtimecourse(EEG, 'comps', [1 2 3], 'factors', [1 5], 'frqlim', [6 40], 
 [ALLEEG EEG CURRENTSET ALLCOM] = eeglab;
 [STUDY ALLEEG] = pop_loadstudy('filename', 'S3_RestECEO.study', 'filepath', '/Users/amon-ra/WORK/Data/IMAT_data');
 CURRENTSTUDY = 1; EEG = ALLEEG; CURRENTSET = [1:length(EEG)];
+eeglab redraw;
 %%
 % Running IMA
 [STUDY] = pop_runIMA_study(STUDY, ALLEEG, 'freqscale', 'log',...
