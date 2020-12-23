@@ -135,10 +135,85 @@ g = finputcheck(varargin, {'frqlim'        'real'       []             []; ...
     }, 'inputgui');
 if isstr(g), error(g); end;
 
-% if narging==1
-%     %Display GUI
-%
-% end
+
+% Check if ICLABEL is installed
+try PLUGINLIST = evalin('base', 'PLUGINLIST'); catch, PLUGINLIST = []; end
+if ~isempty(PLUGINLIST) && isfield(PLUGINLIST, 'plugin')
+    indPlugin = strmatch(lower('ICLabel'), lower({ PLUGINLIST.plugin }), 'exact');
+end
+
+flag_iclabel = 1;
+if indPlugin == 0
+    flag_iclabel = plugin_askinstall('ICLabel');
+end
+
+if nargin==2
+    freqlim_def = [1 ALLEEG(1).srate/2-10];
+    iclabel_list = {'Brain', 'Muscle', 'Eye', 'Heart'};
+    freqscale_list = {'linear' 'log'} ;
+    
+    if flag_iclabel
+        cb_chbx_iclabel = ['val_chbx_iclabel = get(findobj(''Tag'', ''chbx_iclabel''), ''Value'');' ...
+            'if ~val_chbx_iclabel,'...
+            'set(findobj(''Tag'', ''chbx_iclabel''), ''Value'', 0);'...
+            'set(findobj(''Tag'', ''pup_iclabeltag''), ''enable'', ''off'');'...
+            'else;'...
+            'set(findobj(''Tag'', ''chbx_iclabel''), ''Value'', 1);'...
+            'set(findobj(''Tag'', ''pup_iclabeltag''), ''enable'', ''on'');'...
+            'end;']
+    else
+        cb_chbx_iclabel = ['set(findobj(''Tag'', ''chbx_iclabel''), ''Value'', 0);'...
+            'set(findobj(''Tag'', ''pup_iclabeltag''), ''enable'', ''off'');'];
+    end
+    
+    
+    uilist = {{'style' 'text' 'string' 'Select ICs'}...
+        { 'style' 'Checkbox'   'string' 'ICLabel tags' 'Tag', 'chbx_iclabel', 'callback', cb_chbx_iclabel 'Value' 0}...
+        {'style'  'list'  'string' iclabel_list 'tag' 'pup_iclabeltag' 'Enable' 'off' 'max',10,'min',1} ...
+        {}...
+        {'style' 'text' 'string' 'Freq. limits'} ...
+        {'style' 'edit' 'string' num2str(freqlim_def) 'tag' 'freqlimits'}...
+        {'style' 'text' 'string' 'Freq. scale'}...
+        {'style' 'popupmenu'  'string' freqscale_list 'tag' 'freqscale' 'value' 1}...
+        {'style' 'text' 'string' 'pop_runima options (see Help)'}...
+        {'style' 'edit' 'string' ' ' 'tag' 'ed_opt'} {}};
+    
+    ht = 6; wt = 3 ;
+    geom = {{wt ht [0 0]  [1 1]} ...
+        {wt ht [0.1 1]  [1 1]}  {wt ht [1 1] [1 2.5]} ...
+        {wt ht [0.1 3]  [1 1]}...
+        {wt ht [0 4]  [1 1]}  {wt ht [0.5 4] [0.8 1]}  {wt ht [1.6 4]  [1 1]}  {wt ht [2.1 4]  [0.8 1]} ...
+        {wt ht [0 5]  [1 1]}  {wt ht [1 5] [2 1]} ...
+        {wt ht [0.1 6]  [1 1]}...
+        };
+    
+    [result, ~, ~, resstruct, ~] = inputgui('title','Run STUDY Independent Modulator Analysis -- pop_runIMA_study', 'geom', geom, 'uilist',uilist, 'helpcom','pophelp(''pop_runIMA'');');
+    
+    if isempty(result), return; end;
+    
+    if resstruct.chbx_iclabel
+        g.selectICs = iclabel_list{resstruct.pup_iclabeltag};
+    else
+        g.selectICs = 'off';
+    end
+    
+    g.frqlim = str2num(resstruct.freqlimits);
+    g.freqscale = freqscale_list{resstruct.freqscale};
+    
+    %%
+    
+    % Retrieve optional parameters
+    tmpoptparams   = eval( [ '{' get(findobj(gcf,'tag','ed_opt'),'string') '}' ] );
+    tmpparams_name = tmpoptparams(1:2:end);
+    
+    % Update parameters here
+    c =1;
+    for i = 1: length(tmpparams_name)
+        g.(tmpparams_name{i}) =  tmpoptparams{c+1};
+        c = c+2;
+    end
+    
+end
 
 
 %% check format of EEG set
@@ -159,20 +234,20 @@ for iko = 1:nsubj
     if sum(ismember(g.selectICs,'off')) == 0;
         indPlugin = 0;
         
-        try, PLUGINLIST = evalin('base', 'PLUGINLIST'); catch, PLUGINLIST = []; end;
-        if ~isempty(PLUGINLIST) && isfield(PLUGINLIST, 'plugin')
-            indPlugin = strmatch(lower('ICLabel'), lower({ PLUGINLIST.plugin }), 'exact');
-        end
-        
-        if indPlugin == 0;
-            installRes = plugin_askinstall('ICLabel');
-            if installRes == 0
-                errordlg2('Cannot select ICs with IC Label. Please install ICLabel in previous step or using the eeglab extension manager.',...
-                    'ICLabel not installed');
-                error('ICLabel not installed. Cannot select ICs with IC Label. Please install ICLabel in previous step or using the eeglab extension manager.')
-            end
-        end
-        
+%         try, PLUGINLIST = evalin('base', 'PLUGINLIST'); catch, PLUGINLIST = []; end;
+%         if ~isempty(PLUGINLIST) && isfield(PLUGINLIST, 'plugin')
+%             indPlugin = strmatch(lower('ICLabel'), lower({ PLUGINLIST.plugin }), 'exact');
+%         end
+%         
+%         if indPlugin == 0;
+%             installRes = plugin_askinstall('ICLabel');
+%             if installRes == 0
+%                 errordlg2('Cannot select ICs with IC Label. Please install ICLabel in previous step or using the eeglab extension manager.',...
+%                     'ICLabel not installed');
+%                 error('ICLabel not installed. Cannot select ICs with IC Label. Please install ICLabel in previous step or using the eeglab extension manager.')
+%             end
+%         end
+%         
         %% check if dipoles are computed
         fprintf('selecting ICs with IClabel... \n')
         
@@ -201,7 +276,7 @@ for iko = 1:nsubj
         LOGIC{2} = find((IND == 2) & (VAL > g.iclthreshold)); % identify muscle ICS based on IC Label
         LOGIC{3} = find((IND == 3) & (VAL > g.iclthreshold)); % identify eye ICS based on IC Label
         LOGIC{4} = find((IND == 4) & (VAL > g.iclthreshold)); % identify heart ICS based on IC Label
-        indICs = find(ismember(g.selectICs, {'brain' 'muscle' 'eye' 'heart'}));
+        indICs = find(ismember(lower(g.selectICs), {'brain' 'muscle' 'eye' 'heart'}));
         
         INDKEEP = [];
         for iki = 1:length(indICs)
