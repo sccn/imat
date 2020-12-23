@@ -42,6 +42,13 @@
 function [IMA] = pop_plotspecenv(EEG,varargin);
 IMA = [];
 
+if ~isfield(EEG.etc, 'IMA'), return; end
+try
+    tmpIMA = load([EEG.etc.IMA.filepath '/' EEG.etc.IMA.filename], '-mat');
+catch
+    return;
+end
+
 g = finputcheck(varargin, { 'comps'        'integer'    []                           []; ...
                             'factors'      'integer'    []                           []; ...
                             'frqlim'       'real'       []                           []; ...
@@ -55,9 +62,9 @@ if nargin ==1
     EnvtTypes2funtc = {'env' 'upper' 'lower'};
     envTypes = {'Envelope                 ', 'Upper envelope      ', 'Lower envelope     '};
                
-    freqLim = EEG.etc.IMA.freqlim;
-    ic_list = sprintfc('%d',EEG.etc.IMA.complist);
-    im_list = sprintfc('%d',[1:EEG.etc.IMA.npcs]);
+    freqLim = tmpIMA.IMA.freqlim;
+    ic_list = sprintfc('%d',tmpIMA.IMA.complist);
+    im_list = sprintfc('%d',[1:tmpIMA.IMA.npcs]);
     
     uilist = {{'style' 'text' 'string' 'Envelope type'} {'style' 'popupmenu'  'string' envTypes 'tag' 'plottype' 'value' 1}...
               {'style' 'text' 'string' 'Freq. limits'} {'style' 'edit' 'string' num2str(freqLim) 'tag' 'freqlimits'}...
@@ -73,28 +80,26 @@ if nargin ==1
    
     [result, ~, ~, resstruct, ~] = inputgui('title','Plot spectral envelope -- pop_plotspecenv', 'geom', geom, 'uilist',uilist, 'helpcom','pophelp(''pop_plotspecenv'');');
     if isempty(result), return; end;
-    g.comps = EEG.etc.IMA.complist(resstruct.icindx);
+    g.comps = tmpIMA.IMA.complist(resstruct.icindx);
     g.factors = resstruct.imindx;
     g.plotenv = EnvtTypes2funtc{resstruct.plottype};
     g.frqlim = str2num(resstruct.freqlimits);
 end
 
-load([EEG.etc.IMA.filepath '/' EEG.etc.IMA.filename], '-mat');
-
 if isempty(g.frqlim)
-    g.frqlim = IMA.freqlim;
+    g.frqlim = tmpIMA.IMA.freqlim;
 end
 
 if isempty(g.comps)
-    g.comps = IMA.complist;
+    g.comps = tmpIMA.IMA.complist;
 end
 
 if isempty(g.factors)
-    g.factors = 1:IMA.npcs;
+    g.factors = 1:tmpIMA.IMA.npcs;
 end
 
 
 fprintf('\n Plotting overall data and meanspec...');
-dataport = IMA.timepntCond;
-meanspec = IMA.meanpwr;
-plotspecenv(IMA, 'comps', g.comps, 'factors', g.factors, 'frqlim', g.frqlim, 'plotenv', g.plotenv, 'plotperc', g.plotperc, 'setminmax', g.setminmax, 'dataport', dataport, 'meanspec', meanspec);
+dataport = tmpIMA.IMA.timepntCond;
+meanspec = tmpIMA.IMA.meanpwr;
+plotspecenv(tmpIMA.IMA, 'comps', g.comps, 'factors', g.factors, 'frqlim', g.frqlim, 'plotenv', g.plotenv, 'plotperc', g.plotperc, 'setminmax', g.setminmax, 'dataport', dataport, 'meanspec', meanspec);

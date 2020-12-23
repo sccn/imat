@@ -44,6 +44,13 @@
 
 function pop_plotIMtimecourse(EEG,varargin)
 
+if ~isfield(EEG.etc, 'IMA'), return; end
+try
+    tmpIMA = load([EEG.etc.IMA.filepath '/' EEG.etc.IMA.filename], '-mat');
+catch
+    return;
+end
+
 g = finputcheck(varargin, {'comps'          'integer'   []             []; ...
                            'factors'        'integer'   []             []; ...
                            'frqlim'         'real'      []             []; ...
@@ -58,9 +65,10 @@ if isstr(g), error(g); end;
 if nargin ==1
     plotTypes2funtc = {'plotICtf', 'plotPCtf', 'plotIMtfims', 'plotIMtime'};
      plotTypes = {'IC spectrogram', 'Summed IC spectrogram', 'Combined IC-IM spectrogram', 'IM timecourse'};
-    freqLim = EEG.etc.IMA.freqlim;
-    ic_list = sprintfc('%d',EEG.etc.IMA.complist);
-    im_list = sprintfc('%d',[1:EEG.etc.IMA.npcs]);
+    freqLim = tmpIMA.IMA.freqlim;
+    ic_list = sprintfc('%d',tmpIMA.IMA.complist);
+    im_list = sprintfc('%d',[1:tmpIMA.IMA.npcs]);
+    plotopt = repmat({'off'}, 1,4);
     
     uilist = {{'style' 'text' 'string' 'Plot type'} {'style' 'popupmenu'  'string' plotTypes 'tag' 'plottype' 'value' 1}...
               {'style' 'text' 'string' 'Freq. limits'} {'style' 'edit' 'string' num2str(freqLim) 'tag' 'freqlimits'}...
@@ -76,30 +84,25 @@ if nargin ==1
    
     [result, ~, ~, resstruct, ~] = inputgui('title','Plot IM decomposition -- pop_plotspecdecomp', 'geom', geom, 'uilist',uilist, 'helpcom','pophelp(''pop_plotspecdecomp'');');
     if isempty(result), return; end;
-    g.comps = EEG.etc.IMA.complist(resstruct.icindx);
+    g.comps = tmpIMA.IMA.complist(resstruct.icindx);
     g.factors = resstruct.imindx;
     g.frqlim = str2num(resstruct.freqlimits);
+    plotopt{resstruct.plottype} = 'on';
 end
 
-
-load([EEG.etc.IMA.filepath '/' EEG.etc.IMA.filename], '-mat');
-
 if isempty(g.frqlim)
-    g.frqlim = IMA.freqlim;
+    g.frqlim = tmpIMA.IMA.freqlim;
 end
 
 if isempty(g.comps)
-    g.comps = IMA.complist;
+    g.comps = tmpIMA.IMA.complist;
 end
 
 if isempty(g.factors)
-    g.factors = 1:IMA.npcs;
+    g.factors = 1:tmpIMA.IMA.npcs;
 end
 
-plotIMtimecourse(IMA,'comps',g.comps, 'factors', g.factors, 'frqlim', g.frqlim,...
+plotIMtimecourse(tmpIMA.IMA,'comps',g.comps, 'factors', g.factors, 'frqlim', g.frqlim,...
                  'smoothing', g.smoothing,...
-                 'plotICtf', g.plotICtf, 'plotPCtf', g.plotPCtf,...
-                 'plotIMtf', g.plotIMtf, 'plotIMtime', g.plotIMtime)
-
-
-
+                 'plotICtf',plotopt{1}, 'plotPCtf', plotopt{2},...
+                 'plotIMtf', plotopt{3}, 'plotIMtime', plotopt{4});

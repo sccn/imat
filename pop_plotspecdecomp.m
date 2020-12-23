@@ -34,6 +34,11 @@ function [IMA] = pop_plotspecdecomp(EEG,varargin);
 IMA = [];
 
 if ~isfield(EEG.etc, 'IMA'), return; end
+try
+    tmpIMA = load([EEG.etc.IMA.filepath '/' EEG.etc.IMA.filename], '-mat');
+catch
+    return;
+end
 
 % checking inputs
 % ---------------
@@ -49,9 +54,9 @@ if isstr(g), error(g); end;
 if nargin ==1
     plotTypes2funtc = {'comb', 'ics', 'ims'};
      plotTypes = {'IM spectral decomposition', 'Superimposed ICs', 'Superimposed IMs'};
-    freqLim = EEG.etc.IMA.freqlim;
-    ic_list = sprintfc('%d',EEG.etc.IMA.complist);
-    im_list = sprintfc('%d',[1:EEG.etc.IMA.npcs]);
+    freqLim = tmpIMA.IMA.freqlim;
+    ic_list = sprintfc('%d',tmpIMA.IMA.complist);
+    im_list = sprintfc('%d',[1:tmpIMA.IMA.npcs]);
     
     uilist = {{'style' 'text' 'string' 'Plot type'} {'style' 'popupmenu'  'string' plotTypes 'tag' 'plottype' 'value' 1}...
               {'style' 'text' 'string' 'Freq. limits'} {'style' 'edit' 'string' num2str(freqLim) 'tag' 'freqlimits'}...
@@ -67,29 +72,27 @@ if nargin ==1
    
     [result, ~, ~, resstruct, ~] = inputgui('title','Plot IM decomposition -- pop_plotspecdecomp', 'geom', geom, 'uilist',uilist, 'helpcom','pophelp(''pop_plotspecdecomp'');');
     if isempty(result), return; end;
-    g.comps = EEG.etc.IMA.complist(resstruct.icindx);
+    g.comps = tmpIMA.IMA.complist(resstruct.icindx);
     g.factors = resstruct.imindx;
     g.plottype = plotTypes2funtc{resstruct.plottype};
     g.frqlim = str2num(resstruct.freqlimits);
     
 end
     
-load([EEG.etc.IMA.filepath '/' EEG.etc.IMA.filename], '-mat');
-
 if isempty(g.frqlim)
-    g.frqlim = IMA.freqlim;
+    g.frqlim = tmpIMA.IMA.freqlim;
 end
 
 if isempty(g.comps)
-    g.comps = IMA.complist;
+    g.comps = tmpIMA.IMA.complist;
 end
 
 if isempty(g.factors)
-    g.factors = 1:IMA.npcs;
+    g.factors = 1:tmpIMA.IMA.npcs;
 end
 
 
-plotspecdecomp(IMA, 'comps', g.comps, 'factors', g.factors, 'frqlim', g.frqlim,...
+plotspecdecomp(tmpIMA.IMA, 'comps', g.comps, 'factors', g.factors, 'frqlim', g.frqlim,...
     'freqscale', g.freqscale, 'plottype', g.plottype, 'maps', g.maps);
 
 
