@@ -76,16 +76,30 @@ function vers = eegplugin_imat(fig, trystrs, catchstrs)
     % ---------------
     studymenu = findobj(fig, 'tag', 'study');
     
-    cb_std_menu1 = '[STUDY] = pop_runIMA_study(STUDY);';
-    cb_std_menu2 = '[IMA] = pop_collecttemplates(STUDY);';
+    cb_std_menu1 = '[STUDY] = pop_runIMA_study(STUDY, ALLEEG);';
+    
+    cb_std_menu21 = 'pop_plotspecdecomp_study(STUDY)';
+    cb_std_menu22 = 'pop_plotspecenv_study(STUDY)';
+    cb_std_menu23 = 'pop_plotIMtimecourse_study(STUDY)';
+    
+    cb_std_menu23 = 'pop_plotIMtimecourse_study(STUDY)';
     
       % menu callback commands (STUDY)
     % ----------------------
     submenustudy = uimenu( studymenu, 'Label', 'STUDY IMA', 'separator', 'on','userdata', 'startup:off;study:on');
-    std_subsubmenu = uimenu( submenustudy, 'Label', 'Run IMA','userdata', 'startup:off;study:on');
-    uimenu( std_subsubmenu, 'Label', 'Run STUDY IMA', 'CallBack', cb_std_menu1, 'userdata', 'startup:off;study:on');
-    uimenu( std_subsubmenu, 'Label', 'Cluster IMA', 'CallBack', cb_std_menu2, 'userdata', 'startup:off;study:on');
+    uimenu( submenustudy, 'Label', 'Run STUDY IMA', 'CallBack', cb_std_menu1, 'userdata', 'startup:off;study:on');
     
-    uimenu( submenustudy, 'label', 'Plot IMA results', 'userdata', 'startup:off;study:on');
+    std_subsubsubmenu1 = uimenu( submenustudy, 'Label', 'Plot IMA results','separator', 'on','userdata', 'startup:off;study:on');
+    uimenu( std_subsubsubmenu1, 'Label', 'IM decomposition', 'CallBack', cb_std_menu21, 'userdata', 'startup:off;study:on');
+    uimenu( std_subsubsubmenu1, 'Label', 'Spectral envelope', 'CallBack', cb_std_menu22, 'userdata', 'startup:off;study:on');
+    uimenu( std_subsubsubmenu1, 'Label', 'IM timecourse',     'CallBack', cb_std_menu23, 'userdata', 'startup:off;study:on');
+    
+    std_subsubsubmenu2 = uimenu( submenustudy, 'Label', 'Cluster IMs','separator', 'on','userdata', 'startup:off;study:on');
+    uimenu( std_subsubsubmenu2, 'Label', 'Collect templates', 'CallBack', ' ', 'userdata', 'startup:off;study:on');
+    uimenu( std_subsubsubmenu2, 'Label', 'Cluster IMs', 'CallBack', ' ', 'userdata', 'startup:off;study:on');
+    uimenu( std_subsubsubmenu2, 'Label', 'Plot clusters', 'CallBack', ' ', 'userdata', 'startup:off;study:on');
+    
+    
+
 
 
