@@ -133,7 +133,7 @@ if length(g.comps) == 2 || length(g.comps) == 3 || length(g.comps) == 4;
     col = 3;
 else
     row = ceil(sqrt(length(g.comps)*3));
-    col = ceil(sqrt(length(g.comps)*3));
+    col = ceil(sqrt(length(g.comps)*6));
     
     rep = 1;
     while rep == 1
@@ -147,6 +147,16 @@ else
         end;
     end;
 end;
+
+if length(g.comps) == 1;
+    row = 1;
+    col = 4;
+end
+%     row = round(sqrt(length(g.comps)*3)); % check how many comlumns and rows for subplot
+%     col = ceil(sqrt(length(g.comps)*2))*3;
+%     if mod(col,2) == 1
+%         col = col+1; row = row-1;
+%     end;
 
 
 
@@ -164,10 +174,10 @@ for cp = 1:length(g.comps)
     rcp = find(g.comps(cp) == IMA.complist);
     
     % plot scalpmaps
-    sbplot(row,col,pl)
+    sbplot(row,col,[pl pl+0.5]);
     topoplot(EEG.icawinv(:,g.comps(cp)),EEG.chanlocs(1:size(EEG.icawinv,1)),'electrodes','off');
     title(int2str(g.comps(cp)));
-    pl = pl+1;
+    pl = pl+2;
     
     % get spectrum for current IC and add mean IC spectrum
     plotdata = origspecdat(:,length(freqvec)*(rcp-1)+1:length(freqvec)*rcp) + repmat(g.meanspec(rcp,:),[size(origspecdat(:,:),1) 1]);
@@ -254,7 +264,9 @@ for cp = 1:length(g.comps)
         if cp == length(g.comps)
             xlabel('Frequency (Hz)');
         end
+        if length(g.comps) == 1 || cp == round(length(g.comps)-(length(g.comps)/(row*(col/3))))
         ylabel('Power (dB)');
+        end
         
         minl2 = min(pcaproj2(:));
         maxl2 = max(pcaproj2(:));
@@ -301,20 +313,33 @@ for cp = 1:length(g.comps)
         % lower part blue
         if length(g.factors) < 2 & strcmp(g.plotenv,'env')% do red/blue if only one
             snglcols = {'r','b'};
-            for e = 1:size(envdata2,1)
+           % for e = 1:size(envdata2,1)
                 if strcmp(freqscale,'linear')
-                    ph = plot(freqs,envdata2(e,fr),'k-','linewidth',lnwdth); hold on;
+                    ph = plot(freqs,envdata2(1,fr),'r-','linewidth',lnwdth); hold on;
+                    ph12 = gcf;
+                    ph12.Children(1).Children(1).Tag = taglist{1};
+                    hold on
+                    ph = plot(freqs,envdata2(2,fr),'b-','linewidth',lnwdth); hold on;
+                    ph12 = gcf;
+                    ph12.Children(1).Children(1).Tag = taglist{2};
                 elseif strcmp(freqscale,'log')
-                    ph = semilogx(freqs,envdata2(e,fr)', 'LineWidth', 2,'Color','m');hold on
+                    ph = semilogx(freqs,envdata2(1,fr)', 'LineWidth', 2,'Color','r');hold on
+                    ph12 = gcf;
+                    ph12.Children(1).Children(1).Tag = taglist{1};
+                    hold on
+                    ph = semilogx(freqs,envdata2(2,fr)', 'LineWidth', 2,'Color','b');hold on
+                    ph12 = gcf;
+                    ph12.Children(1).Children(1).Tag = taglist{2};
                     set(gca,'FontSize',12)
                     set(gca,'xtick',[10 20 40 80 120])
                     xlim([freqs(1) freqs(end)])
                 end;
-                set(ph,'color',snglcols{e});
-                ph12 = gcf;
-                ph12.Children(1).Children(1).Tag = taglist{tpp};
-                legendInfo{tpp} = ['IM ' num2str(g.factors(tpp))];
-            end;
+%                 set(ph,'color',snglcols{e});
+%                 ph12 = gcf;
+%                 ph12.Children(1).Children(1).Tag = taglist{1};
+%                 ph12.Children(2).Children(2).Tag = taglist{2};
+                %legendInfo{tpp} = ['IM ' num2str(g.factors(tpp))];
+            %end;
         else   %% plot all IMs
             if strcmp(freqscale,'linear') % plot in linear frequency scale
                 ph1 = plot(freqs,envdata2(:,fr),'k-','linewidth',2); hold on;
@@ -337,24 +362,45 @@ for cp = 1:length(g.comps)
     %% plot mean IC spectral power
     if strcmp(freqscale,'linear') % plot in linear freq scale
         ph1 = plot(freqs,g.meanspec(rcp,fr),'k-','linewidth',lnwdth+.1); hold on;
+         ph12 = gcf;
+         ph12.Children(1).Children(1).Tag = taglist{3};
     elseif strcmp(freqscale,'log') % plot in log freq scale
         ph1 = semilogx(freqs,g.meanspec(rcp,fr)', 'LineWidth', 2,'Color','k');hold on
+        ph12 = gcf;
+        ph12.Children(1).Children(1).Tag = taglist{3};
         set(gca,'FontSize',12)
         set(gca,'xtick',[10 20 40 80 120])
         xlim([freqs(1) freqs(end)])
     end;
     ph12 = gcf;
+    
+    if length(g.factors)> 1 && length(g.factors)< 7;
     ph12.Children(1).Children(1).Tag = taglist{tpp+1}; % prepare figure legend
     legendInfo{tpp+1} = ['mean IC spectrum'];
     
     if pl <=3;
         hb = [];
         for loki = 1:tpp+1
-            
             hb = [hb findobj(gcf,'tag',taglist{loki})];
         end
         hlegend = legend(hb,legendInfo); % plot figure legend
         set(hlegend, 'Location', 'best');
+    end
+    end
+    
+    if length(g.factors)== 1
+    %ph12.Children(1).Children(1).Tag = taglist{tpp+1}; % prepare figure legend
+    legendInfo{1} = ['IM ' num2str(g.factors(tpp)) ' upper'];
+    legendInfo{2} = ['IM ' num2str(g.factors(tpp)) ' lower'];
+    legendInfo{3} = ['mean IC spectrum'];
+   if pl <=3;
+        hb = [];
+        for loki = 1:3
+            hb = [hb findobj(gcf,'tag',taglist{loki})];
+        end
+        hlegend = legend(hb,legendInfo); % plot figure legend
+        set(hlegend, 'Location', 'best');
+    end
     end
     
     % set min max values of plot
@@ -378,7 +424,7 @@ for cp = 1:length(g.comps)
     set(gca,'fontsize', 12)
     
     fprintf('\nComp %s of %s done.',int2str(cp),int2str(length(g.comps)));
-    pl = pl+2
+    pl = pl+2;
     if ~isempty(g.setminmax) % if min max plotting values are provided cut plot to these values
         ylim([g.setminmax])
     end

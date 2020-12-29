@@ -137,7 +137,9 @@ if strcmp(g.plottype,'ics') % superimpose ic templates
         if pl <= col*(row-1)
             set(gca,'xticklabel',[]);
         end;pl = pl+1;
-    end; textsc(['Superimposed IC Templates for single IMs subject ' EEG.subject],'title');
+    end; 
+    h90 = textsc(['Superimposed IC Templates for single IMs'],'title');
+    set(h90, 'FontSize',20)
     set(gcf,'Position',[100 300 1400 900]);
     set(gcf,'PaperOrientation','landscape');  set(gcf,'PaperPosition',[0.25 0.25 10.5 8]);
     set(gcf,'color','w');
@@ -193,7 +195,8 @@ elseif strcmp(g.plottype,'ims')  % superimpose IM templates for each IC
         end;
         pl = pl+1;
     end;
-    textsc(['Superimposed IM templates for single ICs'],'title');
+    h90 = textsc(['Superimposed IM templates for single ICs'],'title');
+    set(h90, 'FontSize',20)
     set(gcf,'Position',[100 300 1400 900]);
     set(gcf,'PaperOrientation','landscape');  set(gcf,'PaperPosition',[0.25 0.25 10.5 8]);
     set(gcf,'color','w');
