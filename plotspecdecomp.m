@@ -72,7 +72,7 @@ specwts = speceig*winv;
 winv = specwts; % template timecourse  (overwrite ICA winv with ICA/PCA winv)
 clear speceig specwts
 
-
+    icadefs;
 
 %% scale activations
 
@@ -141,10 +141,10 @@ if strcmp(g.plottype,'ics') % superimpose ic templates
     h90 = textsc(['Superimposed IC Templates for single IMs'],'title');
     set(h90, 'FontSize',20)
     set(gcf,'Position',[100 300 1400 900]);
-    set(gcf,'PaperOrientation','landscape');  set(gcf,'PaperPosition',[0.25 0.25 10.5 8]);
-    set(gcf,'color','w');
+    set(gcf,'PaperOrientation','landscape');  set(gcf,'PaperPosition',[0.25 0.25 10.5 8]);    
+    set(gcf,'color',BACKCOLOR);
     axcopy
-    
+
     %% plot superimposed IM templates for each IC
     
 elseif strcmp(g.plottype,'ims')  % superimpose IM templates for each IC
@@ -199,8 +199,9 @@ elseif strcmp(g.plottype,'ims')  % superimpose IM templates for each IC
     set(h90, 'FontSize',20)
     set(gcf,'Position',[100 300 1400 900]);
     set(gcf,'PaperOrientation','landscape');  set(gcf,'PaperPosition',[0.25 0.25 10.5 8]);
-    set(gcf,'color','w');
+    set(gcf,'color',BACKCOLOR);
     axcopy
+
     
     %% plot IM templates separately for each IC
 else
@@ -228,6 +229,7 @@ else
         if pl == row*col+1
             set(gcf,'Position',[100 300 1400 900]);
             set(gcf,'PaperOrientation','landscape');  set(gcf,'PaperPosition',[0.25 0.25 10.5 8]);
+            set(gcf,'color',BACKCOLOR);
             axcopy
             if isempty(EEG.subject) %% plot title
                 ph=textsc(['Independent Modulators'],'title');
@@ -302,6 +304,8 @@ else
         ph=textsc(['Independent Modulators'],'title');
     end
     set(ph,'fontsize',20);
+    set(gcf,'color',BACKCOLOR);
     axcopy
+
     
 end;

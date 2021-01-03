@@ -81,7 +81,6 @@ end
 
 
 
-
 %% load EEG dataset associated with IMA for plotting of scalpmaps
 EEG = pop_loadset('filename',IMA.subjfilename{1},'filepath',IMA.subjfilepath{1});
 
@@ -127,6 +126,7 @@ taglist = {'line1' 'line2' 'line3' 'line4' 'line5' 'line6' 'line7'...
 
 
 %% check how many columns/rows are needed for subplots
+%hfig = figure('Units', 'normalized', 'Position', [0.1149 0.1000 0.7393 0.7790]);
 figure;
 if length(g.comps) == 2 || length(g.comps) == 3 || length(g.comps) == 4;
     row = length(g.comps);
@@ -335,10 +335,10 @@ for cp = 1:length(g.comps)
                     xlim([freqs(1) freqs(end)])
                 end;
 %                 set(ph,'color',snglcols{e});
-%                 ph12 = gcf;
-%                 ph12.Children(1).Children(1).Tag = taglist{1};
-%                 ph12.Children(2).Children(2).Tag = taglist{2};
-                %legendInfo{tpp} = ['IM ' num2str(g.factors(tpp))];
+%                  ph12 = gcf;
+%                  ph12.Children(1).Children(1).Tag = taglist{1};
+%                  ph12.Children(2).Children(2).Tag = taglist{2};
+%                 %legendInfo{tpp} = ['IM ' num2str(g.factors(tpp))];
             %end;
         else   %% plot all IMs
             if strcmp(freqscale,'linear') % plot in linear frequency scale
@@ -363,20 +363,25 @@ for cp = 1:length(g.comps)
     if strcmp(freqscale,'linear') % plot in linear freq scale
         ph1 = plot(freqs,g.meanspec(rcp,fr),'k-','linewidth',lnwdth+.1); hold on;
          ph12 = gcf;
-         ph12.Children(1).Children(1).Tag = taglist{3};
+        % ph12.Children(1).Children(1).Tag = taglist{3};
     elseif strcmp(freqscale,'log') % plot in log freq scale
         ph1 = semilogx(freqs,g.meanspec(rcp,fr)', 'LineWidth', 2,'Color','k');hold on
         ph12 = gcf;
-        ph12.Children(1).Children(1).Tag = taglist{3};
+       % ph12.Children(1).Children(1).Tag = taglist{3};
         set(gca,'FontSize',12)
         set(gca,'xtick',[10 20 40 80 120])
         xlim([freqs(1) freqs(end)])
     end;
+    if length(g.factors) < 2 & strcmp(g.plotenv,'env')
+         ph12 = gcf;
+      ph12.Children(1).Children(1).Tag = taglist{3}; % prepare figure legend
+    else
     ph12 = gcf;
+      ph12.Children(1).Children(1).Tag = taglist{tpp+1}; % prepare figure legend
+    end
     
     if length(g.factors)> 1 && length(g.factors)< 7;
-    ph12.Children(1).Children(1).Tag = taglist{tpp+1}; % prepare figure legend
-    legendInfo{tpp+1} = ['mean IC spectrum'];
+     legendInfo{tpp+1} = ['mean IC spectrum'];
     
     if pl <=3;
         hb = [];
@@ -430,8 +435,11 @@ for cp = 1:length(g.comps)
     end
     
 end;
-
+if col >4
+set(gcf,'Position',[100 300 1400 900]);
+end
+icadefs;
 set(gcf,'PaperOrientation','landscape');  set(gcf,'PaperPosition',[0.25 0.25 10.5 8]);
-set(gcf,'color','w');
+set(gcf,'color',BACKCOLOR);
 axcopy
 
