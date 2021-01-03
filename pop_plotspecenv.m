@@ -102,4 +102,4 @@ end
 fprintf('\n Plotting overall data and meanspec...');
 dataport = tmpIMA.IMA.timepntCond;
 meanspec = tmpIMA.IMA.meanpwr;
-plotspecenv(tmpIMA.IMA, 'comps', g.comps, 'factors', g.factors, 'frqlim', g.frqlim, 'plotenv', g.plotenv, 'plotperc', g.plotperc, 'setminmax', g.setminmax, 'dataport', dataport, 'meanspec', meanspec);
+plotspecenv(tmpIMA.IMA, EEG, 'comps', g.comps, 'factors', g.factors, 'frqlim', g.frqlim, 'plotenv', g.plotenv, 'plotperc', g.plotperc, 'setminmax', g.setminmax, 'dataport', dataport, 'meanspec', meanspec);

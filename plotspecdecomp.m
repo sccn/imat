@@ -15,12 +15,13 @@
 %
 %
 % Example: plot all ICs with a selection of superimposed IMs for IMA decomposition of a subject
-% >> pop_plotspecdecomp(IMA, 'plottype', 'ims', 'factors', [1 3 4 6 7], 'maps', 'on')
+% >> pop_plotspecdecomp(IMA, EEG, 'plottype', 'ims', 'factors', [1 3 4 6 7], 'maps', 'on')
 %
 %
 %
 % INPUTS
 % IMA - previously saved IMA structure (created either by running pop_runima or pop_runima_study)
+% EEG - EEG structure of associated EEG file
 % comps - independent components to plot
 % factors - IMs to plot
 % frqlim - frequency limits for plotting
@@ -31,7 +32,7 @@
 % maps -- ['on','off'] if 'on', then will plot scalp maps.
 
 
-function plotspecdecomp(IMA, varargin)
+function plotspecdecomp(IMA, EEG, varargin)
 
 %% check inputs
 g = finputcheck(varargin, { 'comps'     'integer'   []             [IMA.complist]; ...
@@ -52,7 +53,7 @@ nlim = []; mlim = [];
 
 
 %% load EEG dataset associated with IMA for plotting of scalpmaps
-EEG = pop_loadset('filename',IMA.subjfilename{1},'filepath',IMA.subjfilepath{1});
+% EEG = pop_loadset('filename',IMA.subjfilename{1},'filepath',IMA.subjfilepath{1});
 
 times = IMA.timevec/1000; % transform timevector to seconds
 freqvec = IMA.freqvec;
@@ -218,7 +219,7 @@ else
         for cp = 1:length(g.comps)
             sbplot(row,col,pl)
             topoplot(EEG.icawinv(:,g.comps(cp)),EEG.chanlocs(EEG.icachansind),'electrodes','off','plotrad',.7); pl = pl+1;
-            set(gca,'fontsize',16);  title(int2str(g.comps(cp)));
+            set(gca,'fontsize',16);  title(['IC ' int2str(g.comps(cp))]);
         end;
     else
         pl = 1;
@@ -243,7 +244,7 @@ else
                 for cp = 1:length(g.comps)
                     sbplot(row,col,pl)
                     topoplot(EEG.icawinv(:,g.comps(cp)),EEG.chanlocs(EEG.icachansind),'electrodes','off'); pl = pl+1;
-                    set(gca,'fontsize',16);  title(int2str(g.comps(cp)));
+                    set(gca,'fontsize',16);  title(['IC' int2str(g.comps(cp))]);
                 end;
             else
                 pl = 1;

@@ -23,6 +23,7 @@
 %
 % INPUTS:
 % IMA - previously saved IMA structure
+% EEG - EEG structure of associated EEG file
 % comps - [vector] independent components to plot - if empty plots all
 %                      the independent components for a subject 
 % factors - [vector] IMs to plot - if empty plots all the IMs for a subject% frqlim - [min max] frequency limits for plotting
@@ -45,7 +46,7 @@
 %            
 
 
-function plotspecenv(IMA, varargin);
+function plotspecenv(IMA, EEG, varargin);
 
 g = finputcheck(varargin, { 'comps'     'integer'   []             []; ...
     'factors'          'integer'    []             []; ...
@@ -82,7 +83,7 @@ end
 
 
 %% load EEG dataset associated with IMA for plotting of scalpmaps
-EEG = pop_loadset('filename',IMA.subjfilename{1},'filepath',IMA.subjfilepath{1});
+%EEG = pop_loadset('filename',IMA.subjfilename{1},'filepath',IMA.subjfilepath{1});
 
 times = IMA.timevec/1000; % transform timevector to seconds
 freqvec = IMA.freqvec;
@@ -176,7 +177,7 @@ for cp = 1:length(g.comps)
     % plot scalpmaps
     sbplot(row,col,[pl pl+0.5]);
     topoplot(EEG.icawinv(:,g.comps(cp)),EEG.chanlocs(1:size(EEG.icawinv,1)),'electrodes','off');
-    title(int2str(g.comps(cp)));
+    title(['IC ' int2str(g.comps(cp))]);
     pl = pl+2;
     
     % get spectrum for current IC and add mean IC spectrum

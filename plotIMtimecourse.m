@@ -27,7 +27,7 @@
 % INPUTS:
 % required Inputs:
 % IMA - previously saved IMA structure (either by running pop_runima or pop_runima_study)
-%
+% EEG - EEG structure of associated EEG dataset
 % optional Inputs:
 % comps - [vector] independent components to plot - if empty plots all
 %                      the independent components for a subject
@@ -45,7 +45,7 @@
 
 
 
-function plotIMtimecourse(IMA, varargin)
+function plotIMtimecourse(IMA, EEG, varargin)
 
 g = finputcheck(varargin, {'comps'     'integer'   []             []; ...
     'factors'       'integer'    []             []; ...
@@ -80,7 +80,7 @@ end
 
 
 %% load EEG dataset associated with IMA for plotting of scalpmaps
-EEG = pop_loadset('filename',IMA.subjfilename{1},'filepath',IMA.subjfilepath{1});
+%EEG = pop_loadset('filename',IMA.subjfilename{1},'filepath',IMA.subjfilepath{1});
 
 times = IMA.timevec/1000; % transform timevector to seconds
 freqvec = IMA.freqvec;
@@ -192,7 +192,7 @@ if strcmp(g.plotICtf, 'on');
         % plot scalpmap of IC
         sbplot(row,col,[pl]);
         topoplot(EEG.icawinv(:,g.comps(cp)),EEG.chanlocs(1:size(EEG.icawinv,1)),'electrodes','off');
-        title(int2str(g.comps(cp)));
+        title(['IC ' int2str(g.comps(cp))]);
         pl = pl+1;
         
         %select tf map of IC from origspecdata and add IC mean spectrum
@@ -250,7 +250,7 @@ if strcmp(g.plotPCtf, 'on');
         % plot scalpmap of IC
         sbplot(row,col,[pl]);
         topoplot(EEG.icawinv(:,g.comps(cp)),EEG.chanlocs(1:size(EEG.icawinv,1)),'electrodes','off');
-        title(int2str(g.comps(cp)));
+        title(['IC ' int2str(g.comps(cp))]);
         pl = pl+1;
         
         % plot PC backprojection timefrequency map
@@ -289,7 +289,7 @@ if strcmp(g.plotPCtf, 'on');
         
     end
     ha = axes('Position',[0 0 1 1],'Xlim',[0 1],'Ylim',[0  1],'Box','off','Visible','off','Units','normalized', 'clipping' , 'off');
-    text(0.4, 0.98,'PCA backprojection', 'fontsize', 16);
+    text(0.4, 0.98,'Summed IM backprojection', 'fontsize', 16);
     if col >4
         set(gcf,'Position',[100 300 1400 900]);
     end
@@ -311,7 +311,7 @@ if strcmp(g.plotIMtf, 'on');
             % plot scalpmap of IC
             sbplot(row,col,[pl]);
             topoplot(EEG.icawinv(:,g.comps(cp)),EEG.chanlocs(1:size(EEG.icawinv,1)),'electrodes','off');
-            title(int2str(g.comps(cp)));
+            title(['IC ' int2str(g.comps(cp))]);
             pl = pl+1;
             
             backproj = winv(:,tp)*activations(tp,:); % backproj curr IM
@@ -351,7 +351,7 @@ if strcmp(g.plotIMtf, 'on');
             
         end
         ha = axes('Position',[0 0 1 1],'Xlim',[0 1],'Ylim',[0  1],'Box','off','Visible','off','Units','normalized', 'clipping' , 'off');
-        text(0.4, 0.98,'IMA backprojection', 'fontsize', 16);
+        text(0.4, 0.98,'IM backprojection', 'fontsize', 16);
         if col >4
             set(gcf,'Position',[100 300 1400 900]);
         end

@@ -92,7 +92,7 @@ if isempty(g.factors)
 end
 
 
-plotspecdecomp(tmpIMA.IMA, 'comps', g.comps, 'factors', g.factors, 'frqlim', g.frqlim,...
+plotspecdecomp(tmpIMA.IMA, EEG, 'comps', g.comps, 'factors', g.factors, 'frqlim', g.frqlim,...
     'freqscale', g.freqscale, 'plottype', g.plottype, 'maps', g.maps);
 
 
