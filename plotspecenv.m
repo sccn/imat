@@ -16,7 +16,7 @@
 %
 % Example plotting the overall spectra for a subject for IC 1 and IMs 1 and 2
 %  with frequency limits 3 to 60, plotting the upper 95th percentile over
-%  two conditions or over one condition (if IMA has been computed only over one condition) 
+%  two conditions or over one condition (if IMA has been computed only over one condition)
 %
 % >> plotspecenv(IMA, 'comps', [1], 'factors', [1 2], 'frqlim', [3 60], 'plotenv', 'upper');
 %
@@ -25,25 +25,25 @@
 % IMA - previously saved IMA structure
 % EEG - EEG structure of associated EEG file
 % comps - [vector] independent components to plot - if empty plots all
-%                      the independent components for a subject 
+%                      the independent components for a subject
 % factors - [vector] IMs to plot - if empty plots all the IMs for a subject% frqlim - [min max] frequency limits for plotting
 % plotenv - [string] possible values: 'env', 'upper', 'lower'. Either plot envelope of IMs, plot upper 95th percentile,
 %           plot lower 95th percentile. (default 'env')
 % plotperc - [number between 0 and 1] define a percentile of trials to use to exclude outliers...
 %            (default 95th percentile - 0.95)
 % setmimax - [min max] set minimum / maximum of spectrum yscale - if empty
-%                      uses matlab default settings 
-% dataport - vector of timepoints to plot - can be either IMA.timepntCond{ib} if IMA has been computed 
+%                      uses matlab default settings
+% dataport - vector of timepoints to plot - can be either IMA.timepntCond{ib} if IMA has been computed
 %            over several conditions using the EEGLAB STUDY structure and conditions are plotted separately
 %            or 1:(IMA.ntrials*IMA.ntw_trials) if the overall spectra over conditions is to be
 %            plotted, or IMA was only computed over a single condition.
 %            default: [1:(IMA.ntrials*IMA.ntw_trials)]
-% meanspec - meanspectra of ICs to plot can be either IMA.meanpwrCond(i,:,:) if IMA has been computed 
+% meanspec - meanspectra of ICs to plot can be either IMA.meanpwrCond(i,:,:) if IMA has been computed
 %            over several conditions using the EEGLAB STUDY structure and conditions are plotted separately (see also dataport)
 %            or IMA.meanpwr if the overall spectra over conditions is to be
 %            plotted, or IMA was only computed over a single condition.
 %            default [IMA.meanpwr]
-%            
+%
 
 
 function plotspecenv(IMA, EEG, varargin);
@@ -121,9 +121,9 @@ cols(9,:) = [.4 .6 0]; % army green
 cols(10,:) = [1 .8 0]; % mustard
 
 taglist = {'line1' 'line2' 'line3' 'line4' 'line5' 'line6' 'line7'...
-           'line7' 'line8' 'line9' 'line10' 'line11' 'line12' 'line13' 'line14' 'line15'...
-           'line16' 'line17' 'line18' 'line19' 'line20' 'line21' 'line22' 'line23' 'line24'...
-           'line25' 'line26' 'line27' 'line28'};
+    'line7' 'line8' 'line9' 'line10' 'line11' 'line12' 'line13' 'line14' 'line15'...
+    'line16' 'line17' 'line18' 'line19' 'line20' 'line21' 'line22' 'line23' 'line24'...
+    'line25' 'line26' 'line27' 'line28'};
 
 
 %% check how many columns/rows are needed for subplots
@@ -134,30 +134,31 @@ if length(g.comps) == 2 || length(g.comps) == 3 || length(g.comps) == 4;
     col = 3;
 else
     row = ceil(sqrt(length(g.comps)*3));
-    col = ceil(sqrt(length(g.comps)*6));
+    col = ceil(sqrt(length(g.comps)*3));
     
     rep = 1;
-    while rep == 1
-        if col ==3 | col==6 | col ==9 | col==12
+    while rep == 1;
+        if col ==3 | col==6 | col==9 | col==12 | col ==18 | col == 24 | col == 30;
             rep = 0;
         else
             col = col+1; %
-            if length(g.comps)*3 <= (row-1)* col
-                row = row -1;
-            end;
         end;
     end;
+    rep = 1;
+    while rep == 1;
+        if length(g.comps)*3 <= (row-1)* col;
+            row = row -1;
+        else
+            rep = 0;
+        end;
+    end
 end;
 
 if length(g.comps) == 1;
     row = 1;
     col = 4;
 end
-%     row = round(sqrt(length(g.comps)*3)); % check how many comlumns and rows for subplot
-%     col = ceil(sqrt(length(g.comps)*2))*3;
-%     if mod(col,2) == 1
-%         col = col+1; row = row-1;
-%     end;
+
 
 
 
@@ -175,15 +176,16 @@ for cp = 1:length(g.comps)
     rcp = find(g.comps(cp) == IMA.complist);
     
     % plot scalpmaps
-    sbplot(row,col,[pl pl+0.5]);
+    sbplot(row,col,[pl pl]);
     topoplot(EEG.icawinv(:,g.comps(cp)),EEG.chanlocs(1:size(EEG.icawinv,1)),'electrodes','off');
     title(['IC ' int2str(g.comps(cp))]);
-    pl = pl+2;
+    set(gca,'fontsize',14);
+    pl = pl+1;
     
     % get spectrum for current IC and add mean IC spectrum
     plotdata = origspecdat(:,length(freqvec)*(rcp-1)+1:length(freqvec)*rcp) + repmat(g.meanspec(rcp,:),[size(origspecdat(:,:),1) 1]);
     plotdata = plotdata(:,fr);
-    sbplot(row,col,[pl pl+1]);
+    sbplot(row,col,[pl+0.2 pl+1]);
     
     
     %%%%%%%%%%%%%%  Plot full data %%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -262,13 +264,11 @@ for cp = 1:length(g.comps)
             end
         end;
         set(ph,'edgecolor',pcabkgd);%set(ph,'edgealpha',0);
-        if cp == length(g.comps)
+        if pl == (row-1)*col+2
+            xlabel('Frequency (Hz)'); ylabel('Power (dB)');
+        elseif pl > (row-1)*col+1
             xlabel('Frequency (Hz)');
-        end
-        if length(g.comps) == 1 || cp == round(length(g.comps)-(length(g.comps)/(row*(col/3))))
-        ylabel('Power (dB)');
-        end
-        
+        end;
         minl2 = min(pcaproj2(:));
         maxl2 = max(pcaproj2(:));
         if minl2 < minl
@@ -301,9 +301,9 @@ for cp = 1:length(g.comps)
         
         %% check if plotting upper/lower boundary of data, envelope or average
         if strcmp(g.plotenv, 'upper') % only pos proj
-            envdata2(1,:) = onebkprj(1,:);
-        elseif strcmp(g.plotenv,'lower')% only neg proj
             envdata2(1,:) = onebkprj(end,:);
+        elseif strcmp(g.plotenv,'lower')% only neg proj
+            envdata2(1,:) = onebkprj(1,:);
         elseif strcmp(g.plotenv,'env') % plot envelope
             envdata2 = [onebkprj(end,:);onebkprj(1,:)];
         elseif strcmp(g.plotenv,'aver') % plot average
@@ -314,32 +314,32 @@ for cp = 1:length(g.comps)
         % lower part blue
         if length(g.factors) < 2 & strcmp(g.plotenv,'env')% do red/blue if only one
             snglcols = {'r','b'};
-           % for e = 1:size(envdata2,1)
-                if strcmp(freqscale,'linear')
-                    ph = plot(freqs,envdata2(1,fr),'r-','linewidth',lnwdth); hold on;
-                    ph12 = gcf;
-                    ph12.Children(1).Children(1).Tag = taglist{1};
-                    hold on
-                    ph = plot(freqs,envdata2(2,fr),'b-','linewidth',lnwdth); hold on;
-                    ph12 = gcf;
-                    ph12.Children(1).Children(1).Tag = taglist{2};
-                elseif strcmp(freqscale,'log')
-                    ph = semilogx(freqs,envdata2(1,fr)', 'LineWidth', 2,'Color','r');hold on
-                    ph12 = gcf;
-                    ph12.Children(1).Children(1).Tag = taglist{1};
-                    hold on
-                    ph = semilogx(freqs,envdata2(2,fr)', 'LineWidth', 2,'Color','b');hold on
-                    ph12 = gcf;
-                    ph12.Children(1).Children(1).Tag = taglist{2};
-                    set(gca,'FontSize',12)
-                    set(gca,'xtick',[10 20 40 80 120])
-                    xlim([freqs(1) freqs(end)])
-                end;
-%                 set(ph,'color',snglcols{e});
-%                  ph12 = gcf;
-%                  ph12.Children(1).Children(1).Tag = taglist{1};
-%                  ph12.Children(2).Children(2).Tag = taglist{2};
-%                 %legendInfo{tpp} = ['IM ' num2str(g.factors(tpp))];
+            % for e = 1:size(envdata2,1)
+            if strcmp(freqscale,'linear')
+                ph = plot(freqs,envdata2(1,fr),'r-','linewidth',lnwdth); hold on;
+                ph12 = gcf;
+                ph12.Children(1).Children(1).Tag = taglist{1};
+                hold on
+                ph = plot(freqs,envdata2(2,fr),'b-','linewidth',lnwdth); hold on;
+                ph12 = gcf;
+                ph12.Children(1).Children(1).Tag = taglist{2};
+            elseif strcmp(freqscale,'log')
+                ph = semilogx(freqs,envdata2(1,fr)', 'LineWidth', 2,'Color','r');hold on
+                ph12 = gcf;
+                ph12.Children(1).Children(1).Tag = taglist{1};
+                hold on
+                ph = semilogx(freqs,envdata2(2,fr)', 'LineWidth', 2,'Color','b');hold on
+                ph12 = gcf;
+                ph12.Children(1).Children(1).Tag = taglist{2};
+                set(gca,'FontSize',12)
+                set(gca,'xtick',[10 20 40 80 120])
+                xlim([freqs(1) freqs(end)])
+            end;
+            %                 set(ph,'color',snglcols{e});
+            %                  ph12 = gcf;
+            %                  ph12.Children(1).Children(1).Tag = taglist{1};
+            %                  ph12.Children(2).Children(2).Tag = taglist{2};
+            %                 %legendInfo{tpp} = ['IM ' num2str(g.factors(tpp))];
             %end;
         else   %% plot all IMs
             if strcmp(freqscale,'linear') % plot in linear frequency scale
@@ -363,50 +363,57 @@ for cp = 1:length(g.comps)
     %% plot mean IC spectral power
     if strcmp(freqscale,'linear') % plot in linear freq scale
         ph1 = plot(freqs,g.meanspec(rcp,fr),'k-','linewidth',lnwdth+.1); hold on;
-         ph12 = gcf;
+        ph12 = gcf;
         % ph12.Children(1).Children(1).Tag = taglist{3};
     elseif strcmp(freqscale,'log') % plot in log freq scale
         ph1 = semilogx(freqs,g.meanspec(rcp,fr)', 'LineWidth', 2,'Color','k');hold on
         ph12 = gcf;
-       % ph12.Children(1).Children(1).Tag = taglist{3};
+        % ph12.Children(1).Children(1).Tag = taglist{3};
         set(gca,'FontSize',12)
         set(gca,'xtick',[10 20 40 80 120])
         xlim([freqs(1) freqs(end)])
     end;
     if length(g.factors) < 2 & strcmp(g.plotenv,'env')
-         ph12 = gcf;
-      ph12.Children(1).Children(1).Tag = taglist{3}; % prepare figure legend
+        ph12 = gcf;
+        ph12.Children(1).Children(1).Tag = taglist{3}; % prepare figure legend
     else
-    ph12 = gcf;
-      ph12.Children(1).Children(1).Tag = taglist{tpp+1}; % prepare figure legend
+        ph12 = gcf;
+        ph12.Children(1).Children(1).Tag = taglist{tpp+1}; % prepare figure legend
     end
     
     if length(g.factors)> 1 && length(g.factors)< 7;
-     legendInfo{tpp+1} = ['mean IC spectrum'];
-    
-    if pl <=3;
-        hb = [];
-        for loki = 1:tpp+1
-            hb = [hb findobj(gcf,'tag',taglist{loki})];
+        legendInfo{tpp+1} = ['mean IC spectrum'];
+        if pl <=3;
+            hb = [];
+            for loki = 1:tpp+1
+                hb = [hb findobj(gcf,'tag',taglist{loki})];
+            end
+            hlegend = legend(hb,legendInfo); % plot figure legend
+            set(hlegend, 'Location', 'best');
         end
-        hlegend = legend(hb,legendInfo); % plot figure legend
-        set(hlegend, 'Location', 'best');
-    end
     end
     
     if length(g.factors)== 1
-    %ph12.Children(1).Children(1).Tag = taglist{tpp+1}; % prepare figure legend
-    legendInfo{1} = ['IM ' num2str(g.factors(tpp)) ' upper'];
-    legendInfo{2} = ['IM ' num2str(g.factors(tpp)) ' lower'];
-    legendInfo{3} = ['mean IC spectrum'];
-   if pl <=3;
-        hb = [];
-        for loki = 1:3
-            hb = [hb findobj(gcf,'tag',taglist{loki})];
+        %ph12.Children(1).Children(1).Tag = taglist{tpp+1}; % prepare figure legend
+        if strcmp(g.plotenv, 'upper') % only pos proj
+            legendInfo{1} = ['IM ' num2str(g.factors(tpp)) ' upper'];
+            legendInfo{2} = ['mean IC spectrum'];
+        elseif strcmp(g.plotenv,'lower')
+            legendInfo{1} = ['IM ' num2str(g.factors(tpp)) ' lower'];
+            legendInfo{2} = ['mean IC spectrum'];
+        elseif strcmp(g.plotenv,'env') % plot envelope
+            legendInfo{1} = ['IM ' num2str(g.factors(tpp)) ' upper'];
+            legendInfo{2} = ['IM ' num2str(g.factors(tpp)) ' lower'];
+            legendInfo{3} = ['mean IC spectrum'];
         end
-        hlegend = legend(hb,legendInfo); % plot figure legend
-        set(hlegend, 'Location', 'best');
-    end
+        if pl <=3;
+            hb = [];
+            for loki = 1:3
+                hb = [hb findobj(gcf,'tag',taglist{loki})];
+            end
+            hlegend = legend(hb,legendInfo); % plot figure legend
+            set(hlegend, 'Location', 'best');
+        end
     end
     
     % set min max values of plot
@@ -437,7 +444,7 @@ for cp = 1:length(g.comps)
     
 end;
 if col >4
-set(gcf,'Position',[100 300 1400 900]);
+    set(gcf,'Position',[100 300 1400 900]);
 end
 icadefs;
 set(gcf,'PaperOrientation','landscape');  set(gcf,'PaperPosition',[0.25 0.25 10.5 8]);

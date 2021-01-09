@@ -219,7 +219,7 @@ else
         for cp = 1:length(g.comps)
             sbplot(row,col,pl)
             topoplot(EEG.icawinv(:,g.comps(cp)),EEG.chanlocs(EEG.icachansind),'electrodes','off','plotrad',.7); pl = pl+1;
-            set(gca,'fontsize',16);  title(['IC ' int2str(g.comps(cp))]);
+            set(gca,'fontsize',14);  title(['IC ' int2str(g.comps(cp))]);
         end;
     else
         pl = 1;

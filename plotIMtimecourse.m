@@ -169,13 +169,19 @@ else
             rep = 0;
         else
             col = col+1; %
-            if length(g.comps)*3 <= (row-1)* col;
-                row = row -1;
-            end;
         end;
     end;
+    rep = 1;
+    while rep == 1;
+        if length(g.comps)*3 <= (row-1)* col;
+            row = row -1;
+        else
+            rep = 0;
+        end;
+    end
 end;
 
+%row = round(sqrt(length(g.comps))); col = ceil(sqrt(length(g.comps)*3)); % determine how many rows and columns for subplot
 
 
 cols = hsv(length(g.factors)); % determine colors for IM traces
@@ -184,7 +190,18 @@ fr = find(freqvec >= g.frqlim(1) & freqvec <= g.frqlim(2)); % check index for fr
 freqs = freqvec(fr);
 pl = 1;
 
+
 if strcmp(g.plotICtf, 'on');
+    
+    % get scale for colorbar
+    plotdatascale = [];
+    for cp = 1:length(g.comps);
+        rcp = find(g.comps(cp) == IMA.complist);
+        plotdata= origspecdat(:,length(freqvec)*(rcp-1)+1:length(freqvec)*rcp);
+        plotdatascale = [plotdatascale plotdata(:,fr)]; % select frequency range to plot
+    end
+    % minl = min(plotdata(:));
+    maxl = max(abs(plotdatascale(:)))/3; %% changed colorscale min max
     %% plot time frequency map of original spectra
     figure;
     for cp = 1:length(g.comps);
@@ -193,6 +210,7 @@ if strcmp(g.plotICtf, 'on');
         sbplot(row,col,[pl]);
         topoplot(EEG.icawinv(:,g.comps(cp)),EEG.chanlocs(1:size(EEG.icawinv,1)),'electrodes','off');
         title(['IC ' int2str(g.comps(cp))]);
+        set(gca,'fontsize',14);
         pl = pl+1;
         
         %select tf map of IC from origspecdata and add IC mean spectrum
@@ -200,10 +218,13 @@ if strcmp(g.plotICtf, 'on');
         plotdata = origspecdat(:,length(freqvec)*(rcp-1)+1:length(freqvec)*rcp);
         plotdata = plotdata(:,fr); % select frequency range to plot
         % minl = min(plotdata(:));
-        maxl = max(abs(plotdata(:)))/3; %% changed colorscale min max
+        %maxl = max(abs(plotdata(:)))/3; %% changed colorscale min max
         sbplot(row,col,[pl pl+1]);
-        set(gca,'YScale','log');
         imagesc(times,freqs,plotdata'); % plot original tf map for IC
+        set(gca,'YDir','normal');
+        set(gca,'YScale','log');
+        set(gca,'ytick',[10 20 40 80 120])
+        ylim([freqs(1) freqs(end)])
         caxis([-maxl maxl]);
         j=jet;
         colormap(j);
@@ -213,23 +234,16 @@ if strcmp(g.plotICtf, 'on');
                 line([times(dataport{lux}(end)),times(dataport{lux}(end))],[freqs(1) freqs(end)], 'Color','k', 'LineWidth', lnwdth); hold on
             end
         end
-        set(gca,'YDir','normal');
-        set(gca,'YScale','log');
-            if cp == row || cp == length(g.comps);
-                xlabel('Time (sec)');
-            end
-            if cp == row 
-            ylabel('Frequency (Hz)');
-            end
-        
+        if pl == (row-1)*col+2
+            xlabel('Time (sec)'); ylabel('Frequency (Hz)');
+        elseif pl > (row-1)*col+1
+            xlabel('Time (sec)');
+        end;
         set(gca,'fontsize', 12);
-        
-        
-        pl = pl+2;% advance for scalp map and spectra
-        
+        pl = pl+2;% advance for scalp map and spectra       
     end
     ha = axes('Position',[0 0 1 1],'Xlim',[0 1],'Ylim',[0  1],'Box','off','Visible','off','Units','normalized', 'clipping' , 'off');
-    text(0.4, 0.98,'IC spectogram', 'fontsize', 16);
+    text(0.4, 0.98,'IC spectogram', 'fontsize', 20);
     if col >4
         set(gcf,'Position',[100 300 1400 900]);
     end
@@ -239,9 +253,17 @@ end
 
 %%%%%%%%%%%%%%  Plot PCA backproj %%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-if strcmp(g.plotPCtf, 'on');
-    figure;
-    
+if strcmp(g.plotPCtf, 'on');    
+    % get scale for colorbar
+    plotdatascale = [];
+    for cp = 1:length(g.comps);
+        rcp = find(g.comps(cp) == IMA.complist);
+        pcaproj = winv(:,:)*activations(:,length(freqvec)*(rcp-1)+1:length(freqvec)*rcp); % select IC tf maps from activations
+        plotdatascale = [plotdatascale pcaproj(:,fr)]; % select frequency range to plot
+    end
+    % minl = min(plotdata(:));
+    maxl = max(abs(plotdatascale(:)))/2; %% changed colorscale min max     
+    figure;  
     pl = 1;
     
     for cp = 1:length(g.comps);
@@ -251,6 +273,7 @@ if strcmp(g.plotPCtf, 'on');
         sbplot(row,col,[pl]);
         topoplot(EEG.icawinv(:,g.comps(cp)),EEG.chanlocs(1:size(EEG.icawinv,1)),'electrodes','off');
         title(['IC ' int2str(g.comps(cp))]);
+        set(gca,'fontsize',14);
         pl = pl+1;
         
         % plot PC backprojection timefrequency map
@@ -259,10 +282,13 @@ if strcmp(g.plotPCtf, 'on');
         plotdata = pcaproj(:,fr); % select frequency range to plot
         %     minl = min(plotdata(:));
         %     maxl = max(plotdata(:));
-        maxl = max(abs(plotdata(:)))/2; %% changed colorscale min max
+        % maxl = max(abs(plotdata(:)))/2; %% changed colorscale min max
         sbplot(row,col,[pl pl+1]);
-        set(gca,'YScale','log');
         imagesc(times,freqs,plotdata'); % plot tf maps
+        set(gca,'YDir','normal');
+        set(gca,'YScale','log');
+        set(gca,'ytick',[10 20 40 80 120])
+        ylim([freqs(1) freqs(end)])
         caxis([-maxl maxl]);
         j=jet;
         colormap(j);
@@ -272,24 +298,16 @@ if strcmp(g.plotPCtf, 'on');
                 line([times(dataport{lux}(end)),times(dataport{lux}(end))],[freqs(1) freqs(end)], 'Color','k', 'LineWidth', lnwdth); hold on
             end
         end
-        set(gca,'YDir','normal');
-        set(gca,'YScale','log');
-            if cp == row || cp == length(g.comps);
-                xlabel('Time (sec)');
-            end
-            if cp == row 
-            ylabel('Frequency (Hz)');
-            end
-        
-        set(gca,'fontsize', 12);
-        
-        
-        pl = pl+2;% advance for scalp map and spectra
-        
-        
+        if pl == (row-1)*col+2
+            xlabel('Time (sec)'); ylabel('Frequency (Hz)');
+        elseif pl > (row-1)*col+1
+            xlabel('Time (sec)');
+        end;
+        set(gca,'fontsize', 12);    
+        pl = pl+2;% advance for scalp map and spectra 
     end
     ha = axes('Position',[0 0 1 1],'Xlim',[0 1],'Ylim',[0  1],'Box','off','Visible','off','Units','normalized', 'clipping' , 'off');
-    text(0.4, 0.98,'Summed IM backprojection', 'fontsize', 16);
+    text(0.4, 0.98,'Summed IM backprojection', 'fontsize', 20);
     if col >4
         set(gcf,'Position',[100 300 1400 900]);
     end
@@ -305,6 +323,18 @@ if strcmp(g.plotIMtf, 'on');
         tp = g.factors(tpp);
         figure;
         pl = 1;
+        
+        % get scale for colorbar
+        plotdatascale = [];
+        for cp = 1:length(g.comps);
+            rcp = find(g.comps(cp) == IMA.complist);
+            backproj = winv(:,tp)*activations(tp,:); % backproj curr IM
+            onebkprj = backproj(:,length(freqvec)*(rcp-1)+1:length(freqvec)*rcp);
+            plotdatascale = [plotdatascale onebkprj(:,fr)]; % select frequency range to plot
+        end
+        % minl = min(plotdata(:));
+        maxl = max(abs(plotdatascale(:)))/2; %% changed colorscale min max
+              
         for cp = 1:length(g.comps);
             rcp = find(g.comps(cp) == IMA.complist);
             
@@ -312,6 +342,7 @@ if strcmp(g.plotIMtf, 'on');
             sbplot(row,col,[pl]);
             topoplot(EEG.icawinv(:,g.comps(cp)),EEG.chanlocs(1:size(EEG.icawinv,1)),'electrodes','off');
             title(['IC ' int2str(g.comps(cp))]);
+            set(gca,'fontsize',14);
             pl = pl+1;
             
             backproj = winv(:,tp)*activations(tp,:); % backproj curr IM
@@ -319,10 +350,13 @@ if strcmp(g.plotIMtf, 'on');
             plotdata = onebkprj(:,fr);
             %         minl = min(plotdata(:));
             %         maxl = max(plotdata(:));
-            maxl = max(abs(plotdata(:)))/2; %% changed colorscale min max
+            % maxl = max(abs(plotdata(:)))/2; %% changed colorscale min max
             sbplot(row,col,[pl pl+1]);
-            set(gca,'YScale','log');
             imagesc(times,freqs,plotdata');
+            set(gca,'YDir','normal');
+            set(gca,'YScale','log');
+            set(gca,'ytick',[10 20 40 80 120])
+            ylim([freqs(1) freqs(end)])
             caxis([-maxl maxl]);
             j=jet;
             colormap(j);
@@ -332,26 +366,20 @@ if strcmp(g.plotIMtf, 'on');
                     line([times(dataport{lux}(end)),times(dataport{lux}(end))],[freqs(1) freqs(end)], 'Color','k', 'LineWidth', lnwdth); hold on
                 end
             end
-            set(gca,'YDir','normal');
-            set(gca,'YScale','log');
-            if cp == row || cp == length(g.comps);
+            if pl == (row-1)*col+2
+                xlabel('Time (sec)'); ylabel('Frequency (Hz)');
+            elseif pl > (row-1)*col+1
                 xlabel('Time (sec)');
-            end
-            if cp == row 
-            ylabel('Frequency (Hz)');
-            end
-            if cp == 1;
-                title(['IM ' num2str(g.factors(tpp))]);
-            end
+            end;
+%             if cp == 1;
+%                 title(['IM ' num2str(g.factors(tpp))], 'fontsize', 20);
+%             end
             set(gca,'fontsize', 12);
-            
-            
+                    
             pl = pl+2;% advance for scalp map and spectra
-            
-            
         end
         ha = axes('Position',[0 0 1 1],'Xlim',[0 1],'Ylim',[0  1],'Box','off','Visible','off','Units','normalized', 'clipping' , 'off');
-        text(0.4, 0.98,'IM backprojection', 'fontsize', 16);
+        text(0.4, 0.98,['IM spectral weights backprojection IM ' num2str(g.factors(tpp))], 'fontsize', 16);
         if col >4
             set(gcf,'Position',[100 300 1400 900]);
         end
@@ -379,12 +407,31 @@ if strcmp(g.plotIMtime, 'on');
                 rep = 0;
             else
                 col = col+1; %
-                if length(g.factors)*3 <= (row-1)* col;
-                    row = row -1;
-                end;
             end;
         end;
+        rep = 1;
+        while rep == 1;
+            if length(g.factors)*3 <= (row-1)* col;
+                row = row -1;
+            else
+                rep = 0;
+            end;
+        end
     end;
+    
+    plotdatascale = [];
+        for tpp = 1:length(g.factors);
+        tp = g.factors(tpp);
+          backproj = squeeze(winv(:,tp));
+        % smooth timecourses using a lowpass butterworth filter
+        clear aa bb
+        [bb,aa] = butter (2, 0.1*g.smoothing./(round(times(end)/length(times)*10)/2), 'low');
+        backproj = filtfilt(bb,aa,(double(backproj)));
+         plotdatascale = [plotdatascale backproj]; % select frequency range to plot
+        end
+        % minl = min(plotdata(:));
+        maxl = max(abs(plotdatascale(:))); %% changed colorscale min max
+
     
     %row = ceil(length(g.factors));
     figure;
@@ -396,7 +443,7 @@ if strcmp(g.plotIMtime, 'on');
         sbplot(row,col,[pl]);
         hist(winv(:,tp),75);hold on;
         title(['IM ' num2str(g.factors(tpp))]);
-        set(gca,'fontsize',7);
+        set(gca,'fontsize',16);
         plot([0 0],[get(gca,'ylim')],'r-');
         set(gca,'yticklabel',[]);   set(gca,'xticklabel',[]);
         
@@ -406,7 +453,7 @@ if strcmp(g.plotIMtime, 'on');
         
         % smooth timecourses using a lowpass butterworth filter
         clear aa bb
-        [bb,aa] = butter (2, 0.5*g.smoothing./(round(times(end)/length(times)*10)/2), 'low');
+        [bb,aa] = butter (2, 0.1*g.smoothing./(round(times(end)/length(times)*10)/2), 'low');
         backproj = filtfilt(bb,aa,(double(backproj)));
         
         % plot IM timecourse
@@ -424,17 +471,16 @@ if strcmp(g.plotIMtime, 'on');
                 legendInfo{lux} = ['Cond ' IMA.condition{lux}];
             else
                 legendInfo{lux} = ['Cond ' num2str(lux)];
-            end
-            
-            if tpp == length(g.factors);
-                xlabel('Time (sec)')
-            end
-            
-            
+            end          
+            if pl == (row-1)*col+2
+                xlabel('Time (sec)'); 
+            elseif pl > (row-1)*col+1
+                xlabel('Time (sec)');
+            end;          
         end
         
         xlim([times(dataport{1}(1)),times(dataport{end}(end))]);
-        ylim([min(backproj) max(backproj)]);
+        ylim([-maxl maxl]);
         set(gca,'fontsize', 12);
         pl = pl+2;% advance for scalp map and spectra
         if strcmp(g.plotcond, 'on')
@@ -450,7 +496,7 @@ if strcmp(g.plotIMtime, 'on');
         end
     end
     ha = axes('Position',[0 0 1 1],'Xlim',[0 1],'Ylim',[0  1],'Box','off','Visible','off','Units','normalized', 'clipping' , 'off');
-    text(0.4, 0.98,'IMA backprojection', 'fontsize', 16);
+    text(0.4, 0.98,'IM weight backprojection', 'fontsize', 20);
     if col >4
         set(gcf,'Position',[100 300 1400 900]);
     end
