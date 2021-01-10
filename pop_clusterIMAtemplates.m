@@ -1,5 +1,5 @@
 %  Takes WT comodulation spectral templates as collected in IMA.precluster.templates 
-%  and clusters to specified number of cluster
+%  and clusters to specified number of clusters
 %
 % [STUDY] = pop_clusterIMAtemplates(STUDY,varargin);
 %
@@ -23,7 +23,7 @@
 % nclust -- [integer] if not empty, will divide templates into nclust clusters
 %                     by 'pdist','linkage','dendrogram' Matlab functions
 % method -- ['corr', 'euc' or 'k-means'] for correlation or euclidean distance for pdist, or k-means clustering
-% pcs -- number of dimensions to reduce the spectra to
+% pcs -- number of principal IM spectral template dimensions to retain
 %
 %
 % OUTPUT
@@ -31,19 +31,37 @@
 % centroid saved in STUDY.etc.IMA.clustidx in the form [SJ IM ICs clusindx] and STUDY.etc.IMA.distance
 %
 
-function [STUDY] = pop_clusterIMAtemplates(STUDY,varargin);
+function [STUDY] = pop_clusterIMAtemplates(STUDY, ALLEEG, varargin);
 
-
+clustmethods = {'corr' 'euc' 'kmeans'};  
 g = finputcheck(varargin, {'freqlim'        'integer'       []             []; ...
-    'nclust'     'integer'     []         [];...
-    'pcs'     'integer'     []         [10];...
-    'method'      'string'       {'corr' 'euc' 'kmeans'}             'kmeans'; ...  
-    }, 'inputgui');
+                           'nclust'     'integer'     []         [];...
+                           'pcs'     'integer'     []         [10];...
+                           'method'      'string'       clustmethods             'kmeans'; ...  
+                           }, 'inputgui');
 if isstr(g), error(g); end;
 
+if nargin == 2
+    clsutmethodslist = {'Correlation' 'Euclidean' 'Kmeans'}; 
+    
+      uilist = {{'style' 'text' 'string' 'Method'} {'style' 'popupmenu'  'string' clsutmethodslist 'tag' 'method' 'value' 1 }...
+              {'style' 'text' 'string' 'Number of clusters'} {'style' 'edit'  'string' ' ' 'tag' 'nclust'}...
+              {'style' 'text' 'string' 'Number of PCs'} {'style' 'edit'  'string' ' ' 'tag' 'npcs'} {'style' 'text' 'string' 'Freq. limits (Hz)'} {'style' 'edit'  'string' ' ' 'tag' 'freqlim'}};
+     
+     ht = 3; wt = 4 ;
+     geom = {{wt ht [0 0]  [1 1]} {wt ht [1 0]  [1 1]}...
+             {wt ht [0 1]  [1 1]} {wt ht [1 1]  [1 1]}...
+             {wt ht [0 2]  [1 1]} {wt ht [1 2]  [1 1]} {wt ht [2 2]  [1 1]} {wt ht [2.8 2]  [1 1]}};
+     
+    [result, ~, ~, resstruct, ~] = inputgui('title','Cluster IM templates -- pop_clusterIMAtemplates', 'geom', geom, 'uilist',uilist, 'helpcom','pophelp(''pop_clusterIMAtemplates'');');
+
+    g.freqlim = str2num(resstruct.freqlim);
+    g.nclust = str2num(resstruct.nclust);
+    g.pcs = str2num(resstruct.nclust);
+    g.method = clustmethods{resstruct.method};
+end
+
 subjcode = STUDY.subject; 
-
-
     
 templates = [];
 IMICindex = [];
@@ -55,7 +73,7 @@ for iko = 1:length(subjcode)
 indsj = find(ismember({STUDY.datasetinfo.subject}, STUDY(iko).subject));
 
 %% load IMA file for curent subject
-load([STUDY.datasetinfo(indsj(1)).filepath '/' STUDY.etc.IMA.imafilename(iko,:)], '-mat' );
+load([STUDY.datasetinfo(indsj(1)).filepath filesep STUDY.etc.IMA.imafilename{iko,:}], '-mat' );
 
 
 str = string(STUDY(iko).subject);
@@ -80,9 +98,7 @@ end
 
 STUDY.etc.IMA.clustidx = clustidx;
 STUDY.etc.IMA.distance = distance;
-[STUDY] = pop_savestudy( STUDY, 'savemode','resave');
-
-
+[STUDY] = pop_savestudy( STUDY, ALLEEG, 'savemode','resave');
 end
 
 
