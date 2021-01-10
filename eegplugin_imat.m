@@ -63,7 +63,7 @@ function vers = eegplugin_imat(fig, trystrs, catchstrs)
     
     % create menus (Singe subject)
     % ------------
-    submenu = uimenu( menu, 'Label', 'IMA');
+    submenu = uimenu( menu, 'Label', 'Decompose IC spectrograms by IMA');
     set(menu, 'enable', 'on', 'userdata', 'startup:on;study:on');
     uimenu( submenu, 'Label', 'Run IMA', 'CallBack', comrunima);
     
@@ -82,7 +82,9 @@ function vers = eegplugin_imat(fig, trystrs, catchstrs)
     cb_std_menu22 = 'pop_plotspecenv_study(STUDY)';
     cb_std_menu23 = 'pop_plotIMtimecourse_study(STUDY)';
     
-    cb_std_menu23 = 'pop_plotIMtimecourse_study(STUDY)';
+    cb_std_menu31 = 'pop_collecttemplates(STUDY)';
+    cb_std_menu32 = '[STUDY] = pop_clusterIMAtemplates(STUDY, ALLEEG)';
+    cb_std_menu33 = 'pop_plotIMAcluster(STUDY)';
     
       % menu callback commands (STUDY)
     % ----------------------
@@ -95,9 +97,9 @@ function vers = eegplugin_imat(fig, trystrs, catchstrs)
     uimenu( std_subsubsubmenu1, 'Label', 'IM timecourse',     'CallBack', cb_std_menu23, 'userdata', 'startup:off;study:on');
     
     std_subsubsubmenu2 = uimenu( submenustudy, 'Label', 'Cluster IMs','separator', 'on','userdata', 'startup:off;study:on');
-    uimenu( std_subsubsubmenu2, 'Label', 'Collect templates', 'CallBack', ' ', 'userdata', 'startup:off;study:on');
-    uimenu( std_subsubsubmenu2, 'Label', 'Cluster IMs', 'CallBack', ' ', 'userdata', 'startup:off;study:on');
-    uimenu( std_subsubsubmenu2, 'Label', 'Plot clusters', 'CallBack', ' ', 'userdata', 'startup:off;study:on');
+    uimenu( std_subsubsubmenu2, 'Label', 'Collect templates', 'CallBack', cb_std_menu31, 'userdata', 'startup:off;study:on');
+    uimenu( std_subsubsubmenu2, 'Label', 'Cluster IMs', 'CallBack', cb_std_menu32, 'userdata', 'startup:off;study:on');
+    uimenu( std_subsubsubmenu2, 'Label', 'Plot clusters', 'CallBack', cb_std_menu33, 'userdata', 'startup:off;study:on');
     
     
 
