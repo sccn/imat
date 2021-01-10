@@ -53,13 +53,13 @@ if isstr(g), error(g); end;
 
 if nargin ==1
     plotTypes2funtc = {'comb', 'ics', 'ims'};
-     plotTypes = {'IM spectral decomposition', 'Superimposed ICs', 'Superimposed IMs'};
+     plotTypes = {'IM mode decomposition', 'Superimposed IM modes', 'Superimposed IC modes'};
     freqLim = tmpIMA.IMA.freqlim;
     ic_list = sprintfc('%d',tmpIMA.IMA.complist);
     im_list = sprintfc('%d',[1:tmpIMA.IMA.npcs]);
     
     uilist = {{'style' 'text' 'string' 'Plot type'} {'style' 'popupmenu'  'string' plotTypes 'tag' 'plottype' 'value' 1}...
-              {'style' 'text' 'string' 'Freq. limits'} {'style' 'edit' 'string' num2str(freqLim) 'tag' 'freqlimits'}...
+              {'style' 'text' 'string' 'Freq. limits (Hz)'} {'style' 'edit' 'string' num2str(freqLim) 'tag' 'freqlimits'}...
               {'style' 'text' 'string' 'Select ICs', }     {'style' 'text' 'string' 'Select IMs'} ...
               {'style'  'list'  'string' ic_list 'max',200,'min',1,'Tag','icindx'} {'style'  'list'  'string' im_list 'max',200,'min',1,'Tag','imindx' } {}};
     
