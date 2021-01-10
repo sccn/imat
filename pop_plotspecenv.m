@@ -59,15 +59,15 @@ g = finputcheck(varargin, { 'comps'        'integer'    []                      
 if isstr(g), error(g); end;
 
 if nargin ==1
-    EnvtTypes2funtc = {'env' 'upper' 'lower'};
-    envTypes = {'Envelope                 ', 'Upper envelope      ', 'Lower envelope     '};
+    EnvtTypes2funtc = {'upper' 'lower' 'env'};
+    envTypes = {'Upper envelope      ', 'Lower envelope     ', 'Full Envelope                 '};
                
     freqLim = tmpIMA.IMA.freqlim;
     ic_list = sprintfc('%d',tmpIMA.IMA.complist);
     im_list = sprintfc('%d',[1:tmpIMA.IMA.npcs]);
     
-    uilist = {{'style' 'text' 'string' 'Envelope type'} {'style' 'popupmenu'  'string' envTypes 'tag' 'plottype' 'value' 1}...
-              {'style' 'text' 'string' 'Freq. limits'} {'style' 'edit' 'string' num2str(freqLim) 'tag' 'freqlimits'}...
+    uilist = {{'style' 'text' 'string' 'Envelope type'} {'style' 'popupmenu'  'string' envTypes 'tag' 'plottype' 'value' 3}...
+              {'style' 'text' 'string' 'Freq. limits (Hz)'} {'style' 'edit' 'string' num2str(freqLim) 'tag' 'freqlimits'}...
               {'style' 'text' 'string' 'Select ICs', }     {'style' 'text' 'string' 'Select IMs'} ...
               {'style'  'list'  'string' ic_list 'max',200,'min',1,'Tag','icindx'} {'style'  'list'  'string' im_list 'max',200,'min',1,'Tag','imindx' } {}};
     
