@@ -84,7 +84,7 @@ pop_plotIMtimecourse_study(STUDY, 'comps', [1 3 5], 'factors', [1 5], 'frqlim', 
                                     'targetpeakfreq', 10,...
                                     'plot_templ', 'on');
 %'peakrange', [9 13], '
-[STUDY] = pop_clusterIMAtemplates(STUDY, 'nclust', 3);
+[STUDY] = pop_clusterIMAtemplates(STUDY, ALLEEG, 'nclust', 3);
 
 [STUDY] = pop_subclusterIMAtemplates(STUDY, 'clust', [2 3], 'nclust', 2);
 
