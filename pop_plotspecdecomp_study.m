@@ -50,26 +50,31 @@ if isstr(g), error(g); end;
 
 if ~isfield(STUDY.etc, 'IMA'), return; end
 try
-    tmpIMA = load([STUDY.etc.IMA.subjfilepath{1} filesep STUDY.etc.IMA.subjfilename{1}(1:end-4) '.ima'], '-mat');
+    tmpIMA = load([STUDY.etc.IMA.imafilepath{1} filesep STUDY.etc.IMA.imafilename{1}], '-mat');
 catch
     return;
 end
 
 if nargin ==1
     plotTypes2funtc = {'comb', 'ics', 'ims'};
-    plotTypes = {'IM spectral decomposition', 'Superimposed ICs', 'Superimposed IMs'};
-    subj_list = unique({STUDY.datasetinfo.subject});
+    plotTypes = {'IM spectral decomposition', 'Superimp. freq. templates', 'Superimp. IMs'};
+    subj_list = STUDY.etc.IMA.subject;
     
     % To be updated in GUI
     freqLim = tmpIMA.IMA.freqlim;
     ic_list = sprintfc('%d',tmpIMA.IMA.complist);
     im_list = sprintfc('%d',[1:tmpIMA.IMA.npcs]);
     
-    subjcallback = '';
+    subjcallback = ['subjindx = get(findobj(''Tag'', ''subjname''),''value'');'...
+                   'tmpIMA = load([STUDY.etc.IMA.imafilepath{subjindx} filesep STUDY.etc.IMA.imafilename{subjindx}], ''-mat'');'...
+                   'ic_list = sprintfc(''%d'',tmpIMA.IMA.complist);'...
+                   'im_list = sprintfc(''%d'',[1:tmpIMA.IMA.npcs]);'...
+                   'set(findobj(''Tag'', ''icindx''), ''string'', ic_list);'...
+                   'set(findobj(''Tag'', ''imindx''), ''string'', im_list);'];
     
     uilist = {{'style' 'text' 'string' 'Subject'} {'style' 'popupmenu'  'string' subj_list 'tag' 'subjname' 'value' 1 'callback' subjcallback}...
               {'style' 'text' 'string' 'Plot type'} {'style' 'popupmenu'  'string' plotTypes 'tag' 'plottype' 'value' 1}...
-              {'style' 'text' 'string' 'Freq. limits'} {'style' 'edit' 'string' num2str(freqLim) 'tag' 'freqlimits'}...
+              {'style' 'text' 'string' 'Freq. limits (Hz)'} {'style' 'edit' 'string' num2str(freqLim) 'tag' 'freqlimits'}...
               {'style' 'text' 'string' 'Select ICs', }     {'style' 'text' 'string' 'Select IMs'} ...
               {'style'  'list'  'string' ic_list 'max',200,'min',1,'Tag','icindx'} {'style'  'list'  'string' im_list 'max',200,'min',1,'Tag','imindx' } {}};
     
@@ -90,7 +95,7 @@ if nargin ==1
     g.comps = tmpIMA.IMA.complist(resstruct.icindx);
     g.factors = resstruct.imindx;
     
-    tmpIMA = load([STUDY.etc.IMA.subjfilepath{1} filesep STUDY.etc.IMA.subjfilename{1}(1:end-4) '.ima'], '-mat'); % Fox to load correct subject file given info from GUI
+    tmpIMA = load([STUDY.etc.IMA.subjfilepath{1}{1} filesep STUDY.etc.IMA.subjfilename{1}{1}(1:end-4) '.ima'], '-mat'); % Fox to load correct subject file given info from GUI
     g.frqlim = str2num(resstruct.freqlimits);
 end
 
@@ -106,7 +111,7 @@ for iko = 1:length(subjcode)
     indsj = find(ismember({STUDY.datasetinfo.subject}, STUDY(iko).subject));
     
     %% load IMA file
-    load([STUDY.datasetinfo(indsj(1)).filepath '/' STUDY.etc.IMA.imafilename(iko,:)], '-mat' );
+    load([STUDY.datasetinfo(indsj(1)).filepath filesep STUDY.etc.IMA.imafilename{iko,:}], '-mat' );
     
     if isempty(g.frqlim)
         g.frqlim = IMA.freqlim;
