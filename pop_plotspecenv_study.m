@@ -57,6 +57,55 @@ g = finputcheck(varargin, {'subject'     'string'   {}             ''; ...
     }, 'inputgui');
 if isstr(g), error(g); end;
 
+if ~isfield(STUDY.etc, 'IMA'), return; end
+try
+    tmpIMA = load([STUDY.etc.IMA.imafilepath{1} filesep STUDY.etc.IMA.imafilename{1}], '-mat');
+catch
+    return;
+end
+
+%%
+if nargin ==1
+    
+     subjcallback = ['subjindx = get(findobj(''Tag'', ''subjname''),''value'');'...
+                   'tmpIMA = load([STUDY.etc.IMA.imafilepath{subjindx} filesep STUDY.etc.IMA.imafilename{subjindx}], ''-mat'');'...
+                   'ic_list = sprintfc(''%d'',tmpIMA.IMA.complist);'...
+                   'im_list = sprintfc(''%d'',[1:tmpIMA.IMA.npcs]);'...
+                   'set(findobj(''Tag'', ''icindx''), ''string'', ic_list);'...
+                   'set(findobj(''Tag'', ''imindx''), ''string'', im_list);'];
+    
+    subj_list = STUDY.etc.IMA.subject;
+    EnvtTypes2funtc = {'upper' 'lower' 'env'};
+    envTypes = {'Upper envelope      ', 'Lower envelope     ', 'Full Envelope                 '};
+    
+    freqLim = tmpIMA.IMA.freqlim;
+    ic_list = sprintfc('%d',tmpIMA.IMA.complist);
+    im_list = sprintfc('%d',[1:tmpIMA.IMA.npcs]);
+    
+    uilist = {{'style' 'text' 'string' 'Subject'} {'style' 'popupmenu'  'string' subj_list 'tag' 'subjname' 'value' 1 'callback' subjcallback}...
+              {'style' 'text' 'string' 'Envelope type'} {'style' 'popupmenu'  'string' envTypes 'tag' 'plottype' 'value' 3}...
+              {'style' 'text' 'string' 'Freq. limits (Hz)'} {'style' 'edit' 'string' num2str(freqLim) 'tag' 'freqlimits'}...
+              {'style' 'text' 'string' 'Select ICs', }     {'style' 'text' 'string' 'Select IMs'} ...
+              {'style'  'list'  'string' ic_list 'max',200,'min',1,'Tag','icindx'} {'style'  'list'  'string' im_list 'max',200,'min',1,'Tag','imindx' } {}};
+    
+    ht = 7; wt = 2 ;
+    geom = { {wt ht [0 0]  [1 1]} {wt ht [1 0]  [1 1]}...
+             {wt ht [0 1]  [1 1]} {wt ht [1 1]  [1 1]}...
+             {wt ht [0 2]  [1 1]} {wt ht [1 2]  [1 1]}...
+             {wt ht [0 3]  [1 1]} {wt ht [1 3]  [1 1]}...
+             {wt ht [0 4]  [1 3]} {wt ht [1 4]  [1 3]}...
+             {wt ht [0 5]  [1 3]}};
+    
+    [result, ~, ~, resstruct, ~] = inputgui('title','Plot spectral envelope -- pop_plotspecenv', 'geom', geom, 'uilist',uilist, 'helpcom','pophelp(''pop_plotspecenv'');');
+    if isempty(result), return; end;
+    g.comps = tmpIMA.IMA.complist(resstruct.icindx);
+    g.factors = resstruct.imindx;
+    g.plotenv = EnvtTypes2funtc{resstruct.plottype};
+    g.frqlim = str2num(resstruct.freqlimits);
+end
+%%
+
+
 if isempty(g.subject)
     subjcode = STUDY.subject;
 else
@@ -67,7 +116,7 @@ for iko = 1:length(subjcode)
     indsj = find(ismember({STUDY.datasetinfo.subject}, STUDY(iko).subject));
     
     %% load IMA file
-    load([STUDY.datasetinfo(indsj(1)).filepath '/' STUDY.etc.IMA.imafilename(iko,:)], '-mat' );
+    load([STUDY.datasetinfo(indsj(1)).filepath filesep STUDY.etc.IMA.imafilename{iko,:}], '-mat' );
     
     if isempty(g.frqlim)
         g.frqlim = IMA.freqlim;
