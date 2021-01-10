@@ -57,20 +57,55 @@ g = finputcheck(varargin, {'freqlim'        'integer'       []             []; .
     }, 'inputgui');
 if isstr(g), error(g); end;
 
-subjcode = STUDY.subject;
+if nargin == 1
+    onofflabel = {'off' 'on'};
+    freqscalelabel = {'linear' 'log'};
+    uilist = {{'style' 'text' 'string' 'IM clusters'} {'style' 'edit'  'string' '' 'tag' 'clustnum'}...
+        {'style' 'text' 'string' 'Freq. limits (Hz)'} {'style' 'edit' 'string' '' 'tag' 'freqlimits'}...
+        {'style' 'text' 'string' 'Freq. scale'} {'style' 'popupmenu' 'string' {'linear', 'log'} 'tag' 'frescale' 'value' 2}...
+        {'style' 'text' 'string' 'Plotting options'} ...
+        {'style' 'checkbox' 'string' 'Clusters' 'Tag' 'cbox_plotcluster'} ...
+        {'style' 'checkbox' 'string' 'Subclusters' 'Tag' 'cbox_pltsbcluster'} ...
+        {'style' 'checkbox' 'string' 'Templates' 'Tag' 'cbox_plottemplates'} ...
+        {'style' 'checkbox' 'string' 'Dipoles' 'Tag' 'cbox_plotdipoles'} ...
+        {'style' 'checkbox' 'string' 'Scalp maps' 'Tag' 'cbox_plotscalpmaps'} ...
+        };
+    
+    ht = 7; wt = 4 ;
+    geom = {{wt ht [0 0]  [1 1]} {wt ht [1 0]  [3 1]}...
+            {wt ht [0 1]  [1 1]} {wt ht [1 1]  [1 1]}  {wt ht [2.2 1]  [1 1]} {wt ht [3 1]  [1 1]}...
+            {wt ht [0 2]  [1 1]}...
+            {wt ht [1 3]  [1 1]}...
+            {wt ht [1 4]  [1 1]}...
+            {wt ht [1 5]  [1 1]}...
+            {wt ht [1 6]  [1 1]}...
+            {wt ht [1 7]  [1 1]}...
+            };
+    
+    [result, ~, ~, resstruct, ~] = inputgui('title','Plot IM clusters -- pop_plotIMAcluster', 'geom', geom, 'uilist',uilist, 'helpcom','pophelp(''pop_plotIMAcluster'');');
+    if isempty(result), return; end;
+    g.freqlim = str2num(resstruct.freqlimits);
+    g.clust = str2num(resstruct.clustnum);
+    g.plotclust = onofflabel{resstruct.cbox_plotcluster+1};
+    g.freqscale = freqscalelabel{resstruct.frescale};
+    g.plotsubclusters = onofflabel{resstruct.cbox_pltsbcluster+1};
+    g.plottemplates = onofflabel{resstruct.cbox_plottemplates+1};
+    g.plotdipsources = onofflabel{resstruct.cbox_plotdipoles+1};
+    g.plotscalpmaps = onofflabel{resstruct.cbox_plotscalpmaps+1};
+end
 
+subjcode = STUDY.subject;
 
 templates = [];
 IMICindex = [];
 dipsources = [];
 scalpmaps = [];
 
-
 for iko = 1:length(subjcode)
     indsj = find(ismember({STUDY.datasetinfo.subject}, STUDY(iko).subject));
     
     %% load IMA file for curent subject
-   load([STUDY.datasetinfo(indsj(1)).filepath '/' STUDY.etc.IMA.imafilename(iko,:)], '-mat' );
+   load([STUDY.datasetinfo(indsj(1)).filepath filesep STUDY.etc.IMA.imafilename{iko,:}], '-mat' );
   
     str = string(STUDY(iko).subject);
     sujnum = sscanf(str,'S%d');
