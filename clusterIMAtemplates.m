@@ -23,7 +23,7 @@
 %                     by 'pdist','linkage','dendrogram' Matlab functions
 %
 % optional Inputs:
-% pcs -- number of dimensions to reduce the spectra to
+% pcs -- number of principal IM spectral template dimensions to retain
 % method -- ['corr', 'euc' or 'k-means'] for correlation or euclidean distance for pdist, or k-means clustering
 %
 %
