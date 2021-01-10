@@ -53,14 +53,38 @@ g = finputcheck(varargin, {'peakrange'        'integer'       []             [];
     }, 'inputgui');
 if isstr(g), error(g); end;
 
-    subjcode = STUDY.subject; 
+if nargin ==1
+     %streatchval = {'on', 'off'}; Check this for removal
+     cb_strecht = 'cboxval = get(findobj(''Tag'', ''chbx_strectspec''), ''value''); if cboxval, set(findobj(''Tag'', ''ed_peakfreq''), ''enable'', ''on''); else, set(findobj(''Tag'', ''ed_peakfreq''), ''enable'', ''off'');end;';
+     uilist = {{'style' 'text' 'string' 'Freq. range (Hz)'} {'style' 'edit'  'string' ' ' 'tag' 'ed_freqrange'}...
+              {'style' 'text' 'string' 'Warp spectra'} {'style' 'checkbox'  'value' 0 'tag' 'chbx_strectspec' 'Callback' cb_strecht}...
+              {'style' 'text' 'string' 'Target peak freq. (Hz)'} {'style' 'edit'  'string' ' ' 'Tag' 'ed_peakfreq' 'enable', 'off'}};
+    
+    ht = 3; wt = 2 ;
+    geom = {{wt ht [0 0]  [1 1]} {wt ht [1 0]  [1 1]}...
+            {wt ht [0 1]  [1 1]} {wt ht [1 1]  [1 1]}...
+            {wt ht [0 2]  [1 1]} {wt ht [1 2]  [1 1]}};
+   
+    [result, ~, ~, resstruct, ~] = inputgui('title','Plot IM decomposition -- pop_plotspecdecomp', 'geom', geom, 'uilist',uilist, 'helpcom','pophelp(''pop_plotspecdecomp'');');
+    if isempty(result), return; end;
+    g.peakrange = str2num(resstruct.ed_freqrange);
+    if resstruct.chbx_strectspec
+        g.stretch_spectra = 'on';
+    else
+        g.stretch_spectra  = 'off'
+    end
+    g.targetpeakfreq = str2num(resstruct.ed_peakfreq);
+end
+
+
+subjcode = STUDY.subject; 
 
 
 for iko = 1:length(subjcode)
 indsj = find(ismember({STUDY.datasetinfo.subject}, STUDY(iko).subject));
 
 %% load IMA file for curent subject
-load([STUDY.datasetinfo(indsj(1)).filepath '/' STUDY.etc.IMA.imafilename(iko,:)], '-mat' );
+load([STUDY.datasetinfo(indsj(1)).filepath filesep STUDY.etc.IMA.imafilename{iko,:}], '-mat' );
 
 if strcmp(g.stretch_spectra, 'on') && ~isempty(g.peakrange) && isempty(g.targetpeakfreq);
     g.targetpeakfreq = mean(g.peakrange);
@@ -74,9 +98,6 @@ end
 
 [IMA] = collecttemplates(IMA, 'peakrange', g.peakrange, 'stretch_spectra', g.stretch_spectra,...
        'targetpeakfreq', g.targetpeakfreq, 'plot_templ', g.plot_templ);
-
-
-
 
 
 end
