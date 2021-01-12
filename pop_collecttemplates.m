@@ -65,7 +65,7 @@ if nargin ==1
             {wt ht [0 1]  [1 1]} {wt ht [1 1]  [1 1]}...
             {wt ht [0 2]  [1 1]} {wt ht [1 2]  [1 1]}};
    
-    [result, ~, ~, resstruct, ~] = inputgui('title','Plot IM decomposition -- pop_plotspecdecomp', 'geom', geom, 'uilist',uilist, 'helpcom','pophelp(''pop_plotspecdecomp'');');
+    [result, ~, ~, resstruct, ~] = inputgui('title','Collect templates for clustering -- pop_collecttemplates', 'geom', geom, 'uilist',uilist, 'helpcom','pophelp(''pop_collecttemplates'');');
     if isempty(result), return; end;
     g.peakrange = str2num(resstruct.ed_freqrange);
     if resstruct.chbx_strectspec
@@ -83,8 +83,11 @@ subjcode = STUDY.subject;
 for iko = 1:length(subjcode)
 indsj = find(ismember({STUDY.datasetinfo.subject}, STUDY(iko).subject));
 
-%% load IMA file for curent subject
-load([STUDY.datasetinfo(indsj(1)).filepath filesep STUDY.etc.IMA.imafilename{iko,:}], '-mat' );
+%% load IMA file for current subject
+load([STUDY.etc.IMA.imafilepath{iko} filesep STUDY.etc.IMA.imafilename{iko}], '-mat' );
+
+EEG = pop_loadset('filename',IMA.subjfilename{1},'filepath',IMA.subjfilepath{1});
+
 
 if strcmp(g.stretch_spectra, 'on') && ~isempty(g.peakrange) && isempty(g.targetpeakfreq);
     g.targetpeakfreq = mean(g.peakrange);
@@ -96,7 +99,7 @@ end
 
 
 
-[IMA] = collecttemplates(IMA, 'peakrange', g.peakrange, 'stretch_spectra', g.stretch_spectra,...
+[IMA] = collecttemplates(IMA, EEG, 'peakrange', g.peakrange, 'stretch_spectra', g.stretch_spectra,...
        'targetpeakfreq', g.targetpeakfreq, 'plot_templ', g.plot_templ);
 
 

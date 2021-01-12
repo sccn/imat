@@ -13,12 +13,13 @@
 % of the tf decomposition using pfac 8 (for a description of pfac see
 % below), and using AMICA as the ica algorithm for IMA
 %
-%  >>  [IMA] = pop_runIMA_study(STUDY, 'selectICs', {'brain'}, 'freqscale', 'log', 'frqlim', [6 120], 'cycles', [6 0.5], 'pcfac', 8,...
+%  >>  [IMA] = pop_runIMA_study(STUDY, ALLEEG, 'selectICs', {'brain'}, 'freqscale', 'log', 'frqlim', [6 120], 'cycles', [6 0.5], 'pcfac', 8,...
 %      'icatype', 'amica')
 %
 %
 % INPUTS:
 % STUDY - STUDY structure with information on stored IMA files
+% ALLEEG - ALLEEG structure
 % subject - subject to compute IMA on - provide subject code/number as string i.e. '3'
 %           if empty computes results for all subjects in the study
 % frqlim -- [minfrq maxfrq] minimum and maximum frequencies to include in spectral decomposition
@@ -486,10 +487,10 @@ for iko = 1:nsubj
     %% save IMA results to file
     save([EEGtmp{1}.filepath '/' IMA.subj{1} '_' newfilename '.ima'],'IMA');
     
-    STUDY.etc.IMA.subjfilename{iko,:} = IMA.subjfilename;
-    STUDY.etc.IMA.subjfilepath{iko,:} = IMA.subjfilepath;
-    STUDY.etc.IMA.imafilename{iko,:} = [IMA.subj{1} '_' newfilename '.ima'];
-    STUDY.etc.IMA.imafilepath{iko,:} = IMA.subjfilepath{1};
+    STUDY.etc.IMA.subjfilename{iko} = IMA.subjfilename;
+    STUDY.etc.IMA.subjfilepath{iko} = IMA.subjfilepath;
+    STUDY.etc.IMA.imafilename{iko} = [IMA.subj{1} '_' newfilename '.ima'];
+    STUDY.etc.IMA.imafilepath{iko} = IMA.subjfilepath{1};
     STUDY.etc.IMA.subject{iko,:} = IMA.subj{1};
     
     [STUDY] = pop_savestudy( STUDY, ALLEEG, 'savemode','resave');

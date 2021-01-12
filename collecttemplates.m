@@ -24,7 +24,8 @@
 %
 % INPUTS:
 % required Inputs:
-% STUDY - STUDY structure with information on stored IMA files
+% IMA - previously saved IMA structure (either by running pop_runima or pop_runima_study)
+% EEG - EEG structure of associated EEG dataset
 %
 % optional Inputs:
 % peakrange -  'vector of two integers' [min max] include only templates that are active/ have peaks 
@@ -43,7 +44,7 @@
 %               selected (if 'peakrange') is given and the selected templates 
 
 
-function [IMA] = collecttemplates(IMA, varargin);
+function [IMA] = collecttemplates(IMA, EEG, varargin);
 
 g = finputcheck(varargin, {'peakrange'        'integer'       []             []; ...
     'stretch_spectra'     'string'     {'on' 'off'}         'off';...
@@ -62,7 +63,7 @@ elseif strcmp(g.stretch_spectra, 'on') && isempty(g.peakrange);
 end
 
 
-EEG = pop_loadset('filename',IMA.subjfilename{1},'filepath',IMA.subjfilepath{1});
+%EEG = pop_loadset('filename',IMA.subjfilename{1},'filepath',IMA.subjfilepath{1});
 
 times = IMA.timevec/1000; % transform timevector to seconds
 freqvec = IMA.freqvec;

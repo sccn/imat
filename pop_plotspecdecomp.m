@@ -53,7 +53,7 @@ if isstr(g), error(g); end;
 
 if nargin ==1
     plotTypes2funtc = {'comb', 'ics', 'ims'};
-     plotTypes = {'IM mode decomposition', 'Superimposed IM modes', 'Superimposed IC modes'};
+     plotTypes = {'IM mode decomposition', 'Superimposed IC modes', 'Superimposed IM modes'};
     freqLim = tmpIMA.IMA.freqlim;
     ic_list = sprintfc('%d',tmpIMA.IMA.complist);
     im_list = sprintfc('%d',[1:tmpIMA.IMA.npcs]);

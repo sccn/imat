@@ -136,7 +136,7 @@ for iko = 1:length(subjcode)
         for ib = 1:length(IMA.ntrials)
             dataport = IMA.timepntCond{ib}; % select trials for condition
             meanspec = squeeze(IMA.meanpwrCond(ib,:,:));
-            plotspecenv(IMA, 'comps' ,g.comps, 'factors',g.factors, 'frqlim',g.frqlim, 'plotenv',g.plotenv, 'plotperc', g.plotperc, 'setminmax' ,g.setminmax, 'dataport', dataport, 'meanspec' ,meanspec);
+            plotspecenv(IMA, EEG, 'comps' ,g.comps, 'factors',g.factors, 'frqlim',g.frqlim, 'plotenv',g.plotenv, 'plotperc', g.plotperc, 'setminmax' ,g.setminmax, 'dataport', dataport, 'meanspec' ,meanspec);
             ph1 = gcf;
             ph1 = textsc([IMA.subj{1}  ' ' IMA.condition{ib}],'title');
             set(ph1,'fontsize',20);
@@ -145,7 +145,7 @@ for iko = 1:length(subjcode)
         fprintf('\n Plotting overall data and meanspec...');
         dataport = 1:(IMA.ntrials*IMA.ntw_trials);
         meanspec = IMA.meanpwr;
-        plotspecenv(IMA, 'comps' ,g.comps, 'factors',g.factors, 'frqlim',g.frqlim, 'plotenv',g.plotenv, 'plotperc', g.plotperc, 'setminmax' ,g.setminmax, 'dataport', dataport, 'meanspec' ,meanspec);
+        plotspecenv(IMA, EEG, 'comps' ,g.comps, 'factors',g.factors, 'frqlim',g.frqlim, 'plotenv',g.plotenv, 'plotperc', g.plotperc, 'setminmax' ,g.setminmax, 'dataport', dataport, 'meanspec' ,meanspec);
         ph1 = gcf;
         ph1 = textsc([IMA.subj{1}],'title');
         set(ph1,'fontsize',20);

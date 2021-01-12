@@ -31,14 +31,17 @@
 % centroid saved in STUDY.etc.IMA.clustidx in the form [SJ IM ICs clusindx] and STUDY.etc.IMA.distance
 %
 
-function [STUDY] = pop_clusterIMAtemplates(STUDY, ALLEEG, varargin);
+function [STUDY] = pop_clusterIMAtemplates(STUDY, varargin);
 
-clustmethods = {'corr' 'euc' 'kmeans'};  
+clustmethods = {'corr' 'euc' 'kmeans'};
 g = finputcheck(varargin, {'freqlim'        'integer'       []             []; ...
-                           'nclust'     'integer'     []         [];...
-                           'pcs'     'integer'     []         [10];...
-                           'method'      'string'       clustmethods             'kmeans'; ...  
-                           }, 'inputgui');
+    'nclust'     'integer'     []         [];...
+    'pcs'     'integer'     []         [10];...
+    'method'      'string'       clustmethods             'kmeans'; ...
+    'dipole_locs' 'struc' [] [];...
+    'weightSP' 'integer' [] [1];...
+    'weightDP' 'integer' [] [1];...
+    }, 'inputgui');
 if isstr(g), error(g); end;
 
 if nargin == 2
@@ -90,11 +93,12 @@ end
 
 templates = [templates IMA.precluster.templates(:,freqind1:freqind2)];
 IMICindex = [IMICindex [repmat(sujnum,1,size(IMA.precluster.IMICindex,1))' IMA.precluster.IMICindex]]; %% add subject index
-
+if dipole_locs = 'on'
+dipsources = [dipsources IMA.precluster.dipsources];
 end
 
 [clustidx, distance]...
-    = clusterIMAtemplates(templates, IMICindex, g.nclust, 'pcs', g.pcs, 'method', g.method);
+    = clusterIMAtemplates(templates, IMICindex, g.nclust, 'pcs', g.pcs, 'dipole_locs', g.dipsources, 'weightSP',g.weightSP ,'weightDP',g.weightDP);
 
 STUDY.etc.IMA.clustidx = clustidx;
 STUDY.etc.IMA.distance = distance;

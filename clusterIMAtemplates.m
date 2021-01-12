@@ -24,8 +24,8 @@
 %
 % optional Inputs:
 % pcs -- number of principal IM spectral template dimensions to retain
-% method -- ['corr', 'euc' or 'k-means'] for correlation or euclidean distance for pdist, or k-means clustering
-%
+% weightDP -- weight to assign to dipole locations for clustering
+% weightSP -- weight to assign to spectra for clustering
 %
 % OUTPUT
 % clustidx -- matrix of indexes of [cluster subject IM IC] 
@@ -34,11 +34,14 @@
 function [clustidx, distance] = clusterIMAtemplates(templates, IMICindex, nclust, varargin);
 
 g = finputcheck(varargin, {'pcs'     'integer'     []         [10];...
-    'method'      'string'       {'corr' 'euc' 'kmeans'}             'kmeans'; ...  
+      'dipole_locs' 'struc' [] [];...
+    'weightSP' 'integer' [] [1];...
+    'weightDP' 'integer' [] [1];...
     }, 'inputgui');
 if isstr(g), error(g); end;
 
-
+%'method'      'string'       {'corr' 'euc' 'kmeans'}             'kmeans'; ... 
+  
 distance = [];
 
 %% reduce dimensions
@@ -47,25 +50,31 @@ fprintf('\nPCA''ing to %s dimensions.\n',int2str(g.pcs));%%%%%%%%%%%%%%%%%%%%%%
 pc = (U*S); % scale 'activations' for appropriate weighting in decomp of pc
 eigvec = V;
 
+
+if ~isempty(dipole_locs)
+dipole_locs = reshape([allbesa.posxyz]',3,size(pc,1))';
+featurevec = [weightSP*zscore(pc) weightDP*zscore(dipole_locs)];
+else
 featurevec = zscore(pc);
+end
 
 if isempty(nclust)
     nclust = (size(IMICindex,1)/length(unique(IMICindex(:,1))))/3;
 end;
-if strcmp(g.method,'corr')
-    alldist = pdist(featurevec, 'correlation'); % euc better than seuc
-    links = linkage(alldist,'complete');
-    figttl = 'Template clusters -- correlation method';
-    figure;[hnd,idx,perm]=  dendrogram(links,nclust);%close
-elseif strcmp(g.method,'euc')
-    alldist = pdist(featurevec, 'euclidean'); % euc better than seuc
-    links = linkage(alldist,'ward');
-    figttl = 'Template clusters -- euclidean method';
-    figure;[hnd,idx,perm]=  dendrogram(links,nclust);%close
-elseif strcmp(g.method,'kmeans')
+% if strcmp(g.method,'corr')
+%     alldist = pdist(featurevec, 'correlation'); % euc better than seuc
+%     links = linkage(alldist,'complete');
+%     figttl = 'Template clusters -- correlation method';
+%     figure;[hnd,idx,perm]=  dendrogram(links,nclust);%close
+% elseif strcmp(g.method,'euc')
+%     alldist = pdist(featurevec, 'euclidean'); % euc better than seuc
+%     links = linkage(alldist,'ward');
+%     figttl = 'Template clusters -- euclidean method';
+%     figure;[hnd,idx,perm]=  dendrogram(links,nclust);%close
+% elseif strcmp(g.method,'kmeans')
     [idx,C,sumd,distance] = kmeans(featurevec,nclust,'replicates',10,'emptyaction','drop');
     figttl = 'Template clusters -- kmeans method';
-end;              
+%end;              
 
 clustidx = [IMICindex idx];
 
