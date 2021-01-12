@@ -113,6 +113,8 @@ for iko = 1:length(subjcode)
     %% load IMA file
     load([STUDY.datasetinfo(indsj(1)).filepath filesep STUDY.etc.IMA.imafilename{iko,:}], '-mat' );
     
+    EEG = pop_loadset('filename',IMA.subjfilename{1},'filepath',IMA.subjfilepath{1});
+
     if isempty(g.frqlim)
         g.frqlim = IMA.freqlim;
     end

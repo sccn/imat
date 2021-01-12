@@ -119,6 +119,8 @@ indsj = find(ismember({STUDY.datasetinfo.subject}, STUDY(iko).subject));
 %% load IMA file
 load([STUDY.datasetinfo(indsj(1)).filepath filesep STUDY.etc.IMA.imafilename{iko,:}], '-mat' );
 
+EEG = pop_loadset('filename',IMA.subjfilename{1},'filepath',IMA.subjfilepath{1});
+
 
 %% check if frequency limits, comps and IMs are empty 
 if isempty(g.frqlim)
