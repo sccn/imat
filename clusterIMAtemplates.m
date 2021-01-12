@@ -24,9 +24,11 @@
 %
 % optional Inputs:
 % pcs -- number of principal IM spectral template dimensions to retain
+% dipsources -- dipole locations as collected in pop_clusterIMAtemplates
 % weightDP -- weight to assign to dipole locations for clustering
 % weightSP -- weight to assign to spectra for clustering
-%
+% method -- ['k-means']  k-means clustering
+
 % OUTPUT
 % clustidx -- matrix of indexes of [cluster subject IM IC] 
 % distance -- distance of each IC to each cluster centroid [ICs x Clusters]
@@ -34,7 +36,8 @@
 function [clustidx, distance] = clusterIMAtemplates(templates, IMICindex, nclust, varargin);
 
 g = finputcheck(varargin, {'pcs'     'integer'     []         [10];...
-      'dipole_locs' 'struc' [] [];...
+      'method'      'string'       {'kmeans'}             'kmeans'; ...  
+      'dipsources' 'struc' [] [];...
     'weightSP' 'integer' [] [1];...
     'weightDP' 'integer' [] [1];...
     }, 'inputgui');
@@ -51,7 +54,7 @@ pc = (U*S); % scale 'activations' for appropriate weighting in decomp of pc
 eigvec = V;
 
 
-if ~isempty(dipole_locs)
+if ~isempty(dipsources)
 dipole_locs = reshape([allbesa.posxyz]',3,size(pc,1))';
 featurevec = [weightSP*zscore(pc) weightDP*zscore(dipole_locs)];
 else

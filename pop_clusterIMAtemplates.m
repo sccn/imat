@@ -1,5 +1,5 @@
 %  Takes WT comodulation spectral templates as collected in IMA.precluster.templates 
-%  and clusters to specified number of clusters
+%  and clusters to specified number of clusters, uses k-means clustering
 %
 % [STUDY] = pop_clusterIMAtemplates(STUDY,varargin);
 %
@@ -22,8 +22,8 @@
 %            range in IMA.freqlim
 % nclust -- [integer] if not empty, will divide templates into nclust clusters
 %                     by 'pdist','linkage','dendrogram' Matlab functions
-% method -- ['corr', 'euc' or 'k-means'] for correlation or euclidean distance for pdist, or k-means clustering
 % pcs -- number of principal IM spectral template dimensions to retain
+% method -- ['k-means']  k-means clustering
 %
 %
 % OUTPUT
@@ -33,19 +33,19 @@
 
 function [STUDY] = pop_clusterIMAtemplates(STUDY, varargin);
 
-clustmethods = {'corr' 'euc' 'kmeans'};
+%clustmethods = {'corr' 'euc' 'kmeans'};
 g = finputcheck(varargin, {'freqlim'        'integer'       []             []; ...
     'nclust'     'integer'     []         [];...
     'pcs'     'integer'     []         [10];...
-    'method'      'string'       clustmethods             'kmeans'; ...
-    'dipole_locs' 'struc' [] [];...
+    'method'      'string'       {'kmeans'}             'kmeans'; ...  
+    'dipole_locs' 'string' ['on' 'off']  'off';...
     'weightSP' 'integer' [] [1];...
     'weightDP' 'integer' [] [1];...
     }, 'inputgui');
 if isstr(g), error(g); end;
 
 if nargin == 2
-    clsutmethodslist = {'Correlation' 'Euclidean' 'Kmeans'}; 
+    clsutmethodslist = {'Kmeans'}; 
     
       uilist = {{'style' 'text' 'string' 'Method'} {'style' 'popupmenu'  'string' clsutmethodslist 'tag' 'method' 'value' 1 }...
               {'style' 'text' 'string' 'Number of clusters'} {'style' 'edit'  'string' ' ' 'tag' 'nclust'}...
@@ -93,12 +93,14 @@ end
 
 templates = [templates IMA.precluster.templates(:,freqind1:freqind2)];
 IMICindex = [IMICindex [repmat(sujnum,1,size(IMA.precluster.IMICindex,1))' IMA.precluster.IMICindex]]; %% add subject index
-if dipole_locs = 'on'
+if strcmp(dipole_locs, 'on')
 dipsources = [dipsources IMA.precluster.dipsources];
+else
+    dipsources = [];
 end
 
 [clustidx, distance]...
-    = clusterIMAtemplates(templates, IMICindex, g.nclust, 'pcs', g.pcs, 'dipole_locs', g.dipsources, 'weightSP',g.weightSP ,'weightDP',g.weightDP);
+    = clusterIMAtemplates(templates, IMICindex, g.nclust, 'pcs', g.pcs, 'method', g.method, 'dipsources', g.dipsources, 'weightSP',g.weightSP ,'weightDP',g.weightDP);
 
 STUDY.etc.IMA.clustidx = clustidx;
 STUDY.etc.IMA.distance = distance;
