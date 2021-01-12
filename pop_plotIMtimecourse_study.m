@@ -76,7 +76,7 @@ if nargin ==1
      subj_list = STUDY.etc.IMA.subject;           
                          
     plotTypes2funtc = {'plotICtf', 'plotPCtf', 'plotIMtfims', 'plotIMtime'};
-    plotTypes = {'IC spectrogram', 'Summed IC spectrogram', 'Combined IC-IM spectrogram', 'IM timecourse'};
+    plotTypes = {'IC spectrogram', 'Summed IM backprojection', 'Combined IC-IM spectrogram', 'IM timecourse'};
     freqLim = tmpIMA.IMA.freqlim;
     ic_list = sprintfc('%d',tmpIMA.IMA.complist);
     im_list = sprintfc('%d',[1:tmpIMA.IMA.npcs]);
@@ -135,7 +135,7 @@ if isempty(g.factors)
     g.factors = 1:IMA.npcs;
 end
 
-plotIMtimecourse(tmpIMA.IMA,'comps',g.comps, 'factors', g.factors, 'frqlim', g.frqlim,...
+plotIMtimecourse(tmpIMA.IMA, EEG, 'comps',g.comps, 'factors', g.factors, 'frqlim', g.frqlim,...
                  'smoothing', g.smoothing,...
                  'plotICtf',plotopt{1}, 'plotPCtf', plotopt{2},...
                  'plotIMtf', plotopt{3}, 'plotIMtime', plotopt{4});             

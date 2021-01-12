@@ -64,7 +64,7 @@ if isstr(g), error(g); end;
 
 if nargin ==1
     plotTypes2funtc = {'plotICtf', 'plotPCtf', 'plotIMtfims', 'plotIMtime'};
-     plotTypes = {'IC spectrogram', 'Summed IC spectrogram', 'Combined IC-IM spectrogram', 'IM timecourse'};
+     plotTypes = {'IC spectrogram', 'Summed IM backprojection', 'Combined IC-IM spectrogram', 'IM timecourse'};
     freqLim = tmpIMA.IMA.freqlim;
     ic_list = sprintfc('%d',tmpIMA.IMA.complist);
     im_list = sprintfc('%d',[1:tmpIMA.IMA.npcs]);

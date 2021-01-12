@@ -57,7 +57,7 @@ end
 
 if nargin ==1
     plotTypes2funtc = {'comb', 'ics', 'ims'};
-    plotTypes = {'IM spectral decomposition', 'Superimp. freq. templates', 'Superimp. IMs'};
+    plotTypes = {'IM mode decomposition', 'Superimposed IC modes', 'Superimposed IM modes'};
     subj_list = STUDY.etc.IMA.subject;
     
     % To be updated in GUI
@@ -128,7 +128,7 @@ for iko = 1:length(subjcode)
     end
     
     
-    plotspecdecomp(IMA, 'comps', g.comps, 'factors', g.factors, 'frqlim', g.frqlim,...
+    plotspecdecomp(IMA, EEG, 'comps', g.comps, 'factors', g.factors, 'frqlim', g.frqlim,...
         'freqscale', g.freqscale, 'plottype', g.plottype, 'maps', g.maps);
     
 end
