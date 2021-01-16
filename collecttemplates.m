@@ -159,9 +159,9 @@ end
 
 % collect dipole locations for clustering
 
-
 dipsources = [];
 for temp_idx = 1:size(TempKeepInd,1)
+    figure;
     dipsources(1,temp_idx).posxyz = EEG.dipfit.model(TempKeepInd(temp_idx,2)).posxyz;%% index should be IC index
     dipsources(1,temp_idx).momxyz = EEG.dipfit.model(TempKeepInd(temp_idx,2)).momxyz;
     dipsources(1,temp_idx).rv = EEG.dipfit.model(TempKeepInd(temp_idx,2)).rv;
