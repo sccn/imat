@@ -104,6 +104,20 @@ winv = specwts; % template timecourse  (overwrite ICA winv with ICA/PCA winv)
 clear speceig specwts
 
 
+[valAct, indAct] =  max(abs(activations)');
+for onj = 1:size(activations,1);
+    if activations(onj,indAct(onj))>=0;
+        maxval = 1;
+    else
+        maxval = -1;
+    end
+    activations(onj,:) = activations(onj,:)*maxval;
+    polarity(onj) = maxval;
+    winv(:,onj) = winv(:,onj)*maxval;
+end
+
+
+
 %% define colors for plotting
 rawbkgd = [.89 .89 .89]; % .89 .89 .89 color of raw data background, [] to turn off
 pcabkgd = [.75 .75 .75];%  .75 .75 .75color of pca reduced data background
