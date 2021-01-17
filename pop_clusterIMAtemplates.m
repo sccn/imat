@@ -1,7 +1,7 @@
 %  Takes WT comodulation spectral templates as collected in IMA.precluster.templates 
 %  and clusters to specified number of clusters, uses k-means clustering
 %
-% [STUDY] = pop_clusterIMAtemplates(STUDY,varargin);
+% [STUDY] = pop_clusterIMAtemplates(STUDY,ALLEEG, varargin);
 %
 % 
 % Author: Johanna Wagner, Swartz Center for Computational Neuroscience, UC San Diego, 2019
@@ -9,14 +9,15 @@
 %
 %
 % Example:
-% >> [STUDY] = pop_clusterIMAtemplates(STUDY, 'freqlim', [3 120] ,'nclust', 3, 'pcs', 20);
+% >> [STUDY] = pop_clusterIMAtemplates(STUDY, ALLEEG, 'freqlim', [3 120] ,'nclust', 3, 'pcs', 20);
 %
 % Example:
-% >> [STUDY] = pop_clusterIMAtemplates(STUDY, 'freqlim', [3 30] ,'nclust', 6);
+% >> [STUDY] = pop_clusterIMAtemplates(STUDY, ALLEEG, 'freqlim', [3 30] ,'nclust', 6);
 %
 %
 % INPUTS:
 % STUDY - STUDY structure with information on stored IMA files
+% ALLEEG - ALLEEG structure
 % freqlim - 'integer'   [min max] frequency limits to restrict clustering
 %            to i.e. alpha frequency range [8 14] default whole frequency
 %            range in IMA.freqlim
@@ -31,7 +32,7 @@
 % centroid saved in STUDY.etc.IMA.clustidx in the form [SJ IM ICs clusindx] and STUDY.etc.IMA.distance
 %
 
-function [STUDY] = pop_clusterIMAtemplates(STUDY, varargin);
+function [STUDY] = pop_clusterIMAtemplates(STUDY, ALLEEG, varargin);
 
 %clustmethods = {'corr' 'euc' 'kmeans'};
 g = finputcheck(varargin, {'freqlim'        'integer'       []             []; ...
@@ -44,7 +45,7 @@ g = finputcheck(varargin, {'freqlim'        'integer'       []             []; .
     }, 'inputgui');
 if isstr(g), error(g); end;
 
-if nargin == 1
+if nargin == 2
     opt_offon = {'off', 'on'};
     clsutmethodslist = {'Kmeans'}; % for display in GUI only 
     clustmethods     = {'kmeans'};
@@ -117,14 +118,14 @@ end
 if ~isfield(IMA, 'precluster'), disp('pop_clusterIMAtemplates: Preclustering must be performed'); return; end;
 templates = [templates IMA.precluster.templates(:,freqind1:freqind2)];
 IMICindex = [IMICindex [repmat(sujnum,1,size(IMA.precluster.IMICindex,1))' IMA.precluster.IMICindex]]; %% add subject index
-if strcmp(dipole_locs, 'on')
+if strcmp(g.dipole_locs, 'on')
     dipsources = [dipsources IMA.precluster.dipsources];
 else
     dipsources = [];
 end
 
 [clustidx, distance]...
-    = clusterIMAtemplates(templates, IMICindex, g.nclust, 'pcs', g.pcs, 'method', g.method, 'dipsources', g.dipsources, 'weightSP',g.weightSP ,'weightDP',g.weightDP);
+    = clusterIMAtemplates(templates, IMICindex, g.nclust, 'pcs', g.pcs, 'method', g.method, 'dipsources', dipsources, 'weightSP',g.weightSP ,'weightDP',g.weightDP);
 
 STUDY.etc.IMA.clustidx = clustidx;
 STUDY.etc.IMA.distance = distance;
