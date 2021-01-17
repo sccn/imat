@@ -45,23 +45,47 @@ g = finputcheck(varargin, {'freqlim'        'integer'       []             []; .
 if isstr(g), error(g); end;
 
 if nargin == 1
-    clsutmethodslist = {'Kmeans'}; 
+    opt_offon = {'off', 'on'};
+    clsutmethodslist = {'Kmeans'}; % for display in GUI only 
+    clustmethods     = {'kmeans'};
     
+     cbk_dipole = ['valchbx = get(findobj(''Tag'', ''chbx_enabledipole''), ''Value'');' ...
+                  'if valchbx,'...'
+                  'set(findobj(''Tag'', ''ed_weightSP''), ''enable'', ''on'');'...
+                  'set(findobj(''Tag'', ''ed_weightDP''), ''enable'', ''on'');'...
+                  'else,'...
+                  'set(findobj(''Tag'', ''ed_weightSP''), ''enable'', ''off'');'...
+                  'set(findobj(''Tag'', ''ed_weightDP''), ''enable'', ''off'');'...   
+                  'end;'];
+              
       uilist = {{'style' 'text' 'string' 'Method'} {'style' 'popupmenu'  'string' clsutmethodslist 'tag' 'method' 'value' 1 }...
               {'style' 'text' 'string' 'Number of clusters'} {'style' 'edit'  'string' ' ' 'tag' 'nclust'}...
-              {'style' 'text' 'string' 'Number of PCs'} {'style' 'edit'  'string' ' ' 'tag' 'npcs'} {'style' 'text' 'string' 'Freq. limits (Hz)'} {'style' 'edit'  'string' ' ' 'tag' 'freqlim'}};
+              {'style' 'text' 'string' 'Number of PCs'} {'style' 'edit'  'string' ' ' 'tag' 'npcs'} {'style' 'text' 'string' 'Freq. limits (Hz)'} {'style' 'edit'  'string' ' ' 'tag' 'freqlim'}...
+              { 'style' 'Checkbox'   'string' 'Complement clustering with dipole location' 'Tag', 'chbx_enabledipole', 'Value' 0,  'enable', 'on' 'callback' cbk_dipole} ...
+              {'style' 'text' 'string' 'Template weight'} {'style' 'edit'  'string' num2str(g.weightSP) 'tag' 'ed_weightSP'  'enable', 'off'} {'style' 'text' 'string' 'Dipole weight'} {'style' 'edit'  'string' num2str(g.weightDP) 'tag' 'ed_weightDP'  'enable', 'off'}};
      
-     ht = 3; wt = 4 ;
-     geom = {{wt ht [0 0]  [1 1]} {wt ht [1 0]  [1 1]}...
-             {wt ht [0 1]  [1 1]} {wt ht [1 1]  [1 1]}...
-             {wt ht [0 2]  [1 1]} {wt ht [1 2]  [1 1]} {wt ht [2 2]  [1 1]} {wt ht [2.8 2]  [1 1]}};
+     ht = 4; wt = 2 ;
+     geom = {{wt ht [0 0]  [1 1]} {wt ht [0.6 0]  [1 1]}...
+             {wt ht [0 1]  [1 1]} {wt ht [0.6 1]  [0.4 1]}...
+             {wt ht [0 2]  [1 1]} {wt ht [0.6 2]  [0.4 1]} {wt ht [1.2 2]  [1 1]} {wt ht [1.6 2]  [0.4 1]}...
+             {wt ht [0 3]  [1 1]}...
+             {wt ht [0 4]  [1 1]} {wt ht [0.6 4]  [0.4 1]} {wt ht [1.2 4]  [1 1]} {wt ht [1.6 4]  [0.4 1]}};
      
     [result, ~, ~, resstruct, ~] = inputgui('title','Cluster IM templates -- pop_clusterIMAtemplates', 'geom', geom, 'uilist',uilist, 'helpcom','pophelp(''pop_clusterIMAtemplates'');');
-
+    
+    if isempty(result), return; end;
     g.freqlim = str2num(resstruct.freqlim);
     g.nclust = str2num(resstruct.nclust);
     g.pcs = str2num(resstruct.nclust);
     g.method = clustmethods{resstruct.method};
+    g.dipole_locs = opt_offon(resstruct.chbx_enabledipole+1);
+    if resstruct.chbx_enabledipole
+        g.weightSP = str2num(resstruct.ed_weightSP);
+        g.weightDP = str2num(resstruct.ed_weightDP);
+    else
+        g.weightSP = 1;
+        g.weightDP = 0;
+    end
 end
 
 subjcode = STUDY.subject; 
@@ -90,11 +114,11 @@ end
 [val, freqind1] = min(abs(IMA.freqvec-g.freqlim(1)));
 [val, freqind2] = min(abs(IMA.freqvec-g.freqlim(2)));
 
-
+if ~isfield(IMA, 'precluster'), disp('pop_clusterIMAtemplates: Preclustering must be performed'); return; end;
 templates = [templates IMA.precluster.templates(:,freqind1:freqind2)];
 IMICindex = [IMICindex [repmat(sujnum,1,size(IMA.precluster.IMICindex,1))' IMA.precluster.IMICindex]]; %% add subject index
 if strcmp(dipole_locs, 'on')
-dipsources = [dipsources IMA.precluster.dipsources];
+    dipsources = [dipsources IMA.precluster.dipsources];
 else
     dipsources = [];
 end
