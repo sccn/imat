@@ -83,12 +83,13 @@ end
 
 denswt = zeros(1,0);
 
-col = round(length(g.clust)/2);
-if length(g.clust) == 1;
-    col  = 1;
-elseif round(length(g.clust)/2) == 1;
-    col  = col+1;
-end
+row = round(sqrt(length(g.clust))); col = ceil(sqrt(length(g.clust)));
+% col = round(length(g.clust)/2);
+% if length(g.clust) == 1;
+%     col  = 1;
+% elseif round(length(g.clust)/2) == 1;
+%     col  = col+1;
+% end
 
 if strcmp(g.plotclust, 'on');
     if strcmp(g.plotdipsources, 'on') && ~isempty(g.dipsources);
@@ -114,7 +115,7 @@ if strcmp(g.plotclust, 'on');
             scalpmaps_clus = g.scalpmaps(indclus,:,:);
             AVscalp = squeeze(mean(scalpmaps_clus,1));
             
-            subplot(round(length(g.clust)/2), col,dind);
+            subplot(row, col,dind);
             toporeplot(AVscalp, 'plotrad', 0.7, 'intrad', 0.5, 'colormap', 'jet');
             title(['cluster' num2str(g.clust(dind))], 'FontSize',16);
             
@@ -125,6 +126,16 @@ if strcmp(g.plotclust, 'on');
     
     if strcmp(g.plottemplates, 'on') && ~isempty(g.templates)
         
+        plotdatascale = [];
+        for dind = 1:length(g.clust);
+            indclus = find(clustidx(:,4) == g.clust(dind));
+            templates_clus = g.templates(indclus,:);
+            plotdatascale = [plotdatascale; templates_clus];
+        end
+        
+        maxl = max((plotdatascale(:)))+1; %% changed colorscale min max
+        minl = min((plotdatascale(:)))-1;
+        
         figure;
         for dind = 1:length(g.clust);
             
@@ -133,7 +144,7 @@ if strcmp(g.plotclust, 'on');
             scalpmaps_clus = g.scalpmaps(indclus,:,:);
             AVscalp = squeeze(mean(scalpmaps_clus,1));
             
-            subplot(round(length(g.clust)/2), col,dind);
+            subplot(row, col,dind);
             if strcmp(g.freqscale,'log');
                 xlog = logspace(log10(g.freqvec(1)), log10(g.freqvec(end)), 8);
                 semilogx(g.freqvec,templates_clus', 'LineWidth', 2,'Color','m');hold on
@@ -141,8 +152,8 @@ if strcmp(g.plotclust, 'on');
                 set(gca,'FontSize',12);
                 set(gca,'xtick',[10 20 40]);
                 xlim([g.freqvec(1) g.freqvec(end)]);
-               % if dind == length(g.clust)
-                    xlabel('Frequency Hz');
+                % if dind == length(g.clust)
+                %  xlabel('Frequency Hz');
                 %end
             else
                 ph = plot(g.freqvec,templates_clus','m-','linewidth',2); hold on;
@@ -151,10 +162,19 @@ if strcmp(g.plotclust, 'on');
                 realx = get(gca,'xtick'); labelx = get(gca,'xticklabel');
                 xlabel('Frequency Hz');
             end;
+            set(gca,'ylim',[minl maxl])
             set(gca,'ticklength',[.05 .05]);
             plot([get(gca,'xlim')],[0 0],'k-'); hold on;
             plot([10 10],[get(gca,'ylim')],'g-', 'LineWidth',2); hold on;
             plot([20 20],[get(gca,'ylim')],'g-', 'LineWidth',2); hold on;
+            if dind == (row-1)*col+1
+                xlabel('Frequency (Hz)'); ylabel('Relative Power');
+            elseif dind > (row-1)*col+1
+                xlabel('Frequency (Hz)');
+            end;
+            if dind <= col*(row-1)
+                set(gca,'xticklabel',[]);
+            end;
             title(['cluster ' num2str(g.clust(dind))], 'FontSize',16);
             
         end

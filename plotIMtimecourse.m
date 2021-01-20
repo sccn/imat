@@ -36,8 +36,8 @@
 % plotcond - [string] 'off' or 'on' (default off). If IMA over different
 %                      conditions was computed plots a vertical line in between conditions and
 %                      plots conditions in different colors for IM weights plotting
-% smoothing - [number between 0 and 1] factor to smooth IM timecourses. A
-%              number more close to 1 means less smoothing
+% smoothing - [integer] how many timepoints to use for moving average for
+%                        smoothing. A higher number means more smoothing. default 40
 % plotICtf  -  [string]  {'on' 'off'} plot IC time-frequency decomposition, default 'off'
 % plotPCtf  -   [string] {'on' 'off'}  plot PC time-frequency backprojection, default 'off'
 % plotIMtf  -    [string] {'on' 'off'}  plot IM time-frequency backprojection, default 'off'
@@ -51,7 +51,7 @@ g = finputcheck(varargin, {'comps'     'integer'   []             []; ...
     'factors'       'integer'    []             []; ...
     'frqlim'        'real'       []             []; ...
     'plotcond'       'string'    {'on' 'off'}                       'off';...
-    'smoothing'      'integer'   []             [1];...
+    'smoothing'      'integer'   []             [40];...
     'plotICtf'       'string'    {'on' 'off'}                       'off';...
     'plotPCtf'       'string'    {'on' 'off'}                       'off';...
     'plotIMtf'       'string'    {'on' 'off'}                       'off';...
@@ -72,7 +72,7 @@ if isempty(g.factors)
     g.factors = 1:IMA.npcs;
 end
 
-if strcmp(g.plotcond, 'on')
+if strcmp(g.plotcond, 'on') || length(IMA.timepntCond) > 1;
     dataport = IMA.timepntCond;
 else
     dataport = {IMA.timepntCond};
@@ -240,7 +240,7 @@ if strcmp(g.plotICtf, 'on');
             xlabel('Time (sec)');
         end;
         set(gca,'fontsize', 12);
-        pl = pl+2;% advance for scalp map and spectra       
+        pl = pl+2;% advance for scalp map and spectra
     end
     ha = axes('Position',[0 0 1 1],'Xlim',[0 1],'Ylim',[0  1],'Box','off','Visible','off','Units','normalized', 'clipping' , 'off');
     text(0.4, 0.98,'IC spectogram', 'fontsize', 20);
@@ -253,7 +253,7 @@ end
 
 %%%%%%%%%%%%%%  Plot PCA backproj %%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-if strcmp(g.plotPCtf, 'on');    
+if strcmp(g.plotPCtf, 'on');
     % get scale for colorbar
     plotdatascale = [];
     for cp = 1:length(g.comps);
@@ -262,8 +262,8 @@ if strcmp(g.plotPCtf, 'on');
         plotdatascale = [plotdatascale pcaproj(:,fr)]; % select frequency range to plot
     end
     % minl = min(plotdata(:));
-    maxl = max(abs(plotdatascale(:)))/2; %% changed colorscale min max     
-    figure;  
+    maxl = max(abs(plotdatascale(:)))/2; %% changed colorscale min max
+    figure;
     pl = 1;
     
     for cp = 1:length(g.comps);
@@ -303,8 +303,8 @@ if strcmp(g.plotPCtf, 'on');
         elseif pl > (row-1)*col+1
             xlabel('Time (sec)');
         end;
-        set(gca,'fontsize', 12);    
-        pl = pl+2;% advance for scalp map and spectra 
+        set(gca,'fontsize', 12);
+        pl = pl+2;% advance for scalp map and spectra
     end
     ha = axes('Position',[0 0 1 1],'Xlim',[0 1],'Ylim',[0  1],'Box','off','Visible','off','Units','normalized', 'clipping' , 'off');
     text(0.4, 0.98,'Summed IM backprojection', 'fontsize', 20);
@@ -334,7 +334,7 @@ if strcmp(g.plotIMtf, 'on');
         end
         % minl = min(plotdata(:));
         maxl = max(abs(plotdatascale(:)))/2; %% changed colorscale min max
-              
+        
         for cp = 1:length(g.comps);
             rcp = find(g.comps(cp) == IMA.complist);
             
@@ -371,11 +371,11 @@ if strcmp(g.plotIMtf, 'on');
             elseif pl > (row-1)*col+1
                 xlabel('Time (sec)');
             end;
-%             if cp == 1;
-%                 title(['IM ' num2str(g.factors(tpp))], 'fontsize', 20);
-%             end
+            %             if cp == 1;
+            %                 title(['IM ' num2str(g.factors(tpp))], 'fontsize', 20);
+            %             end
             set(gca,'fontsize', 12);
-                    
+            
             pl = pl+2;% advance for scalp map and spectra
         end
         ha = axes('Position',[0 0 1 1],'Xlim',[0 1],'Ylim',[0  1],'Box','off','Visible','off','Units','normalized', 'clipping' , 'off');
@@ -420,19 +420,23 @@ if strcmp(g.plotIMtime, 'on');
     end;
     
     plotdatascale = [];
-        for tpp = 1:length(g.factors);
+    for tpp = 1:length(g.factors);
         tp = g.factors(tpp);
-          backproj = squeeze(winv(:,tp));
+        backproj = squeeze(winv(:,tp));
         % smooth timecourses using a lowpass butterworth filter
-        clear aa bb
-        [bb,aa] = butter (2, 0.1*g.smoothing./(round(times(end)/length(times)*10)/2), 'low');
-        backproj = filtfilt(bb,aa,(double(backproj)));
-         plotdatascale = [plotdatascale backproj]; % select frequency range to plot
+        %         clear aa bb
+        %         [bb,aa] = butter (2, 0.1*g.smoothing./(round(times(end)/length(times)*10)/2), 'low');
+        %         backproj = filtfilt(bb,aa,(double(backproj)));
+        plotdataIM = [];
+        for lux = 1:length(dataport);
+            plotdataIM = [plotdataIM smoothdata(double(backproj(dataport{lux})),'movmean',g.smoothing)']; % ,'movmedian',20
         end
-        % minl = min(plotdata(:));
-        maxl = max(abs(plotdatascale(:))); %% changed colorscale min max
-
+        plotdatascale = [plotdatascale plotdataIM]; % select frequency range to plot
+    end
+    % minl = min(plotdata(:));
+    maxl = max(abs(plotdatascale(:))); %% changed colorscale min max
     
+    plotdataIM = [];
     %row = ceil(length(g.factors));
     figure;
     pl = 1;
@@ -452,18 +456,22 @@ if strcmp(g.plotIMtime, 'on');
         backproj = squeeze(winv(:,tp));
         
         % smooth timecourses using a lowpass butterworth filter
-        clear aa bb
-        [bb,aa] = butter (2, 0.1*g.smoothing./(round(times(end)/length(times)*10)/2), 'low');
-        backproj = filtfilt(bb,aa,(double(backproj)));
-        
+        %         clear aa bb
+        %         [bb,aa] = butter (2, 0.1*g.smoothing./(round(times(end)/length(times)*10)/2), 'low');
+        %         backproj = filtfilt(bb,aa,(double(backproj)));
+        %
         % plot IM timecourse
         sbplot(row,col,[pl pl+1]);
         for lux = 1:length(dataport);
+            
+            plotdataIM = smoothdata(double(backproj(dataport{lux})),'movmean' ,g.smoothing); % ,'movmedian',20
             line([times(dataport{lux}(1)),times(dataport{end}(end))],[0,0], 'Color','k', 'LineWidth', lnwdth); hold on
             if strcmp(g.plotcond, 'on') % add separating vertical lines between conditions
                 line([times(dataport{lux}(end)),times(dataport{lux}(end))],[min(backproj)-1 max(backproj)+1], 'Color','k', 'LineWidth', lnwdth); hold on
             end
-            ph1 = plot(times(dataport{lux}),backproj(dataport{lux}),'LineWidth', lnwdth,'Color',cols(tpp,:));hold on
+            % ph1 = plot(times(dataport{lux}),backproj(dataport{lux}),'LineWidth', lnwdth,'Color',cols(tpp,:));hold on
+            ph1 = plot(times(dataport{lux}),plotdataIM,'LineWidth', lnwdth,'Color',cols(tpp,:));hold on
+            
             set(ph1,'color',cols(lux,:));
             ph12 = gcf;
             ph12.Children(1).Children(1).Tag = taglist{lux};
@@ -471,12 +479,12 @@ if strcmp(g.plotIMtime, 'on');
                 legendInfo{lux} = ['Cond ' IMA.condition{lux}];
             else
                 legendInfo{lux} = ['Cond ' num2str(lux)];
-            end          
-            if pl == (row-1)*col+2
-                xlabel('Time (sec)'); 
+            end
+            if pl == (row-1)*col+2;
+                xlabel('Time (sec)');
             elseif pl > (row-1)*col+1
                 xlabel('Time (sec)');
-            end;          
+            end;
         end
         
         xlim([times(dataport{1}(1)),times(dataport{end}(end))]);

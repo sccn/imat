@@ -37,7 +37,7 @@ function [clustidx, distance] = clusterIMAtemplates(templates, IMICindex, nclust
 
 g = finputcheck(varargin, {'pcs'        'integer'     []         [10];...
                           'method'      'string'       {'kmeans'}             'kmeans'; ...  
-                          'dipsources'  'struct' [] [];...
+                          'dipsources'  'struct' [] struct;...
                           'weightSP'    'integer' [] [1];...
                           'weightDP'    'integer' [] [1];...
                            }, 'inputgui');
@@ -54,12 +54,14 @@ pc = (U*S); % scale 'activations' for appropriate weighting in decomp of pc
 eigvec = V;
 
 
-if ~isempty(g.dipsources)
-dipole_locs = reshape([g.dipsources.posxyz]',3,size(pc,1))';
-featurevec = [g.weightSP*zscore(pc) g.weightDP*zscore(dipole_locs)];
+
+if isfield(g.dipsources,'posxyz')
+    dipole_locs = reshape([g.dipsources.posxyz]',3,size(pc,1))';
+    featurevec = [g.weightSP*zscore(pc) g.weightDP*zscore(dipole_locs)];
 else
-featurevec = zscore(pc);
+    featurevec = zscore(pc);
 end
+
 
 if isempty(nclust)
     nclust = (size(IMICindex,1)/length(unique(IMICindex(:,1))))/3;

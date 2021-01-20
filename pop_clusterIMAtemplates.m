@@ -77,7 +77,7 @@ if nargin == 2
     if isempty(result), return; end;
     g.freqlim = str2num(resstruct.freqlim);
     g.nclust = str2num(resstruct.nclust);
-    g.pcs = str2num(resstruct.nclust);
+    g.pcs = str2num(resstruct.npcs);
     g.method = clustmethods{resstruct.method};
     g.dipole_locs = opt_offon(resstruct.chbx_enabledipole+1);
     if resstruct.chbx_enabledipole
@@ -121,7 +121,7 @@ IMICindex = [IMICindex [repmat(sujnum,1,size(IMA.precluster.IMICindex,1))' IMA.p
 if strcmp(g.dipole_locs, 'on')
     dipsources = [dipsources IMA.precluster.dipsources];
 else
-    dipsources = [];
+    dipsources = struct;
 end
 
 [clustidx, distance]...
