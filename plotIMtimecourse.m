@@ -52,6 +52,7 @@ g = finputcheck(varargin, {'comps'     'integer'   []             []; ...
     'frqlim'        'real'       []             []; ...
     'plotcond'       'string'    {'on' 'off'}                       'off';...
     'smoothing'      'integer'   []             [40];...
+    'method'         'string'    {'movmean' 'gaussian' 'lowess' 'rlowess'}  'rlowess';... 
     'plotICtf'       'string'    {'on' 'off'}                       'off';...
     'plotPCtf'       'string'    {'on' 'off'}                       'off';...
     'plotIMtf'       'string'    {'on' 'off'}                       'off';...
@@ -72,7 +73,7 @@ if isempty(g.factors)
     g.factors = 1:IMA.npcs;
 end
 
-if strcmp(g.plotcond, 'on') || length(IMA.timepntCond) > 1;
+if strcmp(g.plotcond, 'on') || iscell(IMA.timepntCond);
     dataport = IMA.timepntCond;
 else
     dataport = {IMA.timepntCond};
@@ -429,7 +430,7 @@ if strcmp(g.plotIMtime, 'on');
         %         backproj = filtfilt(bb,aa,(double(backproj)));
         plotdataIM = [];
         for lux = 1:length(dataport);
-            plotdataIM = [plotdataIM smoothdata(double(backproj(dataport{lux})),'movmean',g.smoothing)']; % ,'movmedian',20
+            plotdataIM = [plotdataIM smoothdata(double(backproj(dataport{lux})),g.method,g.smoothing)']; % ,'movmedian',20
         end
         plotdatascale = [plotdatascale plotdataIM]; % select frequency range to plot
     end
@@ -464,7 +465,7 @@ if strcmp(g.plotIMtime, 'on');
         sbplot(row,col,[pl pl+1]);
         for lux = 1:length(dataport);
             
-            plotdataIM = smoothdata(double(backproj(dataport{lux})),'movmean' ,g.smoothing); % ,'movmedian',20
+            plotdataIM = smoothdata(double(backproj(dataport{lux})),g.method ,g.smoothing); % ,'movmedian',20
             line([times(dataport{lux}(1)),times(dataport{end}(end))],[0,0], 'Color','k', 'LineWidth', lnwdth); hold on
             if strcmp(g.plotcond, 'on') % add separating vertical lines between conditions
                 line([times(dataport{lux}(end)),times(dataport{lux}(end))],[min(backproj)-1 max(backproj)+1], 'Color','k', 'LineWidth', lnwdth); hold on

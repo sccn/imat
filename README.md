@@ -56,7 +56,13 @@ From the resulting window (above right) we can specify:
 
 ## Visualizing IMAT results
 
-There are three main plotting function for visualizing IMAT results.
+There are three main plotting functions for visualizing IMAT results.
+
+1. Superimposed components
+2. Spectral envelope
+3. Time courses
+
+**1. Superimposed Components**  
 
 To visualize the IM decomposition launch **Tools > Decompose spectograms by IMA > Plot IMA results > Superimposed Components**
 
@@ -64,12 +70,194 @@ To visualize the IM decomposition launch **Tools > Decompose spectograms by IMA 
 
 <img src="./Docs/figs/plotspecdecomp.png" width="1000"> 
 
+In the resulting window (above right) we can specify: 
+
+1. The type of plot from the drop down menu   
+    - IM mode decomposition   
+    - Superimposed IC modes  
+    - Superimposed IM modes    
+2. The frequency range to plot (must be within the frequencies for which IMA was    computed)
+3. The ICs and IMs to plot
+
+
+**IM mode decomposition** allows to plot spectral templates separately for all IMs and ICs 
+
 
 <img src="./Docs/figs/IMA_decomposition.png" width="2000"> 
 
+**Superimposed IC modes** allows to plot superimposed spectral templates of ICs for each IM  
+
 <img src="./Docs/figs/SuperimposedICmodes.png" width="1000"> 
 
+**Superimposed IM modes** allows to plot superimposed spectral templates of IMs for each IC
+
 <img src="./Docs/figs/SuperimposedIMmodes.png" width="1000"> 
+
+
+**2. Spectral envelope**
+
+To visualize the contribution of IMs on the mean log spectrum of an IC launch **Tools > Decompose spectograms by IMA > Plot IMA results > Spectral envelope**
+
+<img src="./Docs/figs/plotspecenv.png" width="1000">
+
+In the resulting window (above right) we can specify: 
+
+1. The type of plot from the drop down menu   
+    - Full envelope: plots the 1st and 99th percentiles of the IM spectral variation
+    - Upper envelope: plots the 99th percentile of the IM spectral variation
+    - Lower envelope: plots the 1st percentile of the IM spectral variation  
+2. The frequency range to plot (must be within the frequencies for which IMA was    computed)
+3. The ICs and IMs to plot
+
+Here is an example for plotting the **Full envelope** of IMs. The IC mean log power spectrum is shown as a black trace. Outer light grey limits represent the 1st and 99th percentiles of IC spectral variation. Dark grey areas represent the 1st and 99th percentiles of the PCA-reduced spectral data used in the IMA analysis.
+
+
+<img src="./Docs/figs/plotenv_EC.png" width="600">
+
+**3. Time courses**
+
+To plot the activation of IMs over time launch **Tools > Decompose spectograms by IMA > Plot IMA results > Time courses**
+
+<img src="./Docs/figs/plottimecourse.png" width="1000">
+
+In the resulting window (above right) we can specify: 
+
+1. The type of plot from the drop down menu   
+    - IC spectogram   
+    - Summed IM backprojection  
+    - Combined IC-IM spectogram
+    - IM timecourse    
+2. The frequency range to plot (must be within the frequencies for which IMA was    computed)
+3. The ICs and IMs to plot
+
+**IC spectogram** allows to plot the normalized (mean spectrum removed) IC spectograms.
+ 
+<img src="./Docs/figs/ICspectogram.png" width="500">
+
+**Summed IM backprojection** allows to plot the PCA reduced normalized (mean spectrum removed) IC spectograms on which IMA was computed.
+ 
+<img src="./Docs/figs/summedICbackprojection.png" width="500">
+
+**Combined IC-IM spectogram** allows to plot the backprojection of single IM spectral weights over time for single ICs
+
+<img src="./Docs/figs/IMspectralweights.png" width="500">
+
+**IM timecourse** allows to plot the activation of IMs over time
+
+<img src="./Docs/figs/IMweightbackprojection.png" width="500">
+
+
+## Multiple conditions and group analysis 
+
+## Running IMAT 
+
+Before running IMAT on multiple conditions or for group analysis you need to build a STUDY in eeglab. You can find information on how to create a STUDY in the [eeglab wiki] (https://sccn.ucsd.edu/wiki/Chapter_02:_STUDY_Creation). For multiple conditions you will need to create a separate .set file for each condition. E.g. if you want to run IMA on EEG data that has two conditions: eyes open and eyes closed you need to create one EEG file for eyes open and one EEG file for eyes closed before creating the STUDY. 
+
+Before running IMAT, start EEGLAB and load the STUDY set.
+
+   Here we will use the sample STUDY set,  *.../eeglab/sample\_data/eeglab\_data\_epochs\_ica.set*.
+
+
+To run IMAT on the loaded STUDY, launch the Run IMA (*pop\_runIMA_study*) window, either by typing *pop\_runIMA_study* on the MATLAB command line or by calling it from the EEGLAB menu by selecting **STUDY > STUDY IMA > Run STUDY IMA**,  as highlighted in the figure below. This will run a separate IMA for each subject in the study. A joint IMA is automatically computed over all the conditions of each single subject in the STUDY.
+
+<img src="./Docs/figs/runSTUDYIMA.png" width="1000"> 
+
+From the resulting window (above right) we can specify:
+
+1. We can choose to use IC Label to automatically select categories of ICs (**IC Label tags**). IMAT allows you to set individual thresholds for different categories of ICs for selecting ICs with IC Label. Otherwise IMAt will use the ICs previously specified when the STUDY was created.
+2. Which frequency reange to compute IMA on (**Freq. limits (Hz)**) 
+3. The frequency scale (**Freq scale**) linear of log scale 
+4. A factor to regulate dimensionality reduction on the time windows of the spectral data with PCA before ICA (**pcfac**) - the smaller pcfac, the more dimensions will be retained *ndims = (freqsxICs)/pcfac* where *freqs* is the number of estimated frequencies and *ICs* is the number of ICs (default is 7)
+5. Other IMA options (**pop\_runima_study options**) – e.g., which ICA algorithm to use   (see *pop_runima_study* help for more details)
+
+
+## Visualizing IMAT results for single subjects in the STUDY and multiple conditions
+
+There are three main plotting functions for visualizing IMAT results for single subjects and multiple conditions in the STUDY. These functions are very similar to the single subject IMAT visualizations discussed above.
+
+1. Superimposed components
+2. Spectral envelope
+3. Time courses
+
+
+**1. Superimposed Components**  
+
+To visualize the IM decomposition for single subjects in the study launch **STUDY > STUDY IMA > Plot IMA results > Superimposed Components**
+
+**Plot IM decomposition**  (*pop_plotspecdecomp_study*) 
+
+<img src="./Docs/figs/plotIMdecompSTUDY.png" width="1000"> 
+
+In the resulting window (above right) we can specify: 
+
+1. The subject for which to plot the IM decomposition
+2. The type of plot from the drop down menu   
+    - IM mode decomposition   
+    - Superimposed IC modes  
+    - Superimposed IM modes    
+3. The frequency range to plot (must be within the frequencies for which IMA was    computed)
+4. The ICs and IMs to plot
+
+The type of plots are the same as for single subjects visualizations, please refer to the section above for more information. 
+
+**2. Spectral envelope**
+
+To visualize the contribution of IMs on the mean log spectrum of an IC for a single subject launch **STUDY > STUDY IMA > Plot IMA results > Spectral envelope**
+
+<img src="./Docs/figs/envSTUDY.png" width="1000">
+
+In the resulting window (above right) we can specify: 
+
+1. The subject for which to plot the spectral envelope
+2. The type of plot from the drop down menu   
+    - Full envelope: plots the 1st and 99th percentiles of the IM spectral variation
+    - Upper envelope: plots the 99th percentile of the IM spectral variation
+    - Lower envelope: plots the 1st percentile of the IM spectral variation  
+3. The frequency range to plot (must be within the frequencies for which IMA was    computed)
+4. The ICs and IMs to plot
+
+The function is automatically plotting separate spectral loadings for each condition. Here is an example for plotting the **Full envelope** of IMs for an eyes open and eyes closed condition separately. The IC mean log power spectrum is shown as a black trace. Outer light grey limits represent the 1st and 99th percentiles of IC spectral variation. Dark grey areas represent the 1st and 99th percentiles of the PCA-reduced spectral data used in the IMA analysis.
+
+<img src="./Docs/figs/envECSTUDY.png" width="500">
+
+<img src="./Docs/figs/envEOSTUDY.png" width="500">
+
+**3. Time courses**
+
+To plot the activation of IMs over time for a single subject launch **STUDY > STUDY IMA > Plot IMA results > Time courses**
+
+<img src="./Docs/figs/timecourseSTUDY.png" width="1000">
+
+In the resulting window (above right) we can specify: 
+
+1. The subject for which to plot the spectral envelope
+2. The type of plot from the drop down menu   
+    - IC spectogram   
+    - Summed IM backprojection  
+    - Combined IC-IM spectogram
+    - IM timecourse    
+3. The frequency range to plot (must be within the frequencies for which IMA was    computed)
+4. The ICs and IMs to plot
+
+The function automatically plots a black vertical line at the timepoint of transition between conditions
+
+**IC spectogram** allows to plot the normalized (mean spectrum removed) IC spectograms.
+ 
+<img src="./Docs/figs/ICspectogramSTUDY.png" width="500">
+
+**Summed IM backprojection** allows to plot the PCA reduced normalized (mean spectrum removed) IC spectograms on which IMA was computed.
+ 
+<img src="./Docs/figs/IMspectogramSTUDY.png" width="500">
+
+**Combined IC-IM spectogram** allows to plot the backprojection of single IM spectral weights over time for single ICs
+
+<img src="./Docs/figs/ICIMspectogramSTUDY.png" width="500">
+
+**IM timecourse** allows to plot the activation of IMs over time, visualizing differences between condition
+
+<img src="./Docs/figs/IMtimecourseSTUDY.png" width="500">
+
+## Clustering IMs
 
 ## Running and visualizing IMAT from the MATLAB command line
 Running IMAT, can also be performed from the MATLAB command line or by a MATLAB script. 
