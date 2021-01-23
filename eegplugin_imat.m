@@ -55,7 +55,7 @@ function vers = eegplugin_imat(fig, trystrs, catchstrs)
                         '[ALLEEG EEG] = eeg_store(ALLEEG, EEG, CURRENTSET); ' ...
                         'catch, errordlg2(lasterr, ''EEGLAB error''); LASTCOM= ''''; clear EEGTMP; end;' ...
                         'h(LASTCOM); disp(''Done.''); eeglab(''redraw'');' ];
-    comrunima = [ trystrs.check_data 'EEG = pop_runIMA(EEG);' catchstrs.add_to_hist ]; 
+    comrunima = [ trystrs.check_data '[EEG, IMA] = pop_runIMA(EEG);' catchstrs.add_to_hist ]; 
     
     cb_plot1 = 'pop_plotspecdecomp(EEG);';
     cb_plot2 = 'pop_plotspecenv(EEG);';

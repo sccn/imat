@@ -25,7 +25,12 @@
 %                     by 'pdist','linkage','dendrogram' Matlab functions
 % pcs -- number of principal IM spectral template dimensions to retain
 % method -- ['k-means']  k-means clustering
-%
+% dipole_locs -- 'string' {'on' 'off'}  use dipole locations in addition to spectral templates for clustering, default 'off' 
+% weightSP -- 'integer' A number between 1 and 20. Weighting to use for spectral templates when clustering on spectral templates and dipole locations default is 1.
+%               A larger number will give more weight to spectral templates compared to dipole locations
+% weightDP -- 'integer' A number between 1 and 20. Weighting to use for dipoles when clustering on spectral templates and dipole locations default is 1. a larger 
+%               number will give more weight to dipole locations compared to spectral templates
+ 
 %
 % OUTPUT
 % STUDY - STUDY structure with indexes of clusters (column 4 in matrix) and distance to cluster

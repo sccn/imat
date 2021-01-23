@@ -38,9 +38,6 @@ Restart EEGLAB. If the installation is successful, a menu item to call IMAT, **T
 ## Running IMAT
 Before running IMAT, start EEGLAB and load an EEG dataset.
 
-   Here we will use the sample EEGLAB dataset,  *.../eeglab/sample\_data/eeglab\_data\_epochs\_ica.set*.
-
-
 To run IMAT on the loaded dataset, launch the Run IMA (*pop\_runIMA*) window, either by typing *pop\_runIMA* on the MATLAB command line or by calling it from the EEGLAB menu by selecting **Tools > Decompose spectograms by IMA > Run IMA**,  as highlighted in the figure below.
 
 <img src="./Docs/figs/RunIMA.png" width="1000"> 
@@ -53,6 +50,69 @@ From the resulting window (above right) we can specify:
 4. A factor to regulate dimensionality reduction on the time windows of the spectral data with PCA before ICA (**pcfac**) - the smaller pcfac, the more dimensions will be retained *ndims = (freqsxICs)/pcfac* where *freqs* is the number of estimated frequencies and *ICs* is the number of ICs (default is 7)
 5. Other IMA options (**pop\_runima options**) – e.g., which ICA algorithm to use   (see *pop_runima* help for more details)
 
+**Running IMA from the commandline**
+
+*[EEG, IMA] = pop\_runIMA(EEG, 'freqscale', 'log', 'frqlim', [6 120], 'pcfac', 7, 'cycles', [6 0.5], 'selectICs', {'brain'}, 'icatype', 'amica');*
+
+Here we are computing IMA on a single subject, selecting brain ICs using IC label, with parameters for time-frequency decomposition: log scale, frequency limit 6 to 120Hz, wavelet cycles [6 0.5], reducing the dimensions of timewindows
+of the tf decomposition using pfac 7, and using AMICA as the ICA algorithm for IMA
+
+## The IMA structure
+  
+*pop\_runIMA* is saving the IMA results in the IMA structure, which is saved in the same folder as the EEG file it is run on.  
+
+After running IMA (either from the gui or from the commandline) type *IMA* in the Matlab command line to display the IMA structure.  
+ 
+Alternatively the IMA file can be loaded using   
+
+*IMA = load([EEG.etc.IMA.filepath '/' EEG.etc.IMA.filename], '-mat');*
+
+**IMA structure**
+
+The IMA structure has the following fields:
+
+             wts: [21×21 double]
+             sph: [21×21 double]
+         meanpwr: [14×229 double]
+         timevec: [1260×1 double]
+         freqvec: [1×229 double]
+       freqscale: 'log'
+         freqlim: [6 120]
+            npcs: 21
+        complist: [1 2 3 4 5 6 8 9 10 11 17 21 27 38]
+           srate: 500
+         ntrials: 42
+      ntw_trials: 30
+          eigvec: [1260×21 double]
+              pc: [21×3206 double]
+        timefreq: [1260×3206 double]
+     meanpwrCond: []
+     timepntCond: [1×1260 double]
+       condition: []
+    subjfilename: {'RestEC_S03_ContAMICAdip.set'}
+    subjfilepath: {'/Volumes/IMAT_project/IM/S03'}
+
+
+**Detailed description of IMA outputs:**  
+*IMA.wts - weights of IMA decomposition*  
+*IMA.sph - spheres of IMA decomposition*  
+*IMA.meanpwr - mean power spectra of single ICs*  
+*IMA.timevec - timevector*  
+*IMA.freqvec - frequency vector*  
+*IMA.freqscale - frequency scale of computed spectra ('log' or 'linear')*  
+*IMA.freqlim - frequency limits of spectra*  
+*IMA.npcs - number of dimensions that have been used to reduce the data before IMA*   
+*IMA.complist - component indices on which IMA was run on*  
+*IMA.srate - original sampling rate of EEG data used to compute the spectra*  
+*IMA.ntrials - number of trials used to commpute the tie-frequency decomposition*  
+*IMA.ntw_trials - number of timewindows per trial*  
+*IMA.eigvec - pc backprojection in time*  
+*IMA.pc - pc spectral backprojection*  
+*IMA.timefreq - time-frequency decomposition (spectograms for each IC)*  
+*IMA.timepntCond - total number of timepoints in time-frequency decomposition*  
+*IMA.timevec - timevector of full length of time-frequency decomposition*  
+*IMA.subjfilename - the filename of the .ima file*  
+*IMA.subjfilepath - the filepath of .ima file*  
 
 ## Visualizing IMAT results
 
@@ -80,16 +140,22 @@ In the resulting window (above right) we can specify:
 3. The ICs and IMs to plot
 
 
-**IM mode decomposition** allows to plot spectral templates separately for all IMs and ICs 
+**IM mode decomposition**   
+Allows to plot spectral templates separately for all IMs and ICs.   
+At the commandline use: *pop_plotspecdecomp(EEG, 'plottype', 'comb')*  
 
 
 <img src="./Docs/figs/IMA_decomposition.png" width="2000"> 
 
-**Superimposed IC modes** allows to plot superimposed spectral templates of ICs for each IM  
+**Superimposed IC modes**   
+Allows to plot superimposed spectral templates of ICs for each IM.  
+At the commandline use: *pop_plotspecdecomp(EEG, 'plottype', 'ics', 'comps', [1:7], 'factors', [1:8])*  
 
 <img src="./Docs/figs/SuperimposedICmodes.png" width="1000"> 
 
-**Superimposed IM modes** allows to plot superimposed spectral templates of IMs for each IC
+**Superimposed IM modes**   
+Allows to plot superimposed spectral templates of IMs for each IC.  
+At the commandline use: *pop_plotspecdecomp(EEG, 'plottype', 'ims', 'comps', [1:6 8], 'factors', [1:8])*
 
 <img src="./Docs/figs/SuperimposedIMmodes.png" width="1000"> 
 
@@ -108,6 +174,9 @@ In the resulting window (above right) we can specify:
     - Lower envelope: plots the 1st percentile of the IM spectral variation  
 2. The frequency range to plot (must be within the frequencies for which IMA was    computed)
 3. The ICs and IMs to plot
+
+At the commandline use:  
+*pop\_plotspecenv(EEG,'comps', [1 2 5], 'factors', [1 2 3 6], 'frqlim', [6 120], 'plotenv', 'full');*
 
 Here is an example for plotting the **Full envelope** of IMs. The IC mean log power spectrum is shown as a black trace. Outer light grey limits represent the 1st and 99th percentiles of IC spectral variation. Dark grey areas represent the 1st and 99th percentiles of the PCA-reduced spectral data used in the IMA analysis.
 
@@ -130,19 +199,27 @@ In the resulting window (above right) we can specify:
 2. The frequency range to plot (must be within the frequencies for which IMA was    computed)
 3. The ICs and IMs to plot
 
-**IC spectogram** allows to plot the normalized (mean spectrum removed) IC spectograms.
+**IC spectogram**   
+Allows to plot the normalized (mean spectrum removed) IC spectograms.  
+At the commandline use: *pop_plotIMtimecourse(EEG, 'comps', [1 2 6], 'frqlim', [6 120], 'plotICtf', 'on')* 
  
 <img src="./Docs/figs/ICspectogram.png" width="500">
 
-**Summed IM backprojection** allows to plot the PCA reduced normalized (mean spectrum removed) IC spectograms on which IMA was computed.
+**Summed IM backprojection**  
+Allows to plot the PCA reduced normalized (mean spectrum removed) IC spectograms on which IMA was computed.    
+At the commandline use: *pop_plotIMtimecourse(EEG, 'comps', [1 2 6], 'frqlim', [6 120], 'plotPCtf', 'on')*
  
 <img src="./Docs/figs/summedICbackprojection.png" width="500">
 
-**Combined IC-IM spectogram** allows to plot the backprojection of single IM spectral weights over time for single ICs
+**Combined IC-IM spectogram**  
+Allows to plot the backprojection of single IM spectral weights over time for single ICs.    
+At the commandline use: *pop_plotIMtimecourse(EEG, 'comps', [1 2 6], 'frqlim', [6 120], 'factors', [1], 'plotIMtf', 'on')*
 
 <img src="./Docs/figs/IMspectralweights.png" width="500">
 
-**IM timecourse** allows to plot the activation of IMs over time
+**IM timecourse**  
+Allows to plot the activation of IMs over time.  
+At the commandline use: *pop_plotIMtimecourse(EEG, 'frqlim', [6 120], 'factors', [1 2 3], 'smoothing', 40, 'plotIMtime', 'on')*
 
 <img src="./Docs/figs/IMweightbackprojection.png" width="500">
 
@@ -154,9 +231,6 @@ In the resulting window (above right) we can specify:
 Before running IMAT on multiple conditions or for group analysis you need to build a STUDY in eeglab. You can find information on how to create a STUDY in the [eeglab wiki] (https://sccn.ucsd.edu/wiki/Chapter_02:_STUDY_Creation). For multiple conditions you will need to create a separate .set file for each condition. E.g. if you want to run IMA on EEG data that has two conditions: eyes open and eyes closed you need to create one EEG file for eyes open and one EEG file for eyes closed before creating the STUDY. 
 
 Before running IMAT, start EEGLAB and load the STUDY set.
-
-   Here we will use the sample STUDY set,  *.../eeglab/sample\_data/eeglab\_data\_epochs\_ica.set*.
-
 
 To run IMAT on the loaded STUDY, launch the Run IMA (*pop\_runIMA_study*) window, either by typing *pop\_runIMA_study* on the MATLAB command line or by calling it from the EEGLAB menu by selecting **STUDY > STUDY IMA > Run STUDY IMA**,  as highlighted in the figure below. This will run a separate IMA for each subject in the study. A joint IMA is automatically computed over all the conditions of each single subject in the STUDY.
 
@@ -257,18 +331,48 @@ The function automatically plots a black vertical line at the timepoint of trans
 
 <img src="./Docs/figs/IMtimecourseSTUDY.png" width="500">
 
-## Clustering IMs
+## Clustering IM spectral templates
+
+There are 3 main steps when clustering IM spectral templates
+1. Preclustering
+2. Clustering
+3. Plot clusters
+
+**Preclustering**  
+
+Before clustering we need to select the relevant spectral templates for clustering and remove spectral templates that do not show activation in the relevant frequency range. To select the spectral templates for clustering launch **STUDY > STUDY IMA > Cluster IMs > Collect templates**
+
+<img src="./Docs/figs/Precluster.png" width="1000">
+
+In the resulting window (above right) we can specify: 
+
+1. **Freq range** The relevant frequency range: this includes only templates that are active or have peaks in the specified range of frequencies. If empty templates with activations in any frequency range are chosen (templates with low activations are removed)
+2. **Warp spectra** Whether the spectra should be warped to a certain frequency: stretches templates in the frequency range defined by 'Freq. range' using the subject specific median template peak frequency within the band defined in 'Freq. range' to stretch spectra to a predefined peak as defined in 'Target peak freq'.Use is only reccomended when a narrow enough frequency band is defined in 'Freq. range'. i.e. 8-14Hz           
+3. **Target peak freq** The target peak frequency: defines the target frequency to stretch spectra to when 'stretch_spectra' is 'on', if 'Target peak freq' is empty uses the center frequency of 'Freq. range'
+
+**Cluster IM spectral templates**
+
+To cluster the IM spectral templates collected in the previous step launch **STUDY > STUDY IMA > Cluster IMs > Cluster IMs**   
+
+<img src="./Docs/figs/IMclustering.png" width="1000">  
+
+In the resulting window (above right) we can specify: 
+
+1. **Method** The method for clustering. Currently only k-means is implemented
+2. **Number of clusters** The number of clusters to compute          
+3. **Number of PCs** number of principal IM spectral template dimensions to retain for clustering
+4. **Freq limits** frequency limits to restrict clustering to i.e. alpha frequency range [8 14]. The default is the whole frequency range on which IMA was computed
+5. **Complement clustering with dipole location** use dipole locations in addition to spectral templates for clustering
+6. **Template weight** weight to assign to spectral templates for clustering when clustering on spectral templates and dipole locations. A number between 1 and 20, default is 1. A larger number will give more weight to spectral templates compared to dipole locations.
+7. **Dipole weight**  weight to assign to dipole locations for clustering when clustering on spectral templates and dipole locations. A number between 1 and 20, default is 1. A larger number will give more weight to dipole locations compared to spectral templates
+
+**Plotting cluster results**
+
 
 ## Running and visualizing IMAT from the MATLAB command line
 Running IMAT, can also be performed from the MATLAB command line or by a MATLAB script. 
 
-**Single subject analysis**
-
-
-
-**Running IMA**
  
-*[EEG, IMA] = pop\_runIMA(EEG, 'freqscale', 'linear', 'frqlim', [6 120], 'pcfac', 8, 'cycles', [6 0.5], 'selectICs', {'brain'}, 'icatype', 'infomax');*
 
 
 **Plotting IMA results**
@@ -285,7 +389,7 @@ Running IMAT, can also be performed from the MATLAB command line or by a MATLAB 
 *pop_plotIMtimecourse(EEG, 'comps', [1 2 3], 'factors', [1 5], 'frqlim', [6 40], 'smoothing', 0.1)* 
 
 
-**Multiple subjects and /or multiple conditions analysis (STUDY)**
+##Multiple subjects and /or multiple conditions analysis (STUDY)
 
 **Loading STUDY**  
 
@@ -299,6 +403,9 @@ Running IMAT, can also be performed from the MATLAB command line or by a MATLAB 
                                           'cycles', [6 0.5],
                                           'selectICs', {'brain'},
                                           'icatype', 'infomax');*
+                                          
+                                                         
+                                          
 
 **Plotting Options**
 

@@ -357,11 +357,11 @@ if sum(ismember(g.selectICs,'off')) == 0
     
     LOGIC{2} = find((IND == 2) & (VAL > g.iclthreshold_muscle)); % find muscle ICs with classification accuracy above threshold
     LOGIC{3} = find((IND == 3) & (VAL > g.iclthreshold_eye)); % find eye ICs with classification accuracy above threshold
-    LOGIC{4} = find((IND == 4) & (VAL > g.iclthreshold_iclthreshold_artefact)); % find heart ICs with classification accuracy above threshold
+    LOGIC{4} = find((IND == 4) & (VAL > g.iclthreshold_artefact)); % find heart ICs with classification accuracy above threshold
     indICs = find(ismember(lower(g.selectICs), {'brain' 'muscle' 'eye' 'heart'}));
     
     INDKEEP = [];
-    for iki = 1:length(indICs)
+    for iki = 1:length(indICs);
         INDKEEP = [INDKEEP LOGIC{iki}']; % find which ICs to keep according to predefined categories 
     end
     g.plotcomps = INDKEEP;
