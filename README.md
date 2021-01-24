@@ -30,7 +30,9 @@ Restart EEGLAB. If the installation is successful, a menu item to call IMAT, **T
 1. Since IMAT is working on brain sources derived using Independent Component Analysis (ICA) you need to decompose the EEG data into Independent Components (ICs) using ICA before running IMAT. A description on how to preprocess EEG data and run ICA can be found in the [eeglab Wiki] (https://eeglab.org/tutorials/06_RejectArtifacts/RunICA.html#run-ica).
 2. For component selection and clustering it is of advantage to estimate also equivalent current dipoles for ICs. 
 3. For automatic selection of components you need to install the eeglab plugin [IC Label] (https://sccn.ucsd.edu/wiki/ICLabel)  
+4. For plotting dipole density of clusters you need to install the eeglab plugin Fieldtrip lite.   
 
+Please refer to the section above on how to install eeglab plugins. 
 
 
 ## Single subject analysis
@@ -122,11 +124,10 @@ There are three main plotting functions for visualizing IMAT results.
 2. Spectral envelope
 3. Time courses
 
-**1. Superimposed Components**  
+**1. Superimposed Components**  (*pop_plotspecdecomp*) 
 
 To visualize the IM decomposition launch **Tools > Decompose spectograms by IMA > Plot IMA results > Superimposed Components**
 
-**Plot IM decomposition**  (*pop_plotspecdecomp*) 
 
 <img src="./Docs/figs/plotspecdecomp.png" width="1000"> 
 
@@ -160,7 +161,7 @@ At the commandline use: *pop_plotspecdecomp(EEG, 'plottype', 'ims', 'comps', [1:
 <img src="./Docs/figs/SuperimposedIMmodes.png" width="1000"> 
 
 
-**2. Spectral envelope**
+**2. Spectral envelope** (*pop\_plotspecenv*)
 
 To visualize the contribution of IMs on the mean log spectrum of an IC launch **Tools > Decompose spectograms by IMA > Plot IMA results > Spectral envelope**
 
@@ -183,7 +184,7 @@ Here is an example for plotting the **Full envelope** of IMs. The IC mean log po
 
 <img src="./Docs/figs/plotenv_EC.png" width="600">
 
-**3. Time courses**
+**3. Time courses** (*pop_plotIMtimecourse*)
 
 To plot the activation of IMs over time launch **Tools > Decompose spectograms by IMA > Plot IMA results > Time courses**
 
@@ -244,6 +245,18 @@ From the resulting window (above right) we can specify:
 4. A factor to regulate dimensionality reduction on the time windows of the spectral data with PCA before ICA (**pcfac**) - the smaller pcfac, the more dimensions will be retained *ndims = (freqsxICs)/pcfac* where *freqs* is the number of estimated frequencies and *ICs* is the number of ICs (default is 7)
 5. Other IMA options (**pop\_runima_study options**) – e.g., which ICA algorithm to use   (see *pop_runima_study* help for more details)
 
+**Running IMA from the commandline**
+
+
+*[STUDY] = pop\_runIMA_study(STUDY, ALLEEG, 'freqscale', 'log','frqlim', [6 120],
+                                          'pcfac', 7,
+                                          'cycles', [6 0.5],
+                                          'selectICs', {'brain'},
+                                          'icatype', 'amica');*
+                                          
+Here we are computing IMA on the subjects conatined in the study set (a separate IMA is run on the data of each subject). We are selecting brain ICs using IC label, with parameters for time-frequency decomposition: log scale, frequency limit 6 to 120Hz, wavelet cycles [6 0.5], reducing the dimensions of timewindows of the tf decomposition using pfac 7, and using AMICA as the ICA algorithm for IMA.
+
+
 
 ## Visualizing IMAT results for single subjects in the STUDY and multiple conditions
 
@@ -254,11 +267,9 @@ There are three main plotting functions for visualizing IMAT results for single 
 3. Time courses
 
 
-**1. Superimposed Components**  
+**1. Superimposed Components**  (*pop\_plotspecdecomp_study*)
 
 To visualize the IM decomposition for single subjects in the study launch **STUDY > STUDY IMA > Plot IMA results > Superimposed Components**
-
-**Plot IM decomposition**  (*pop_plotspecdecomp_study*) 
 
 <img src="./Docs/figs/plotIMdecompSTUDY.png" width="1000"> 
 
@@ -272,9 +283,14 @@ In the resulting window (above right) we can specify:
 3. The frequency range to plot (must be within the frequencies for which IMA was    computed)
 4. The ICs and IMs to plot
 
+At the commandline use:   
+*pop\_plotspecdecomp_study(STUDY, 'plottype', 'comb', 'subject', '3')*  
+*pop\_plotspecdecomp_study(STUDY, 'plottype', 'ics', 'subject', '3')*  
+*pop\_plotspecdecomp_study(STUDY, 'plottype', 'ims', 'subject', '3')*  
+
 The type of plots are the same as for single subjects visualizations, please refer to the section above for more information. 
 
-**2. Spectral envelope**
+**2. Spectral envelope** (*pop\_plotspecenv_study*)
 
 To visualize the contribution of IMs on the mean log spectrum of an IC for a single subject launch **STUDY > STUDY IMA > Plot IMA results > Spectral envelope**
 
@@ -292,11 +308,14 @@ In the resulting window (above right) we can specify:
 
 The function is automatically plotting separate spectral loadings for each condition. Here is an example for plotting the **Full envelope** of IMs for an eyes open and eyes closed condition separately. The IC mean log power spectrum is shown as a black trace. Outer light grey limits represent the 1st and 99th percentiles of IC spectral variation. Dark grey areas represent the 1st and 99th percentiles of the PCA-reduced spectral data used in the IMA analysis.
 
+At the commandline use: 
+*pop\_plotspecenv_study(STUDY,'comps', [1 2 5], 'factors', [1 2 3 6], 'frqlim', [6 120],'plotcond', 'on', 'subject', '3');*
+
 <img src="./Docs/figs/envECSTUDY.png" width="500">
 
 <img src="./Docs/figs/envEOSTUDY.png" width="500">
 
-**3. Time courses**
+**3. Time courses** (*pop_plotIMtimecourse_study*)
 
 To plot the activation of IMs over time for a single subject launch **STUDY > STUDY IMA > Plot IMA results > Time courses**
 
@@ -315,19 +334,29 @@ In the resulting window (above right) we can specify:
 
 The function automatically plots a black vertical line at the timepoint of transition between conditions
 
-**IC spectogram** allows to plot the normalized (mean spectrum removed) IC spectograms.
+**IC spectogram**   
+Allows to plot the normalized (mean spectrum removed) IC spectograms.    
+At the commandline use: *pop_plotIMtimecourse_study(STUDY, 'comps', [1 2 6], 'frqlim', [6 120], 'plotcond', 'on', 'plotICtf', 'on', 'subject', '3')*
  
 <img src="./Docs/figs/ICspectogramSTUDY.png" width="500">
 
-**Summed IM backprojection** allows to plot the PCA reduced normalized (mean spectrum removed) IC spectograms on which IMA was computed.
- 
+**Summed IM backprojection**  
+Allows to plot the PCA reduced normalized (mean spectrum removed) IC spectograms on which IMA was computed.    
+At the commandline use: *pop_plotIMtimecourse_study(STUDY, 'comps', [1 2 6], 'frqlim', [6 120], 'plotcond', 'on', 'plotPCtf', 'on', 'subject', '3')*
+     
 <img src="./Docs/figs/IMspectogramSTUDY.png" width="500">
 
-**Combined IC-IM spectogram** allows to plot the backprojection of single IM spectral weights over time for single ICs
+**Combined IC-IM spectogram** 
+Allows to plot the backprojection of single IM spectral weights over time for single ICs.
+At the commandline use: *pop_plotIMtimecourse_study(STUDY, 'comps', [1 2 6], 'factors', [1], 'frqlim', [6 120], 'plotcond', 'on', 
+    'plotIMtf', 'on', 'subject', '3')*
 
 <img src="./Docs/figs/ICIMspectogramSTUDY.png" width="500">
 
-**IM timecourse** allows to plot the activation of IMs over time, visualizing differences between condition
+**IM timecourse** 
+Allows to plot the activation of IMs over time, visualizing differences between condition.  
+At the commandline use: *pop_plotIMtimecourse_study(STUDY, 'factors', [1 2 3], 'frqlim', [6 120], 'plotcond', 'on', 'smoothing', 40,
+    'plotIMtime', 'on', 'subject', '3')*
 
 <img src="./Docs/figs/IMtimecourseSTUDY.png" width="500">
 
@@ -350,7 +379,15 @@ In the resulting window (above right) we can specify:
 2. **Warp spectra** Whether the spectra should be warped to a certain frequency: stretches templates in the frequency range defined by 'Freq. range' using the subject specific median template peak frequency within the band defined in 'Freq. range' to stretch spectra to a predefined peak as defined in 'Target peak freq'.Use is only reccomended when a narrow enough frequency band is defined in 'Freq. range'. i.e. 8-14Hz           
 3. **Target peak freq** The target peak frequency: defines the target frequency to stretch spectra to when 'stretch_spectra' is 'on', if 'Target peak freq' is empty uses the center frequency of 'Freq. range'
 
-**Cluster IM spectral templates**
+At the commandline use: 
+*pop\_collecttemplates(STUDY, 'peakrange', [8 12],
+                                    'stretch_spectra', 'on',
+                                    'targetpeakfreq', 10,
+                                    'plot_templ', 'on');*  
+                                    
+Here we are collecting spectral templates for clustering that have a peak in the frequency band [8 12] Hz, we are choosing to warp the spectra to the 'targetpeakfreq' at 10 Hz. We choose to plot the collected templates.  
+                                    
+**Cluster IM spectral templates** (*pop_clusterIMAtemplates*)
 
 To cluster the IM spectral templates collected in the previous step launch **STUDY > STUDY IMA > Cluster IMs > Cluster IMs**   
 
@@ -366,74 +403,51 @@ In the resulting window (above right) we can specify:
 6. **Template weight** weight to assign to spectral templates for clustering when clustering on spectral templates and dipole locations. A number between 1 and 20, default is 1. A larger number will give more weight to spectral templates compared to dipole locations.
 7. **Dipole weight**  weight to assign to dipole locations for clustering when clustering on spectral templates and dipole locations. A number between 1 and 20, default is 1. A larger number will give more weight to dipole locations compared to spectral templates
 
+
+At the commandline use: 
+*[STUDY] = pop_clusterIMAtemplates(STUDY, ALLEEG, 'nclust', 5, 'pcs', 10, 'freqlim', [8 14],'dipole_locs', 'on', 'weightSP', 5, 'weightDP', 2);*
+
+Here we are clustering the previously collected spectral templates using 5 clusters and 10 principal IM spectral template dimensions to retain for clustering. We are chhosing to cluster on the alpha frequency range 8-14 Hz. We also choose complement clustering with dipole location. We assign weight 5  to the spectral templates and weight 2 to the dipole locations for clustering. 
+
+
 **Plotting cluster results**
 
-
-## Running and visualizing IMAT from the MATLAB command line
-Running IMAT, can also be performed from the MATLAB command line or by a MATLAB script. 
-
- 
+To plot cluster results launch **STUDY > STUDY IMA > Cluster IMs > Plot clusters**  
 
 
-**Plotting IMA results**
+<img src="./Docs/figs/PlotClusters2.png" width="1000">  
+
+In the resulting window (above right) we can specify: 
+
+1. **IM clusters** Which clusters to plot
+2. **Freq limits** Frequency limits for plotting spectral templates           
+3. The frequency scale (**Freq scale**) linear or log scale for plotting the spectral templates
+4. **Templates** Plot spectral template clusters
+5. **Dipoles** plot dipole densities of spectral template clusters
+6. **Scalp maps** plot scalp maps of spectral template clusters
 
 
-*pop_plotspecdecomp(EEG, 'plottype', 'comb', 'comps', [1 2 3 4 5 6])*  
-*pop_plotspecdecomp(EEG, 'plottype', 'ics', 'comps', [1 2 3 4 5 6])*  
-*pop_plotspecdecomp(EEG, 'plottype', 'ims', 'comps', [1 2 3 4 5 6])*
+At the commandline use:   
+*pop_plotIMAcluster(STUDY, 'clust', [1 2 3], 'freqlim', [6 40],'freqscale', 'log','plottemplates', 'on', 'plotscalpmaps', 'on', 'plotdipsources', 'on')*
 
+**Templates**
 
-*pop\_plotspecenv(EEG,'comps', [1 2 3 4 5 6], 'factors', [1 2 4 5], 'frqlim', [3 40], 'plotenv', 'upper');%, 'setminmax', [30 80]);*
+<img src="./Docs/figs/Clusterspectra_RestEC.png" width="500">  
 
+**Dipoles**
 
-*pop_plotIMtimecourse(EEG, 'comps', [1 2 3], 'factors', [1 5], 'frqlim', [6 40], 'smoothing', 0.1)* 
+<img src="./Docs/figs/Cluster1dipoledensity_RestEC.png" width="500">
 
+<img src="./Docs/figs/Cluster2dipoledensity_RestEC.png" width="500">
 
-##Multiple subjects and /or multiple conditions analysis (STUDY)
-
-**Loading STUDY**  
-
-*[ALLEEG EEG CURRENTSET ALLCOM] = eeglab;*  
-*[STUDY ALLEEG] = pop_loadstudy('filename', 'S3_RestECEO.study', 'filepath', '/Users/amon-ra/WORK/Data/IMAT_data');*    
-*eeglab redraw;*  
-
-**Running IMA**   
-*[STUDY] = pop\_runIMA_study(STUDY, ALLEEG, 'freqscale', 'log','frqlim', [6 120],
-                                          'pcfac', 8,
-                                          'cycles', [6 0.5],
-                                          'selectICs', {'brain'},
-                                          'icatype', 'infomax');*
-                                          
-                                                         
-                                          
-
-**Plotting Options**
-
-*pop\_plotspecdecomp_study(STUDY, 'plottype', 'comb')*
-
-
-*pop\_plotspecenv_study(STUDY,'comps', [1 3 5 6], 'factors', [1 2 3 5 7], 'frqlim', [3 40],'plotcond', 'on');*
-
-*pop_plotIMtimecourse_study(STUDY, 'comps', [1 3 5], 'factors', [1 5], 'frqlim', [6 40], 'plotcond', 'on', 'smoothing', 0.1,
-    'plotIMtf', 'on', 'plotIMtime', 'on')*
+<img src="./Docs/figs/Cluster3dipoledensity_RestEC.png" width="500">
 
 
 
-**Clustering**   
-
-**Preclustering**  
-*[IMA] = pop\_collecttemplates(STUDY, 'peakrange', [8 14],
-                                    'stretch_spectra', 'on',
-                                    'targetpeakfreq', 10,
-                                    'plot_templ', 'on');*  
-                                    
-**Cluster IMs**  
-*[STUDY] = pop_clusterIMAtemplates(STUDY, ALLEEG, 'nclust', 3);*
 
 
 
-**Plot Clusters**  
-*pop_plotIMAcluster(STUDY, 'plotclust','on', 'plottemplates', 'on', 'plotscalpmaps', 'on', 'plotdipsources', 'on', 'plotsubclusters', 'on')*
+
 
 
 

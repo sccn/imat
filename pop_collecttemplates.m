@@ -43,7 +43,7 @@
 %               selected (if 'peakrange') is given and the selected templates 
 
 
-function [IMA] = pop_collecttemplates(STUDY,varargin);
+function pop_collecttemplates(STUDY,varargin);
 
 
 g = finputcheck(varargin, {'peakrange'        'integer'       []             []; ...
