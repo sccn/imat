@@ -8,12 +8,12 @@ Independent Modulator Analysis is a method for decomposing spectral fluctuations
 
 Many studies of EEG spectral dynamics separate spectrographic data into a set of pre-defined broad or narrow frequency bands, then extract and operate on measures of these bands. However, to better understand the functional roles of local field dynamics contributing to the EEG, as well as individual differences in oscillatory dynamics, more flexible, data-driven models of spectral dynamics are needed.  
  
-In the IMA method, multi-channel EEG data are first spatially decomposed using independent component analysis (ICA) into maximally independent component (IC) source processes. Then the temporal fluctuations in the concurrent joint IC log spectrograms are decomposed into independent modulator (IM) processes that are maximally independent over sources and frequency-weighting (see schematic figure below from [Onton & Makeig, 2006] (https://sccn.ucsd.edu/~julie/HBM2006PosterMini.pdf)).
+In the IMA method, multi-channel EEG data are first spatially decomposed using independent component analysis (ICA) into maximally independent component (IC) source processes. Then the temporal fluctuations in the concurrent joint IC log spectrograms are decomposed into independent modulator (IM) processes that are maximally independent over sources and frequency-weighting (see schematic figure below from [Onton & Makeig, 2006](https://sccn.ucsd.edu/~julie/HBM2006PosterMini.pdf)).
 
 <img src="./Docs/figs/IMA.png" width="600"> 
 
 
-IMAT has been developed by Johanna Wagner & Ramon Martinez-Cancino with Scott Makeig based on earlier work by Julie Onton and Scott ([Onton & Makeig, 2009](https://www.frontiersin.org/articles/10.3389/neuro.09.061.2009/full), [Onton & Makeig, 2006] (https://sccn.ucsd.edu/~julie/HBM2006PosterMini.pdf)).
+IMAT has been developed by Johanna Wagner & Ramon Martinez-Cancino with Scott Makeig based on earlier work by Julie Onton and Scott ([Onton & Makeig, 2009](https://www.frontiersin.org/articles/10.3389/neuro.09.061.2009/full), [Onton & Makeig, 2006](https://sccn.ucsd.edu/~julie/HBM2006PosterMini.pdf)).
 
 
 ## Installing the IMAT plug-in in EEGLAB
@@ -27,9 +27,9 @@ Restart EEGLAB. If the installation is successful, a menu item to call IMAT, **T
  
 
 ## Requirements
-1. Since IMAT is working on brain sources derived using Independent Component Analysis (ICA) you need to decompose the EEG data into Independent Components (ICs) using ICA before running IMAT. A description on how to preprocess EEG data and run ICA can be found in the [eeglab Wiki] (https://eeglab.org/tutorials/06_RejectArtifacts/RunICA.html#run-ica).
+1. Since IMAT is working on brain sources derived using Independent Component Analysis (ICA) you need to decompose the EEG data into Independent Components (ICs) using ICA before running IMAT. A description on how to preprocess EEG data and run ICA can be found in the [eeglab Wiki](https://eeglab.org/tutorials/06_RejectArtifacts/RunICA.html#run-ica).
 2. For component selection and clustering it is of advantage to estimate also equivalent current dipoles for ICs. 
-3. For automatic selection of components you need to install the eeglab plugin [IC Label] (https://sccn.ucsd.edu/wiki/ICLabel)  
+3. For automatic selection of components you need to install the eeglab plugin [IC Label](https://sccn.ucsd.edu/wiki/ICLabel)  
 4. For plotting dipole density of clusters you need to install the eeglab plugin Fieldtrip lite.   
 5. IMAT can handle epoched or continuous data. Be aware that for epoched data, the epochs should have length at least to accomodate 3 cycles of the lowest frequency at which IMA is computed. 
 
