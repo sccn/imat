@@ -103,7 +103,11 @@ if strcmp(g.plotclust, 'on');
             [dens3d mri] = dipoledensity( optdipplot, 'method','alldistance','methodparam',15,'weight',denswt);
             mri3dplot(dens3d,mri); %, 'cmax', 0.08, 'cmin', 0
             tmp = gcf;
-            tmp.Name= ['cluster ' num2str(g.clust(dind))];
+            tmp.Name= ['cluster ' num2str(g.clust(dind)) ' (SJs ' num2str(length(unique(clustidx(indclus,1))))...
+                '  STs ' num2str(length(clustidx(indclus,2))) ')'];
+            t = title(['cluster ' num2str(g.clust(dind)) ' (SJs ' num2str(length(unique(clustidx(indclus,1))))...
+                '  STs ' num2str(length(clustidx(indclus,2))) ')'], 'FontSize', 16)
+            
         end
     end
     
@@ -117,10 +121,9 @@ if strcmp(g.plotclust, 'on');
             
             subplot(row, col,dind);
             toporeplot(AVscalp, 'plotrad', 0.7, 'intrad', 0.5, 'colormap', 'jet');
-            title(['cluster' num2str(g.clust(dind))], 'FontSize',16);
-            
-            tmp = gcf;
-            tmp.Name= ['cluster ' num2str(g.clust(dind))];
+
+            t = title(['cluster ' num2str(g.clust(dind)) ' (SJs ' num2str(length(unique(clustidx(indclus,1))))...
+                '  STs ' num2str(length(clustidx(indclus,2))) ')'], 'FontSize', 16)
         end
     end
     
@@ -150,7 +153,7 @@ if strcmp(g.plotclust, 'on');
                 semilogx(g.freqvec,templates_clus', 'LineWidth', 2,'Color','m');hold on
                 semilogx(g.freqvec,mean(templates_clus,1)', 'LineWidth', 2,'Color','b');
                 set(gca,'FontSize',12);
-                set(gca,'xtick',[10 20 40]);
+                set(gca,'xtick',[10 20 40 80]);
                 xlim([g.freqvec(1) g.freqvec(end)]);
                 % if dind == length(g.clust)
                 %  xlabel('Frequency Hz');
@@ -175,7 +178,8 @@ if strcmp(g.plotclust, 'on');
             if dind <= col*(row-1)
                 set(gca,'xticklabel',[]);
             end;
-            title(['cluster ' num2str(g.clust(dind))], 'FontSize',16);
+            t = title(['cluster ' num2str(g.clust(dind)) ' (SJs ' num2str(length(unique(clustidx(indclus,1))))...
+                '  STs ' num2str(length(clustidx(indclus,2))) ')'], 'FontSize', 16)
             
         end
     end

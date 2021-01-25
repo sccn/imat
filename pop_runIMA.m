@@ -96,6 +96,8 @@
 % IMA.srate - original sampling rate of EEG data used to compute the spectra
 % IMA.ntrials - number of trials used to commpute the tie-frequency decomposition
 % IMA.ntw_trials - number of timewindows per trial
+% IMA.winsize - window length for computing spectra in the time-frequency decomposition
+% IMA.epochlength - epochlength used for computing time-frequency decomposition in seconds*
 % IMA.eigvec - pc backprojection in time
 % IMA.pc - pc spectral backprojection
 % IMA.timefreq - time-frequency decomposition (spectograms for each IC)
@@ -479,6 +481,8 @@ IMA.complist = g.plotcomps;
 IMA.srate = EEGc.srate;
 IMA.ntrials = n_trials;
 IMA.ntw_trials = ntw_trials;
+IMA.winsize = g.winsize;
+IMA.epochlength = g.epochlength;
 IMA.eigvec = eigvectmp;
 IMA.pc = pc;
 IMA.timefreq = timefreqtmp;

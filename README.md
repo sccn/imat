@@ -31,6 +31,7 @@ Restart EEGLAB. If the installation is successful, a menu item to call IMAT, **T
 2. For component selection and clustering it is of advantage to estimate also equivalent current dipoles for ICs. 
 3. For automatic selection of components you need to install the eeglab plugin [IC Label] (https://sccn.ucsd.edu/wiki/ICLabel)  
 4. For plotting dipole density of clusters you need to install the eeglab plugin Fieldtrip lite.   
+5. IMAT can handle epoched or continuous data. Be aware that for epoched data, the epochs should have length at least to accomodate 3 cycles of the lowest frequency at which IMA is computed. 
 
 Please refer to the section above on how to install eeglab plugins. 
 
@@ -73,6 +74,7 @@ Alternatively the IMA file can be loaded using
 
 The IMA structure has the following fields:
 
+
              wts: [21×21 double]
              sph: [21×21 double]
          meanpwr: [14×229 double]
@@ -85,6 +87,7 @@ The IMA structure has the following fields:
            srate: 500
          ntrials: 42
       ntw_trials: 30
+         winsize: 0.5000
           eigvec: [1260×21 double]
               pc: [21×3206 double]
         timefreq: [1260×3206 double]
@@ -92,7 +95,7 @@ The IMA structure has the following fields:
      timepntCond: [1×1260 double]
        condition: []
     subjfilename: {'RestEC_S03_ContAMICAdip.set'}
-    subjfilepath: {'/Volumes/IMAT_project/IM/S03'}
+    subjfilepath: {'/Volumes/ExtremeSSD/IMAT_project/IM/PreSTUDY/S03'}
 
 
 **Detailed description of IMA outputs:**  
@@ -108,6 +111,7 @@ The IMA structure has the following fields:
 *IMA.srate - original sampling rate of EEG data used to compute the spectra*  
 *IMA.ntrials - number of trials used to commpute the tie-frequency decomposition*  
 *IMA.ntw_trials - number of timewindows per trial*  
+*IMA.winsize - window length in seconds for computing spectra in the time-frequency decomposition*
 *IMA.eigvec - pc backprojection in time*  
 *IMA.pc - pc spectral backprojection*  
 *IMA.timefreq - time-frequency decomposition (spectograms for each IC)*  
@@ -256,6 +260,95 @@ From the resulting window (above right) we can specify:
                                           
 Here we are computing IMA on the subjects conatined in the study set (a separate IMA is run on the data of each subject). We are selecting brain ICs using IC label, with parameters for time-frequency decomposition: log scale, frequency limit 6 to 120Hz, wavelet cycles [6 0.5], reducing the dimensions of timewindows of the tf decomposition using pfac 7, and using AMICA as the ICA algorithm for IMA.
 
+## The IMA structure in the STUDY environment
+  
+*pop\_runIMA_study* is saving the IMA results in the IMA structure, which is associated to to the subject specific EEG files and saved in the same folder as the EEG files it is run on. 
+ 
+The filenames of the subject specific IMA files are saved in:
+
+*STUDY.etc.IMA*
+   
+     subjfilename: {{1×2 cell}}
+     subjfilepath: {{1×2 cell}}
+      imafilename: {'S3_S3_RestECEO.ima'}
+      imafilepath: {'/Volumes/ExtremeSSD/IMAT_project/IM/PreSTUDY/S03'}
+          subject: {'S3'}
+         clustidx: [15×4 double]
+         distance: [15×3 double]
+     
+ 
+The subject specific IMA file can be loaded using   
+
+*IMA = load([ STUDY.etc.IMA.imafilepath{subjectindex} filesep STUDY.etc.IMA.imafilename{subjectindex}], '-mat' );*
+   
+
+**IMA structure**
+
+The IMA structure has the following fields:
+
+              wts: [21×21 double]
+              sph: [21×21 double]
+          meanpwr: [14×229 double]
+          freqvec: [1×229 double]
+          timevec: [2430×1 double]
+     timevec_cond: {[30×42 double]  [30×39 double]}
+        freqscale: 'log'
+          freqlim: [6 120]
+             npcs: 21
+         complist: [1 2 3 4 5 6 8 9 10 11 17 21 27 38]
+            srate: 500
+          ntrials: [42 39]
+       ntw_trials: 30
+          winsize: 0.5000
+      epochlength: 6
+           eigvec: [2430×21 double]
+               pc: [21×3206 double]
+         timefreq: [2430×3206 double]
+      meanpwrCond: [2×14×229 double]
+      timepntCond: {[1×1260 double]  [1×1170 double]}
+        condition: {'EC'  'EO'}
+        STUDYname: 'RestECEO.study'
+    STUDYfilepath: '/Volumes/IM/PreSTUDY/S03'
+             subj: {'S3'}
+     subjfilename: {'RestEC_S03_ContAMICAdip.set'  'RestEO_S03_ContAMICAdip.set'}
+     subjfilepath: {'/Volumes/IM/PreSTUDY/S03'  '/Volumes/IM/PreSTUDY/S03'}
+         filename: 'S3_RestECEO.ima'
+       precluster: [1×1 struct]
+
+
+Here in this example the IMA file is associated to two EEG files (2 conditions of the same subject), since a joint IMA is run over multiple conditions (saved in separate EEG.set files) of a single subject.
+
+**Detailed description of IMA outputs:**
+
+*IMA.wts - weights of IMA decomposition*  
+*IMA.sph - spheres of IMA decomposition*  
+*IMA.meanpwr - mean power spectra of single ICs*  
+*IMA.timevec - timevector*  
+*IMA.freqvec - frequency vector*  
+*IMA.freqscale - frequency scale of computed spectra ('log' or 'linear')*  
+*IMA.freqlim - frequency limits of spectra*  
+*IMA.npcs - number of dimensions that have been used to reduce the data before IMA*  
+*IMA.complist - component indices on which IMA was run on*  
+*IMA.srate - original sampling rate of EEG data used to compute the spectra*  
+*IMA.ntrials - number of trials used to commpute the time-frequency decomposition*  
+*IMA.ntw_trials - number of timewindows per trial*  
+*IMA.winsize - window length for computing spectra in the time-frequency decomposition*  
+*IMA.epochlength - epochlength used for computing time-frequency decomposition in seconds*
+*IMA.eigvec - pc backprojection in time*  
+*IMA.pc - pc spectral backprojection*  
+*IMA.timefreq - time-frequency decomposition (spectograms for each IC)*  
+*IMA.timepntCond - total number of timepoints in time-frequency
+                  decomposition in each condition*  
+*IMA.timevec_cond - timevector of full length of time-frequency
+                   decomposition for each condition*  
+*IMA.meanpwrCond - mean power spectra for each IC and each condition*
+*IMA.condition - names and order of conditions*  
+*IMA.STUDYname - filename of the STUDY the IMA decomposition belongs to*  
+*IMA.STUDYfilepath - filepath of the STUDY the IMA decomposition belongs to*  
+*IMA.subj - subject the IMA has been comuted on*  
+*IMA.subjfilename - filenames of the EEG data the IMA has been computed on*  
+*IMA.subjfilepath - filepath of the EEG data the IMA has been computed on*  
+*IMA.precluster - contains the collected spectral templates and the associated dipsources and scalpmaps collected during preclustering.*
 
 
 ## Visualizing IMAT results for single subjects in the STUDY and multiple conditions
@@ -385,7 +478,17 @@ At the commandline use:
                                     'targetpeakfreq', 10,
                                     'plot_templ', 'on');*  
                                     
-Here we are collecting spectral templates for clustering that have a peak in the frequency band [8 12] Hz, we are choosing to warp the spectra to the 'targetpeakfreq' at 10 Hz. We choose to plot the collected templates.  
+Here we are collecting spectral templates for clustering that have a peak in the frequency band [8 12] Hz, we are choosing to warp the spectra to the 'targetpeakfreq' at 10 Hz. We choose to plot the collected templates.
+
+The collected spectral templates and the associated dipsources and scalpmaps are saved in the subject specific IMA file in *IMA.precluster*. 
+
+     templates: [15×229 double]
+     IMICindex: [15×2 double]
+    dipsources: [1×15 struct]
+     scalpmaps: [15×67×67 double]
+    
+     
+*IMA.precluster.IMICindex* contains the indices of spectral templates collected for clustering. The first column are the indices of IMs, the second column the indices of the ICs that show relevant spectral loadings on the IMs.  
                                     
 **Cluster IM spectral templates** (*pop_clusterIMAtemplates*)
 
@@ -408,6 +511,14 @@ At the commandline use:
 *[STUDY] = pop_clusterIMAtemplates(STUDY, ALLEEG, 'nclust', 5, 'pcs', 10, 'freqlim', [8 14],'dipole_locs', 'on', 'weightSP', 5, 'weightDP', 2);*
 
 Here we are clustering the previously collected spectral templates using 5 clusters and 10 principal IM spectral template dimensions to retain for clustering. We are chhosing to cluster on the alpha frequency range 8-14 Hz. We also choose complement clustering with dipole location. We assign weight 5  to the spectral templates and weight 2 to the dipole locations for clustering. 
+
+The cluster indices and the distance of spectral templates in the cluster space are saved in *STUDY.etc.IMA*. 
+   
+     clustidx: [15×4 double]
+     distance: [15×3 double]
+     
+*STUDY.etc.IMA.clustidx* consists of 4 columns: column 1 is the subject number, column 2 the IM index, column 3 the IC index and column 4 the cluster index - which cluster the spectral template was assigned to.
+*STUDY.etc.IMA.distance* has as many columns as clusters. Each column contains the euclidean distances of spectral templates to a specific cluster.
 
 
 **Plotting cluster results**

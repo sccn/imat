@@ -111,8 +111,10 @@ for iko = 1:length(subjcode)
     indsj = find(ismember({STUDY.datasetinfo.subject}, STUDY(iko).subject));
     
     %% load IMA file
-    load([STUDY.datasetinfo(indsj(1)).filepath filesep STUDY.etc.IMA.imafilename{iko,:}], '-mat' );
-    
+   % load([STUDY.datasetinfo(indsj(1)).filepath filesep STUDY.etc.IMA.imafilename{iko,:}], '-mat' );
+   load([STUDY.etc.IMA.imafilepath{iko} filesep STUDY.etc.IMA.imafilename{iko}], '-mat' );
+   
+     
     EEG = pop_loadset('filename',IMA.subjfilename{1},'filepath',IMA.subjfilepath{1});
 
     if isempty(g.frqlim)
