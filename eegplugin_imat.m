@@ -39,9 +39,8 @@ function vers = eegplugin_imat(fig, trystrs, catchstrs)
   
     % -----------------------
     if ~exist('pop_runimat')
-        p = which('eegplugin_imat');
-        p = p(1:findstr(p,'eegplugin_imat.m')-1);
-        addpath([ p vers ] );
+        p = fileparts(which('eegplugin_imat'));
+        addpath(p);
     end
     
     % find tools menu (Singe subject)
