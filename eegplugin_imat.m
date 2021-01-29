@@ -31,7 +31,7 @@
 
 function vers = eegplugin_imat(fig, trystrs, catchstrs)
     
-    vers = 'imat 0.1';
+    vers = 'imat0.1';
     if nargin < 3
         error('eegplugin_imat requires 3 arguments');
     end;
