@@ -2,13 +2,13 @@
 Independent Modulator Analysis Toolbox
 
 ## What is IMAT?
-Independent Modulator Analysis is a method for decomposing spectral fluctuations of temporally independent EEG sources into ‘spatio-spectrally’ distinct spectral modulator processes. Such processes might might derive from and isolate coordinated multiplicatively scaling effects of functionally near-independent modulatory factors, for example cortico-subcortical or sensory-cortical loops, or brainstem-centered import recognition systems linked to dopamine, serotonin, noradrenaline, etc. (see schematic figure below from [Onton & Makeig, 2009](https://www.frontiersin.org/articles/10.3389/neuro.09.061.2009/full))
+Independent Modulator Analysis is a method for decomposing spectral fluctuations of temporally independent EEG sources into ‘spatio-spectrally’ distinct spectral modulator processes. Such processes might might derive from and isolate coordinated multiplicative scaling effects of functionally near-independent modulatory factors, for example the effects of modulations roduced in cortico-subcortical or sensory-cortical loops, or by signalling from brainstem-centered import recognition systems using dopamine, serotonin, noradrenaline, etc. (see schematic figure below from [Onton & Makeig, 2009](https://www.frontiersin.org/articles/10.3389/neuro.09.061.2009/full)). Rather than attempting to decompose the mean power spectrum for a component process to identify narrow-band processes superimposed on a 1/f baseline spectum, IMAT identifies characteristic frequency bands in which spectral power *varies* across time. This allows IMA to find *both* narrow and wide band modes. Also, the identified modes need not be singular. For example, IMA will separate the joint activity of an alpha or mu rhythm and its harmonics from endogenous beta band fluctuations occupying overlapping frequency ranges. IMA is applied to independent component (IC) source processes in the data which can be localized in the brain or to a specific scalp muscle, etc. IMA thereby identifies IC subsets that are co-modulated in a specified IM frequency band; these might be thought of as co-modulation networks with a common influence and susceptability.
 
 <img src="./Docs/figs/IndependentModulators.png" width="400">  
 
-Many studies of EEG spectral dynamics separate spectrographic data into a set of pre-defined broad or narrow frequency bands, then extract and operate on measures of these bands. However, to better understand the functional roles of local field dynamics contributing to the EEG, as well as individual differences in oscillatory dynamics, more flexible, data-driven models of spectral dynamics are needed.  
+Many studies of EEG spectral dynamics separate spectrographic data into a set of pre-defined broad or narrow frequency bands, then extract and operate on measures of these bands. Other approaches try to decompose a mean power spectrum itself into wide- and narrow-band portions. However, to better understand the functional roles of local field dynamics contributing to the EEG, as well as individual differences in oscillatory dynamics, more flexible, data-driven models of spectral dynamics are needed.  
  
-In the IMA method, multi-channel EEG data are first spatially decomposed using independent component analysis (ICA) into maximally independent component (IC) source processes. Then the temporal fluctuations in the concurrent joint IC log spectrograms are decomposed into independent modulator (IM) processes that are maximally independent over sources and frequency-weighting (see schematic figure below from [Onton & Makeig, 2006](https://sccn.ucsd.edu/~julie/HBM2006PosterMini.pdf)).
+In the IMA method, multi-channel EEG data are first spatially decomposed using independent component analysis (ICA) into spatially stable, maximally temporally independent component (IC) source processes. Then the temporal fluctuations in the concurrent joint IC log spectrograms are decomposed into independent modulator (IM) processes that are maximally independent *over sources and frequency-weightings* (see schematic figure below from [Onton & Makeig, 2006](https://sccn.ucsd.edu/~julie/HBM2006PosterMini.pdf)). Note there that for IMA, the independence maximized is *not* over time, but over sources and frequency weights.
 
 <img src="./Docs/figs/IMA.png" width="600"> 
 
@@ -53,12 +53,14 @@ From the resulting window (above right) we can specify:
 4. A factor to regulate dimensionality reduction in the time windows of the spectral data using PCA dimension reduction before ICA decomposition (**pcfac**) - the smaller the *pcfac*, the more dimensions will be retained *ndims = (freqsxICs)/pcfac* where *freqs* is the number of estimated frequencies and *ICs* is the number of ICs (default is 7)
 5. Other IMA options (**pop\_runima options**) – e.g., which ICA algorithm to use   (see *pop_runima* help for more details)
 
+
 **Running IMA from the command line**
 
 *[EEG, IMA] = pop\_runIMA(EEG, 'freqscale', 'log', 'frqlim', [6 120], 'pcfac', 7, 'cycles', [6 0.5], 'selectICs', {'brain'}, 'icatype', 'amica');*
 
 Here we are computing IMA on a single subject's data, selecting ''Brain ICs'' using ICLabel, with parameters for time-frequency decomposition: log frequency scaling, frequency limits: 6 to 120 Hz, wavelet cycles [6 0.5], reducing the dimensions of timewindows
 of the time/frequency decomposition using pfac 7, and using AMICA for ICA decomposition.
+
 
 ## The IMA structure
   
@@ -120,6 +122,7 @@ The IMA structure has the following fields:
 *IMA.subjfilename - filename of the .ima file*  
 *IMA.subjfilepath - filepath of .ima file*  
 
+
 ## Visualizing IMAT results
 
 There are three main plotting functions for visualizing IMAT results.
@@ -127,6 +130,7 @@ There are three main plotting functions for visualizing IMAT results.
 1. Superimposed components
 2. Spectral envelope
 3. Time courses
+
 
 **1. Superimposed Components**  (*pop_plotspecdecomp*) 
 
@@ -149,14 +153,15 @@ In the resulting window (above right) we can specify:
 Plots spectral templates separately for all IMs and ICs.   
 On the command line enter: *pop_plotspecdecomp(EEG, 'plottype', 'comb')*  
 
-
 <img src="./Docs/figs/IMA_decomposition.png" width="2000"> 
+
 
 **Superimposed IC modes**   
 Plots superimposed IC spectral templates for each IM.  
 On the command line enter: *pop_plotspecdecomp(EEG, 'plottype', 'ics', 'comps', [1:7], 'factors', [1:8])*  
 
 <img src="./Docs/figs/SuperimposedICmodes.png" width="1000"> 
+
 
 **Superimposed IM modes**   
 Plots superimposed spectral IM templates for each IC.  
@@ -170,6 +175,7 @@ On the command line enter: *pop_plotspecdecomp(EEG, 'plottype', 'ims', 'comps', 
 To visualize the contributions of IMs to the mean log spectrum of an IC, launch **Tools > Decompose spectograms by IMA > Plot IMA results > Spectral envelope**
 
 <img src="./Docs/figs/plotspecenv.png" width="1000">
+
 
 In the resulting window (above right) we can specify: 
 
@@ -186,6 +192,7 @@ On the command line enter:
 Here is an example of plotting IMs **Full envelope** of inflence on the IC power spectra. The IC mean log power spectrum is shown as a black trace. Outer light grey limits represent the 1st and 99th percentiles of IC spectral variation associated with the IM. Dark grey areas represent the 1st and 99th percentiles of the PCA-reduced spectral data used in the IMA analysis.
 
 <img src="./Docs/figs/plotenv_EC.png" width="600">
+
 
 **3. Time courses** (*pop_plotIMtimecourse*)
 
@@ -209,17 +216,20 @@ On the command line enter: *pop_plotIMtimecourse(EEG, 'comps', [1 2 6], 'frqlim'
  
 <img src="./Docs/figs/ICspectogram.png" width="500">
 
+
 **Summed IM backprojection**  
 Plots the PCA reduced normalized (mean spectrum removed) IC spectograms on which IMA was computed.    
 On the command line enter: *pop_plotIMtimecourse(EEG, 'comps', [1 2 6], 'frqlim', [6 120], 'plotPCtf', 'on')*
  
 <img src="./Docs/figs/summedICbackprojection.png" width="500">
 
+
 **Combined IC-IM spectogram**  
 Plots the backprojections of single IM spectral weights across time for single ICs.    
 On the command line enter: *pop_plotIMtimecourse(EEG, 'comps', [1 2 6], 'frqlim', [6 120], 'factors', [1], 'plotIMtf', 'on')*
 
 <img src="./Docs/figs/IMspectralweights.png" width="500">
+
 
 **IM timecourse**  
 Plots the IM activations across time.  
@@ -248,8 +258,8 @@ From the resulting window (above right) we can specify:
 4. A factor to regulate dimensionality reduction on the time windows of the spectral data using PCA before spectrogram ICA decomposition (**pcfac**) - the smaller the pcfac, the more dimensions will be retained *ndims = (freqsxICs)/pcfac* where *freqs* is the number of frequencies estimated and *ICs* is the number of ICs (default is 7)
 5. Other IMA options (**pop\_runima_study options**) – e.g., which ICA algorithm to use (see *pop_runima_study* help for more details)
 
-**Running IMA from the command line**
 
+**Running IMA from the command line**
 
 *[STUDY] = pop\_runIMA_study(STUDY, ALLEEG, 'freqscale', 'log','frqlim', [6 120],
                                           'pcfac', 7,
@@ -258,6 +268,7 @@ From the resulting window (above right) we can specify:
                                           'icatype', 'amica');*
                                           
 Here we are computing IMA on the subject data contained in the STUDY set; a separate IMA decomposition is run on the data of each subject. We are selecting Brain ICs using ICLabel with parameters for the time-frequency decomposition: log frequency scaling, frequency limits: 6 to 120 Hz, wavelet cycles [6 0.5], reducing the dimensions of time windows of the tf decomposition using pfac 7, and using AMICA for the IMA decomposition
+
 
 ## The IMA structure in the STUDY environment
   
@@ -315,6 +326,7 @@ The IMA structure has the following fields:
        precluster: [1×1 struct]
 
 In this example the IMA file is associated with two EEG files (two conditions for the same subject) since a joint IMA is run over multiple conditions (saved in separate EEG.set files) for a single subject.
+
 
 **Detailed description of IMA outputs:**
 
@@ -405,11 +417,13 @@ On the command line enter:
 
 <img src="./Docs/figs/envEOSTUDY.png" width="500">
 
+
 **3. Time courses** (*pop_plotIMtimecourse_study*)
 
 To plot IM activations (strength across time) for a given subject, launch **STUDY > STUDY IMA > Plot IMA results > Time courses**
 
 <img src="./Docs/figs/timecourseSTUDY.png" width="1000">
+
 
 In the resulting window (above right) we can specify: 
 
@@ -424,17 +438,20 @@ In the resulting window (above right) we can specify:
 
 The function plots a black vertical line at the boundary between conditions
 
+
 **IC spectogram**   
 Plots the normalized (mean spectrum removed) IC spectograms.    
 On the command line enter:  *pop_plotIMtimecourse_study(STUDY, 'comps', [1 2 6], 'frqlim', [6 120], 'plotcond', 'on', 'plotICtf', 'on', 'subject', '3')*
  
 <img src="./Docs/figs/ICspectogramSTUDY.png" width="500">
 
+
 **Summed IM backprojection**  
 Plots the PCA-reduced normalized (mean spectrum removed) IC spectograms on which IMA was computed.    
 On the command line enter:  *pop_plotIMtimecourse_study(STUDY, 'comps', [1 2 6], 'frqlim', [6 120], 'plotcond', 'on', 'plotPCtf', 'on', 'subject', '3')*
      
 <img src="./Docs/figs/IMspectogramSTUDY.png" width="500">
+
 
 **Combined IC-IM spectogram** 
 Plots the backprojection of single IM spectral weights across time for single ICs.
@@ -443,6 +460,7 @@ On the command line enter:  *pop_plotIMtimecourse_study(STUDY, 'comps', [1 2 6],
 
 <img src="./Docs/figs/ICIMspectogramSTUDY.png" width="500">
 
+
 **IM timecourse** 
 Plots IM activations across time to visualize differences between conditions.  
 On the command line enter:  *pop_plotIMtimecourse_study(STUDY, 'factors', [1 2 3], 'frqlim', [6 120], 'plotcond', 'on', 'smoothing', 40,
@@ -450,12 +468,14 @@ On the command line enter:  *pop_plotIMtimecourse_study(STUDY, 'factors', [1 2 3
 
 <img src="./Docs/figs/IMtimecourseSTUDY.png" width="500">
 
+
 ## Clustering IM spectral templates
 
 There are three main steps in clustering IM spectral templates across subjects (or sessions)
 1. Preclustering
 2. Clustering
 3. Plotting cluster results
+
 
 **Preclustering**  
 
@@ -485,7 +505,8 @@ The collected spectral templates and the associated dipsources and scalpmaps are
      scalpmaps: [15×67×67 double]
        
 *IMA.precluster.IMICindex* contains the indices of the spectral templates collected for clustering. The first column are the IM indices, the second column the indices of ICs that have relevant spectral loadings on these IMs.  
-                                    
+       
+       
 **Cluster IM spectral templates** (*pop_clusterIMAtemplates*)
 
 To cluster the IM spectral templates collected in the previous step, launch **STUDY > STUDY IMA > Cluster IMs > Cluster IMs**   
@@ -501,7 +522,6 @@ In the resulting window (above right) we can specify:
 5. **Complement clustering with dipole location** Use IC equivalent dipole location in addition to spectral template matching in clustering
 6. **Template weight** The weight to assign to spectral templates for clustering when clustering on spectral templates and dipole locations. A number between 1 and 20, default is 1. A larger number will give more weight to spectral templates compared to dipole locations.
 7. **Dipole weight**  The weight to assign to dipole locations for clustering when clustering on spectral templates and dipole locations. A number between 1 and 20, default is 1. A larger number will give more weight to dipole locations compared to spectral templates
-
 
 On the command line enter: 
 *[STUDY] = pop_clusterIMAtemplates(STUDY, ALLEEG, 'nclust', 5, 'pcs', 10, 'freqlim', [8 14],'dipole_locs', 'on', 'weightSP', 5, 'weightDP', 2);*
@@ -521,8 +541,8 @@ The cluster indices and the distances (in the constructed clustering measure spa
 
 To plot cluster results, launch **STUDY > STUDY IMA > Cluster IMs > Plot clusters**  
 
-
 <img src="./Docs/figs/PlotClusters2.png" width="1000">  
+
 
 In the resulting window (above right) we can specify: 
 
@@ -533,13 +553,14 @@ In the resulting window (above right) we can specify:
 5. **Dipoles** Flag plotting of dipole densities of spectral template clusters ('on', 'off')
 6. **Scalp maps** Flag plotting of scalp maps of spectral template clusters ('on', 'off')
 
-
 On the command line enter:   
 *pop_plotIMAcluster(STUDY, 'clust', [1 2 3], 'freqlim', [6 40],'freqscale', 'log','plottemplates', 'on', 'plotscalpmaps', 'on', 'plotdipsources', 'on')*
+
 
 **Templates**
 
 <img src="./Docs/figs/Clusterspectra_RestEC.png" width="500">  
+
 
 **Dipoles**
 
