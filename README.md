@@ -43,7 +43,7 @@ Before running IMAT, start EEGLAB and load an EEG dataset.
 To run IMAT on the loaded dataset, launch the Run IMA (*pop\_runIMA*) window, either by typing *pop\_runIMA* on the MATLAB command line or by calling it from the EEGLAB menu by selecting **Tools > Decompose spectograms by IMA > Run IMA**,  as highlighted in the figure below.
 
 <img src="./Docs/figs/RunIMA.png" width="1000"> 
-From the resulting window (above right) we can specify:
+In the resulting window (above right) we can specify:
 
 1. The Independent Components (ICs) on which to run IMA - either a list of components (**IC Indices**) or we can choose to use ICLabel to automatically classify ICs into different types (**ICLabel tags**). IMAT allows you to set individual thresholds for different IC categories in selecting ICs using ICLabel.   
 2. Which frequency range in which to compute IMA  (**Freq. limits (Hz)**) 
