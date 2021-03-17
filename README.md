@@ -1,7 +1,7 @@
 # IMAT
 Independent Modulator Analysis Toolbox
 
-## What is IMAT?
+## What is IMA?
 Independent Modulator Analysis is a method for decomposing spectral fluctuations of temporally independent EEG sources into ‘spatio-spectrally’ distinct spectral modulator processes. Such processes might might derive from and isolate coordinated multiplicative scaling effects of functionally near-independent modulatory factors, for example the effects of modulations roduced in cortico-subcortical or sensory-cortical loops, or by signalling from brainstem-centered import recognition systems using dopamine, serotonin, noradrenaline, etc. (see schematic figure below from [Onton & Makeig, 2009](https://www.frontiersin.org/articles/10.3389/neuro.09.061.2009/full)). Rather than attempting to decompose the mean power spectrum for a component process to identify narrow-band processes superimposed on a 1/f baseline spectum, IMAT identifies characteristic frequency bands in which spectral power *varies* across time. This allows IMA to find *both* narrow and wide band modes. Also, the identified modes need not be singular. For example, IMA will separate the joint activity of an alpha or mu rhythm and its harmonics from endogenous beta band fluctuations occupying overlapping frequency ranges. IMA is applied to independent component (IC) source processes in the data which can be localized in the brain or to a specific scalp muscle, etc. IMA thereby identifies IC subsets that are co-modulated in a specified IM frequency band; these might be thought of as co-modulation networks with a common influence and susceptibility.
 
 <img src="./Docs/figs/IndependentModulators.png" width="400">  
@@ -12,8 +12,7 @@ In the IMA method, multi-channel EEG data are first spatially decomposed using i
 
 <img src="./Docs/figs/IMA.png" width="600"> 
 
-
-IMAT has been developed by Johanna Wagner & Ramon Martinez-Cancino with Scott Makeig based on work by Julie Onton and Scott ([Onton & Makeig, 2009](https://www.frontiersin.org/articles/10.3389/neuro.09.061.2009/full), [Onton & Makeig, 2006](https://sccn.ucsd.edu/~julie/HBM2006PosterMini.pdf)) and Matlab scripts by Julie.
+IMAT has been developed by Johanna Wagner, Ramon Martinez-Cancino, and Scott Makeig based on research by Julie Onton and Scott ([Onton & Makeig, 2009](https://www.frontiersin.org/articles/10.3389/neuro.09.061.2009/full), [Onton & Makeig, 2006](https://sccn.ucsd.edu/~julie/HBM2006PosterMini.pdf)) and Matlab scripts by Julie.
 
 
 ## Installing the IMAT plug-in in EEGLAB
@@ -136,7 +135,6 @@ There are three main plotting functions for visualizing IMAT results.
 
 To visualize the IM decomposition, launch **Tools > Decompose spectograms by IMA > Plot IMA results > Superimposed Components**
 
-
 <img src="./Docs/figs/plotspecdecomp.png" width="1000"> 
 
 In the resulting window (above right) we can specify: 
@@ -176,7 +174,6 @@ To visualize the contributions of IMs to the mean log spectrum of an IC, launch 
 
 <img src="./Docs/figs/plotspecenv.png" width="1000">
 
-
 In the resulting window (above right) we can specify: 
 
 1. The type of plot (from the drop down menu)   
@@ -211,15 +208,15 @@ In the resulting window (above right) we can specify:
 3. The ICs and IMs to plot
 
 **IC spectogram**   
-Plots the normalized (mean spectrum removed) IC spectograms.  
+Plots the normalized (mean log spectrum removed) IC spectograms.  
 On the command line enter: *pop_plotIMtimecourse(EEG, 'comps', [1 2 6], 'frqlim', [6 120], 'plotICtf', 'on')* 
  
 <img src="./Docs/figs/ICspectogram.png" width="500">
 
 
 **Summed IM backprojection**  
-Plots the PCA reduced normalized (mean spectrum removed) IC spectograms on which IMA was computed.    
-On the command line enter: *pop_plotIMtimecourse(EEG, 'comps', [1 2 6], 'frqlim', [6 120], 'plotPCtf', 'on')*
+Plots the PCA reduced normalized (mean log spectrum removed) IC spectograms on which IMA was computed.    
+To visualize the combined effects of IMs 1, 2, and 6, n the command line enter: *pop_plotIMtimecourse(EEG, 'comps', [1 2 6], 'frqlim', [6 120], 'plotPCtf', 'on')*
  
 <img src="./Docs/figs/summedICbackprojection.png" width="500">
 
@@ -424,7 +421,6 @@ To plot IM activations (strength across time) for a given subject, launch **STUD
 
 <img src="./Docs/figs/timecourseSTUDY.png" width="1000">
 
-
 In the resulting window (above right) we can specify: 
 
 1. The subject index
@@ -438,16 +434,15 @@ In the resulting window (above right) we can specify:
 
 The function plots a black vertical line at the boundary between conditions
 
-
 **IC spectogram**   
-Plots the normalized (mean spectrum removed) IC spectograms.    
+Plots the normalized (mean log spectrum removed) IC spectograms.    
 On the command line enter:  *pop_plotIMtimecourse_study(STUDY, 'comps', [1 2 6], 'frqlim', [6 120], 'plotcond', 'on', 'plotICtf', 'on', 'subject', '3')*
  
 <img src="./Docs/figs/ICspectogramSTUDY.png" width="500">
 
 
 **Summed IM backprojection**  
-Plots the PCA-reduced normalized (mean spectrum removed) IC spectograms on which IMA was computed.    
+Plots the PCA-reduced normalized (mean log spectrum removed) IC spectograms on which IMA was computed.    
 On the command line enter:  *pop_plotIMtimecourse_study(STUDY, 'comps', [1 2 6], 'frqlim', [6 120], 'plotcond', 'on', 'plotPCtf', 'on', 'subject', '3')*
      
 <img src="./Docs/figs/IMspectogramSTUDY.png" width="500">
@@ -542,7 +537,6 @@ The cluster indices and the distances (in the constructed clustering measure spa
 To plot cluster results, launch **STUDY > STUDY IMA > Cluster IMs > Plot clusters**  
 
 <img src="./Docs/figs/PlotClusters2.png" width="1000">  
-
 
 In the resulting window (above right) we can specify: 
 
