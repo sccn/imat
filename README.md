@@ -408,7 +408,7 @@ In the resulting window (above right) we can specify:
 3. The frequency range to plot (must be within the frequency range in which IMA was computed)
 4. Indices of the ICs and IMs to plot
 
-The function plots separate spectral loadings for each condition. Here is an example plotting the **Full envelope** of IMs for two *Eyes_open* and *Eyes_closed* conditions separately. The IC mean log power spectrum is shown as a black trace. The outer light grey limits represent the 1st and 99th percentiles of IC spectral variation accounted for by the IM(s). Dark grey areas represent the 1st and 99th percentiles of the PCA-reduced spectral data used in the IMA analysis.
+The function plots separate spectral loadings for each condition. Here is an example plotting the **Full envelope** of IMs for two *Eyes_open* and *Eyes_closed* conditions separately. The IC mean log power spectrum is shown as a black trace. The outer light grey limits represent the 1st and 99th percentiles of variation in the IC log spectrum across time. Dark grey areas represent the 1st and 99th percentiles for the PCA-reduced IC spectral data that has been used in the IMA analysis.
 
 On the command line enter:  
 *pop\_plotspecenv_study(STUDY,'comps', [1 2 5], 'factors', [1 2 3 6], 'frqlim', [6 120],'plotcond', 'on', 'subject', '3');*
