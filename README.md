@@ -242,7 +242,7 @@ On the command line enter: *pop_plotIMtimecourse(EEG, 'frqlim', [6 120], 'factor
 
 ## Running IMAT 
 
-Before running IMAT on multiple conditions or for group analysis, you need to build a STUDY in EEGLAB. You can find information on how to create a STUDY in the [eeglab wiki] (https://sccn.ucsd.edu/wiki/Chapter_02:_STUDY_Creation). For multiple conditions, you will need to create a separate .set file for each condition. E.g., if you want to run IMA on EEG data recorded in two conditions (say, eyes open and eyes closed), you need to create one EEG file for *eyes open* and one EEG file for *eyes closed* before creating the STUDY. 
+Before running IMAT on multiple conditions or for group analysis, you need to build a STUDY in EEGLAB. You can find information on how to create a STUDY in the [eeglab wiki] (https://sccn.ucsd.edu/wiki/Chapter_02:_STUDY_Creation). For multiple conditions, you will need to create a separate .set file for each condition. E.g., if you want to run IMA on EEG data recorded in two conditions (say, Eyes_open and Eyes_closed), you need to create one EEG file for *Eyes_open* and one EEG file for *Eyes_closed* before creating the STUDY. 
 
 Before running IMAT, start EEGLAB and load the STUDY set.
 
@@ -408,7 +408,7 @@ In the resulting window (above right) we can specify:
 3. The frequency range to plot (must be within the frequency range in which IMA was computed)
 4. Indices of the ICs and IMs to plot
 
-The function plots separate spectral loadings for each condition. Here is an example plotting the **Full envelope** of IMs for two *Eyes open* and *Eyes closed* conditions separately. The IC mean log power spectrum is shown as a black trace. The outer light grey limits represent the 1st and 99th percentiles of IC spectral variation accounted for by the IM(s). Dark grey areas represent the 1st and 99th percentiles of the PCA-reduced spectral data used in the IMA analysis.
+The function plots separate spectral loadings for each condition. Here is an example plotting the **Full envelope** of IMs for two *Eyes_open* and *Eyes_closed* conditions separately. The IC mean log power spectrum is shown as a black trace. The outer light grey limits represent the 1st and 99th percentiles of IC spectral variation accounted for by the IM(s). Dark grey areas represent the 1st and 99th percentiles of the PCA-reduced spectral data used in the IMA analysis.
 
 On the command line enter:  
 *pop\_plotspecenv_study(STUDY,'comps', [1 2 5], 'factors', [1 2 3 6], 'frqlim', [6 120],'plotcond', 'on', 'subject', '3');*
