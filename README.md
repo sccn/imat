@@ -43,7 +43,6 @@ Before running IMAT, start EEGLAB and load an EEG dataset.
 To run IMAT on the loaded dataset, launch the Run IMA (*pop\_runIMA*) window, either by typing *pop\_runIMA* on the MATLAB command line or by calling it from the EEGLAB menu by selecting **Tools > Decompose spectograms by IMA > Run IMA**,  as highlighted in the figure below.
 
 <img src="./Docs/figs/RunIMA.png" width="1000"> 
-
 From the resulting window (above right) we can specify:
 
 1. The Independent Components (ICs) on which to run IMA - either a list of components (**IC Indices**) or we can choose to use ICLabel to automatically classify ICs into different types (**ICLabel tags**). IMAT allows you to set individual thresholds for different IC categories in selecting ICs using ICLabel.   
@@ -136,7 +135,6 @@ There are three main plotting functions for visualizing IMAT results.
 To visualize the IM decomposition, launch **Tools > Decompose spectograms by IMA > Plot IMA results > Superimposed Components**
 
 <img src="./Docs/figs/plotspecdecomp.png" width="1000"> 
-
 In the resulting window (above right) we can specify: 
 
 1. The type of plot (from the drop down menu)   
@@ -173,7 +171,6 @@ On the command line enter: *pop_plotspecdecomp(EEG, 'plottype', 'ims', 'comps', 
 To visualize the contributions of IMs to the mean log spectrum of an IC, launch **Tools > Decompose spectograms by IMA > Plot IMA results > Spectral envelope**
 
 <img src="./Docs/figs/plotspecenv.png" width="1000">
-
 In the resulting window (above right) we can specify: 
 
 1. The type of plot (from the drop down menu)   
@@ -196,7 +193,6 @@ Here is an example of plotting IMs **Full envelope** of inflence on the IC power
 To plot the activation of IMs over time, launch **Tools > Decompose spectograms by IMA > Plot IMA results > Time courses**
 
 <img src="./Docs/figs/plottimecourse.png" width="1000">
-
 In the resulting window (above right) we can specify: 
 
 1. The type of plot (from the drop down menu)   
@@ -246,8 +242,7 @@ Before running IMAT, start EEGLAB and load the STUDY set.
 To run IMAT on the loaded STUDY, launch the Run IMA (*pop\_runIMA_study*) window, either by typing *pop\_runIMA_study* on the MATLAB command line or by calling it from the EEGLAB menu by selecting **STUDY > STUDY IMA > Run STUDY IMA**  as highlighted in the figure below. This will run a separate IMA decomposition for each subject in the study. That is, a joint IMA is computed over all the conditions for each single subject in the STUDY.
 
 <img src="./Docs/figs/runSTUDYIMA.png" width="1000"> 
-
-From the resulting window (above right) we can specify:
+In the resulting window (above right) we can specify:
 
 1. We can choose to use ICLabel to automatically classify ICs into several categories (**ICLabel tags**). To select ICs in specified categories, IMAT allows you to set individual likelihood thresholds for the different categories. Otherwise IMAt will use the ICs specified for analysis when the STUDY was created.
 2. Which frequency range to compute IMA on (**Freq. limits (Hz)**).
@@ -371,7 +366,6 @@ There are three main plotting functions for visualizing IMAT results for single 
 To visualize the IM decomposition for single subjects in the study, launch **STUDY > STUDY IMA > Plot IMA results > Superimposed Components**
 
 <img src="./Docs/figs/plotIMdecompSTUDY.png" width="1000"> 
-
 In the resulting window (above right) we can specify: 
 
 1. The index of the subject whose IM decomposition you want to plot
@@ -394,7 +388,6 @@ The type of plots are the same as for single subjects visualizations, please ref
 To visualize the contribution of IMs added to the mean log spectrum of an IC for a single subject launch **STUDY > STUDY IMA > Plot IMA results > Spectral envelope**
 
 <img src="./Docs/figs/envSTUDY.png" width="1000">
-
 In the resulting window (above right) we can specify: 
 
 1. The subject index
@@ -420,7 +413,6 @@ On the command line enter:
 To plot IM activations (strength across time) for a given subject, launch **STUDY > STUDY IMA > Plot IMA results > Time courses**
 
 <img src="./Docs/figs/timecourseSTUDY.png" width="1000">
-
 In the resulting window (above right) we can specify: 
 
 1. The subject index
@@ -477,7 +469,6 @@ There are three main steps in clustering IM spectral templates across subjects (
 Before clustering we need to select the relevant spectral templates for clustering and ignore the spectral templates that are not active in the frequency range of interest. To select the spectral templates for clustering, launch **STUDY > STUDY IMA > Cluster IMs > Collect templates**
 
 <img src="./Docs/figs/Precluster.png" width="1000">
-
 In the resulting window (above right) we can specify: 
 
 1. **Freq range** The relevant frequency range: this includes only templates that have peaks in the specified frequency range. If empty templates (active in any frequency range) are chosen, templates with low activations are removed.
@@ -507,7 +498,6 @@ The collected spectral templates and the associated dipsources and scalpmaps are
 To cluster the IM spectral templates collected in the previous step, launch **STUDY > STUDY IMA > Cluster IMs > Cluster IMs**   
 
 <img src="./Docs/figs/IMclustering.png" width="1000">  
-
 In the resulting window (above right) we can specify: 
 
 1. **Method** The clustering method; currently only k-means is implemented.
@@ -537,7 +527,6 @@ The cluster indices and the distances (in the constructed clustering measure spa
 To plot cluster results, launch **STUDY > STUDY IMA > Cluster IMs > Plot clusters**  
 
 <img src="./Docs/figs/PlotClusters2.png" width="1000">  
-
 In the resulting window (above right) we can specify: 
 
 1. **IM clusters** Which clusters to plot
