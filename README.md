@@ -212,21 +212,21 @@ On the command line enter: *pop_plotIMtimecourse(EEG, 'comps', [1 2 6], 'frqlim'
 
 **Summed IM backprojection**  
 Plots the PCA reduced normalized (mean log spectrum removed) IC spectograms on which IMA was computed.    
-To visualize the combined effects of IMs 1, 2, and 6, n the command line enter: *pop_plotIMtimecourse(EEG, 'comps', [1 2 6], 'frqlim', [6 120], 'plotPCtf', 'on')*
+To visualize the combined effects of IMs on ICs 1, 2, and 6, on the command line enter: *pop_plotIMtimecourse(EEG, 'comps', [1 2 6], 'frqlim', [6 120], 'plotPCtf', 'on')*
  
 <img src="./Docs/figs/summedICbackprojection.png" width="500">
 
 
 **Combined IC-IM spectogram**  
 Plots the backprojections of single IM spectral weights across time for single ICs.    
-On the command line enter: *pop_plotIMtimecourse(EEG, 'comps', [1 2 6], 'frqlim', [6 120], 'factors', [1], 'plotIMtf', 'on')*
+To visualize the combined effect of IM 1 on ICs 1, 2, and 6, on the command line enter: *pop_plotIMtimecourse(EEG, 'comps', [1 2 6], 'frqlim', [6 120], 'factors', [1], 'plotIMtf', 'on')*
 
 <img src="./Docs/figs/IMspectralweights.png" width="500">
 
 
 **IM timecourse**  
 Plots the IM activations across time.  
-On the command line enter: *pop_plotIMtimecourse(EEG, 'frqlim', [6 120], 'factors', [1 2 3], 'smoothing', 40, 'plotIMtime', 'on')*
+To visualize the timecourse of IM 1, 2 and 3, on the command line enter: *pop_plotIMtimecourse(EEG, 'frqlim', [6 120], 'factors', [1 2 3], 'smoothing', 40, 'plotIMtime', 'on')*
 
 <img src="./Docs/figs/IMweightbackprojection.png" width="500">
 
