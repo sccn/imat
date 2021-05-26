@@ -115,12 +115,12 @@ g = finputcheck(varargin, { 'plotcomps'     'integer'   []             []; ...
     'freqscale'     'string'   {'linear' 'log'}      'log';...
     'pcfac'        'integer'      []             [7];...
     'cycles'      'real'      []             [3 0.5];...
-    'overlapfac'      'real'      []            [0.6];...
+    'overlapfac'      'real'      []            [0.8];...
     'nfreqs'       'integer'      []             [];...
     'padratio'     'integer'      []             [4];...
     'wletmethod'   'string'    {'dftfilt' 'dftfilt2' 'dftfilt3'}   'dftfilt3';...
     'winsize'      'integer'      []             [];...
-    'epochlength' 'real'          []             [6];...
+    'epochlength' 'real'          []             [];...
     'selectICs'   'cell'     {'brain' 'muscle' 'eye' 'artefact' 'off'}     {'off'};...
     'iclthreshold_brain' 'real'    []     [0.7];...
     'iclthreshold_muscle' 'real'    []     [0.7];...
@@ -147,7 +147,7 @@ end
 %%  Display GUI
 if nargin ==1
     
-    freqlim_def = [1 EEGc.srate/2-10];
+    freqlim_def = [3 EEGc.srate/2-10];
     iclabel_list = {'Brain', 'Muscle', 'Eye', 'Heart'};  
     freqscale_list = {'linear' 'log'} ;
     
@@ -376,11 +376,15 @@ if isempty(g.plotcomps);
 end
 
 %% if data is not epoched - estimate overlap of epochs
-
-if length(size(EEGc.data)) == 2;
+if isempty(g.epochlength)
+    if size(EEGc.icaact) == 3;
+        g.epochlength = EEG.xmax - EEG.xmin;
+    else
+        g.epochlength = 6;
+    end
+end
     
-    fprintf('data is not epoched \n')
-    fprintf('estimating epoch overlap... \n')
+    
     
      % calculate windowsize needed to estimate n cycles of lowest frequency
      TWindow = (g.cycles(1)*(1/g.frqlim(1)));
@@ -404,8 +408,11 @@ if length(size(EEGc.data)) == 2;
      error('poch size is too small for estimating lowest frequency with n cycles. Window size determined for for estimating lowest frequency with n cycles is larger than epoch size. You need to choose a larger epoch size.')           
    end  
     
-   
+   if length(size(EEGc.data)) == 2;
 
+       fprintf('data is not epoched \n')
+       fprintf('estimating epoch overlap... \n')
+       
 %% epoching data
          EEGcurr = EEGc;
         
@@ -440,6 +447,11 @@ if length(size(EEGc.data)) == 2;
         timevecproc =  EEGcurr.data(end,:,:);    % save processed version of original timevector in variable
         EEGcurr = pop_select( EEGcurr,'nochannel',size(EEGcurr.data,1)); % remove previously added data channel with timevector from EEG structure
          
+else
+    EEGcurr = EEGc;
+    eegdata{1} = EEGc.icaact;
+     %timevecproc = [0:EEG.pnts*EEG.trials:(EEG.pnts*EEG.trials)/EEG.srate 
+     timevecproc = repmat(EEGcurr.times, EEGcurr.trials,1)'; %linspace(0,(EEG.pnts*EEG.trials)/EEG.srate,EEG.pnts*EEG.trials);
 end
 
 

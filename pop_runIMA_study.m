@@ -124,12 +124,12 @@ g = finputcheck(varargin, {'frqlim'        'real'       []             []; ...
     'freqscale'     'string'   {'linear' 'log'}      'log';...
     'pcfac'        'integer'      []             7;...
     'cycles'      'real'      []             [3 0.5];...
-    'overlapfac'      'real'      []            [0.6];...
+    'overlapfac'      'real'      []            [0.8];...
     'nfreqs'       'integer'      []             [];...
     'padratio'     'integer'      []             [4];...
     'wletmethod'   'string'    {'dftfilt' 'dftfilt2' 'dftfilt3'}   'dftfilt3';...
     'winsize'      'integer'      []             [];...
-    'epochlength' 'real'          []             [6];...
+    'epochlength' 'real'          []             [];...
     'selectICs'   'cell'     {'brain' 'muscle' 'eye' 'artefact' 'off'}     {'off'};...
     'iclthreshold_brain' 'real'    []     [0.7];...
     'iclthreshold_muscle' 'real'    []     [0.7];...
@@ -154,7 +154,7 @@ if indPlugin == 0
 end
 
 if nargin<3
-    freqlim_def = [1 ALLEEG(1).srate/2-10];
+    freqlim_def = [3 ALLEEG(1).srate/2-10];
     iclabel_list = {'Brain', 'Muscle', 'Eye', 'Heart'};
     freqscale_list = {'linear' 'log'} ;
     
@@ -341,11 +341,17 @@ for iko = 1:nsubj
     end
     
     %% if data is not epoched - estimate overlap of epochs
-    timevecorig = [];
-    if length(size(EEGtmp{1}.data)) == 2;
-        
-        fprintf('data is not epoched \n')
-        fprintf('estimating epoch overlap... \n')
+    if isempty(g.epochlength)
+    if size(EEGc.icaact) == 3;
+        g.epochlength = EEG.xmax - EEG.xmin;
+    else
+        g.epochlength = 6;
+    end
+end
+    
+    
+    
+
         
         % calculate windowsize needed to estimate n cycles of lowest frequency
         TWindow = (g.cycles(1)*(1/g.frqlim(1)));
@@ -369,7 +375,11 @@ for iko = 1:nsubj
             error('poch size is too small for estimating lowest frequency with n cycles. Window size determined for for estimating lowest frequency with n cycles is larger than epoch size. You need to choose a larger epoch size.')
         end
         
+    timevecorig = [];
+    if length(size(EEGtmp{1}.data)) == 2;
         
+        fprintf('data is not epoched \n')
+        fprintf('estimating epoch overlap... \n')
         %% epoching data
         
         for inc = 1:length(EEGtmp)
@@ -413,6 +423,7 @@ for iko = 1:nsubj
         for inc = 1:length(EEGtmp)
             EEGtemp{inc} = EEGtmp{inc};
             eegdata{inc} = EEGtmp{inc}.icaact;
+            timevecproc{inc} = repmat(EEGtmp{inc}.times, EEGtmp{inc}.trials,1)';
         end
     end
     
