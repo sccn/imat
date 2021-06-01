@@ -99,12 +99,12 @@ dipsources = [];
 scalpmaps = [];
 
 for iko = 1:length(subjcode)
-    indsj = find(ismember({STUDY.datasetinfo.subject}, STUDY(iko).subject));
+    indsj = find(ismember({STUDY.datasetinfo.subject}, STUDY.subject(iko)));
     
     %% load IMA file for curent subject
     load([STUDY.etc.IMA.imafilepath{iko} filesep STUDY.etc.IMA.imafilename{iko}], '-mat' );
   
-    str = string(STUDY(iko).subject);
+    str = string(STUDY.subject(iko));
     sujnum = sscanf(str,'S%d');
     
     if isempty(g.freqlim)
@@ -114,9 +114,9 @@ for iko = 1:length(subjcode)
     [val, freqind1] = min(abs(IMA.freqvec-g.freqlim(1)));
     [val, freqind2] = min(abs(IMA.freqvec-g.freqlim(2)));
     
-    templates = [templates IMA.precluster.templates(:,freqind1:freqind2)];
+    templates = [templates; IMA.precluster.templates(:,freqind1:freqind2)];
     dipsources = [dipsources IMA.precluster.dipsources];
-    scalpmaps = [scalpmaps IMA.precluster.scalpmaps];
+    scalpmaps = [scalpmaps; IMA.precluster.scalpmaps];
     freqvec = IMA.freqvec(freqind1:freqind2);
 end
 

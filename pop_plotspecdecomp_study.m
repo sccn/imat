@@ -92,28 +92,32 @@ if nargin ==1
     if isempty(result), return; end;
     g.subject = subj_list{resstruct.subjname};
     g.plottype = plotTypes2funtc{resstruct.plottype};
+    
+    indsj = find(ismember(STUDY.subject, g.subject));
+    %% load IMA file
+    tmpIMA = load([STUDY.etc.IMA.imafilepath{indsj} filesep STUDY.etc.IMA.imafilename{indsj}], '-mat' );  
+   % tmpIMA = load([STUDY.etc.IMA.subjfilepath{1}{1} filesep STUDY.etc.IMA.subjfilename{1}{1}(1:end-4) '.ima'], '-mat'); % Fox to load correct subject file given info from GUI
+   
     g.comps = tmpIMA.IMA.complist(resstruct.icindx);
     g.factors = resstruct.imindx;
-    
-    tmpIMA = load([STUDY.etc.IMA.subjfilepath{1}{1} filesep STUDY.etc.IMA.subjfilename{1}{1}(1:end-4) '.ima'], '-mat'); % Fox to load correct subject file given info from GUI
     g.frqlim = str2num(resstruct.freqlimits);
 end
 
 %% getting activations
 if isempty(g.subject)
-    subjcode = STUDY.subject;
+    subjcode = STUDY.subject{1};
 else
     subjcode = {g.subject};
 end
 
 
-for iko = 1:length(subjcode)
-    indsj = find(ismember({STUDY.datasetinfo.subject}, STUDY(iko).subject));
-    
+%% allows plotting only one subject at a time
+
+%for iko = 1:length(subjcode)
+    %indsj = find(ismember(STUDY.subject, subjcode{iko}));
+    indsj = find(ismember(STUDY.subject, subjcode));
     %% load IMA file
-   % load([STUDY.datasetinfo(indsj(1)).filepath filesep STUDY.etc.IMA.imafilename{iko,:}], '-mat' );
-   load([STUDY.etc.IMA.imafilepath{iko} filesep STUDY.etc.IMA.imafilename{iko}], '-mat' );
-   
+   load([STUDY.etc.IMA.imafilepath{indsj} filesep STUDY.etc.IMA.imafilename{indsj}], '-mat' );  
      
     EEG = pop_loadset('filename',IMA.subjfilename{1},'filepath',IMA.subjfilepath{1});
 
@@ -133,5 +137,5 @@ for iko = 1:length(subjcode)
     plotspecdecomp(IMA, EEG, 'comps', g.comps, 'factors', g.factors, 'frqlim', g.frqlim,...
         'freqscale', g.freqscale, 'plottype', g.plottype, 'maps', g.maps);
     
-end
+%end
 

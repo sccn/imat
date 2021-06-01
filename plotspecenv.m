@@ -104,17 +104,18 @@ winv = specwts; % template timecourse  (overwrite ICA winv with ICA/PCA winv)
 clear speceig specwts
 
 
-[valAct, indAct] =  max(abs(activations)');
-for onj = 1:size(activations,1);
-    if activations(onj,indAct(onj))>=0;
-        maxval = 1;
-    else
-        maxval = -1;
-    end
-    activations(onj,:) = activations(onj,:)*maxval;
-    polarity(onj) = maxval;
-    winv(:,onj) = winv(:,onj)*maxval;
-end
+%% control for polarity of spectra
+% [valAct, indAct] =  max(abs(activations)');
+% for onj = 1:size(activations,1);
+%     if activations(onj,indAct(onj))>=0;
+%         maxval = 1;
+%     else
+%         maxval = -1;
+%     end
+%     activations(onj,:) = activations(onj,:)*maxval;
+%     polarity(onj) = maxval;
+%     winv(:,onj) = winv(:,onj)*maxval;
+% end
 
 
 
@@ -175,8 +176,9 @@ end
 
 
 
-
+if length(g.factors)>10
 cols = hsv(length(g.factors)); % determine colors for IM traces
+end
 
 % find index for frequency vector limits
 fr = find(freqvec >= g.frqlim(1) & freqvec <= g.frqlim(2));
@@ -314,10 +316,18 @@ for cp = 1:length(g.comps)
         end;
         
         %% check if plotting upper/lower boundary of data, envelope or average
-        if strcmp(g.plotenv, 'upper') % only pos proj
-            envdata2(1,:) = onebkprj(end,:);
-        elseif strcmp(g.plotenv,'lower')% only neg proj
-            envdata2(1,:) = onebkprj(1,:);
+        if strcmp(g.plotenv, 'lower') % only pos proj
+            if mean(onebkprj(end,:))> mean(onebkprj(1,:))
+            envdata2 = onebkprj(1,:);
+            else
+             envdata2 = onebkprj(end,:);
+            end
+        elseif strcmp(g.plotenv,'upper')% only neg proj
+             if mean(onebkprj(end,:))> mean(onebkprj(1,:))
+            envdata2 = onebkprj(end,:);
+            else
+             envdata2 = onebkprj(1,:);
+             end
         elseif strcmp(g.plotenv,'env') % plot envelope
             envdata2 = [onebkprj(end,:);onebkprj(1,:)];
         elseif strcmp(g.plotenv,'aver') % plot average
@@ -330,19 +340,19 @@ for cp = 1:length(g.comps)
             snglcols = {'r','b'};
             % for e = 1:size(envdata2,1)
             if strcmp(freqscale,'linear')
-                ph = plot(freqs,envdata2(1,fr),'r-','linewidth',lnwdth); hold on;
+                ph = plot(freqs,envdata2(2,fr),'r-','linewidth',lnwdth); hold on;
                 ph12 = gcf;
                 ph12.Children(1).Children(1).Tag = taglist{1};
                 hold on
-                ph = plot(freqs,envdata2(2,fr),'b-','linewidth',lnwdth); hold on;
+                ph = plot(freqs,envdata2(1,fr),'b-','linewidth',lnwdth); hold on;
                 ph12 = gcf;
                 ph12.Children(1).Children(1).Tag = taglist{2};
             elseif strcmp(freqscale,'log')
-                ph = semilogx(freqs,envdata2(1,fr)', 'LineWidth', 2,'Color','r');hold on
+                ph = semilogx(freqs,envdata2(2,fr)', 'LineWidth', 2,'Color','r');hold on
                 ph12 = gcf;
                 ph12.Children(1).Children(1).Tag = taglist{1};
                 hold on
-                ph = semilogx(freqs,envdata2(2,fr)', 'LineWidth', 2,'Color','b');hold on
+                ph = semilogx(freqs,envdata2(1,fr)', 'LineWidth', 2,'Color','b');hold on
                 ph12 = gcf;
                 ph12.Children(1).Children(1).Tag = taglist{2};
                 set(gca,'FontSize',12)
@@ -364,6 +374,9 @@ for cp = 1:length(g.comps)
                 set(gca,'xtick',[10 20 40 80 120])
                 xlim([freqs(1) freqs(end)])
             end;
+            
+            
+            
             set(ph1,'color',cols(tpp,:));
             ph12 = gcf;
             ph12.Children(1).Children(1).Tag = taglist{tpp};

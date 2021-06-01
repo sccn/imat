@@ -146,6 +146,9 @@ cols2(10,:) = round([1 .8 0]*0.9,1); % mustard
 
 
 
+% if length(g.factors)>10
+% cols = hsv(length(g.factors)); % determine colors for IM traces
+% end
 
 
 taglist = {'line1' 'line2' 'line3' 'line4' 'line5' 'line6' 'line7'...
@@ -185,7 +188,7 @@ end;
 %row = round(sqrt(length(g.comps))); col = ceil(sqrt(length(g.comps)*3)); % determine how many rows and columns for subplot
 
 
-cols = hsv(length(g.factors)); % determine colors for IM traces
+%cols = hsv(length(g.factors)); % determine colors for IM traces
 
 fr = find(freqvec >= g.frqlim(1) & freqvec <= g.frqlim(2)); % check index for frequency range
 freqs = freqvec(fr);
@@ -244,7 +247,7 @@ if strcmp(g.plotICtf, 'on');
         pl = pl+2;% advance for scalp map and spectra
     end
     ha = axes('Position',[0 0 1 1],'Xlim',[0 1],'Ylim',[0  1],'Box','off','Visible','off','Units','normalized', 'clipping' , 'off');
-    text(0.4, 0.98,'IC spectogram', 'fontsize', 20);
+    text(0.4, 0.98,'IC spectogram', 'fontsize', 16);
     if col >4
         set(gcf,'Position',[100 300 1400 900]);
     end
@@ -308,7 +311,7 @@ if strcmp(g.plotPCtf, 'on');
         pl = pl+2;% advance for scalp map and spectra
     end
     ha = axes('Position',[0 0 1 1],'Xlim',[0 1],'Ylim',[0  1],'Box','off','Visible','off','Units','normalized', 'clipping' , 'off');
-    text(0.4, 0.98,'Summed IM backprojection', 'fontsize', 20);
+    text(0.4, 0.98,'Summed IM backprojection', 'fontsize', 16);
     if col >4
         set(gcf,'Position',[100 300 1400 900]);
     end
@@ -505,7 +508,7 @@ if strcmp(g.plotIMtime, 'on');
         end
     end
     ha = axes('Position',[0 0 1 1],'Xlim',[0 1],'Ylim',[0  1],'Box','off','Visible','off','Units','normalized', 'clipping' , 'off');
-    text(0.4, 0.98,'IM weight backprojection', 'fontsize', 20);
+    text(0.4, 0.98,'IM weight backprojection', 'fontsize', 16);
     if col >4
         set(gcf,'Position',[100 300 1400 900]);
     end

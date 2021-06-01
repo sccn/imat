@@ -98,6 +98,12 @@ if nargin ==1
     
     [result, ~, ~, resstruct, ~] = inputgui('title','Plot spectral envelope -- pop_plotspecenv', 'geom', geom, 'uilist',uilist, 'helpcom','pophelp(''pop_plotspecenv'');');
     if isempty(result), return; end;
+    g.subject = subj_list{resstruct.subjname};
+    
+    indsj = find(ismember(STUDY.subject, g.subject));
+    %% load IMA file
+    tmpIMA = load([STUDY.etc.IMA.imafilepath{indsj} filesep STUDY.etc.IMA.imafilename{indsj}], '-mat' );  
+    
     g.comps = tmpIMA.IMA.complist(resstruct.icindx);
     g.factors = resstruct.imindx;
     g.plotenv = EnvtTypes2funtc{resstruct.plottype};
@@ -106,17 +112,22 @@ end
 %%
 
 
+%% getting subject ID
 if isempty(g.subject)
-    subjcode = STUDY.subject;
+    subjcode = STUDY.subject{1};
 else
     subjcode = {g.subject};
 end
 
-for iko = 1:length(subjcode)
-    indsj = find(ismember({STUDY.datasetinfo.subject}, STUDY(iko).subject));
+
+%% allows plotting only one subject at a time
+
+%for iko = 1:length(subjcode)
+    %indsj = find(ismember(STUDY.subject, subjcode{iko}));
+    indsj = find(ismember(STUDY.subject, subjcode));
     
     %% load IMA file
-   load([STUDY.etc.IMA.imafilepath{iko} filesep STUDY.etc.IMA.imafilename{iko}], '-mat' );
+   load([STUDY.etc.IMA.imafilepath{indsj} filesep STUDY.etc.IMA.imafilename{indsj}], '-mat' );
      
     EEG = pop_loadset('filename',IMA.subjfilename{1},'filepath',IMA.subjfilepath{1});
 

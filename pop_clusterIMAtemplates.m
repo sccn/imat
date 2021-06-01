@@ -103,13 +103,15 @@ scalpmaps = [];
     
 
 for iko = 1:length(subjcode)
-indsj = find(ismember({STUDY.datasetinfo.subject}, STUDY(iko).subject));
-
+%indsj = find(ismember({STUDY.datasetinfo.subject}, STUDY.subject(iko)));
+ indsj = find(ismember(STUDY.subject, subjcode{iko}));
+ 
 %% load IMA file for curent subject
- load([STUDY.etc.IMA.imafilepath{iko} filesep STUDY.etc.IMA.imafilename{iko}], '-mat' );
-  
+% load([STUDY.etc.IMA.imafilepath{iko} filesep STUDY.etc.IMA.imafilename{iko}], '-mat' );
+load([STUDY.etc.IMA.imafilepath{indsj} filesep STUDY.etc.IMA.imafilename{indsj}], '-mat' );  
 
-str = string(STUDY(iko).subject);
+
+str = string(STUDY.subject(iko));
 sujnum = sscanf(str,'S%d');
 
 
@@ -121,12 +123,14 @@ end
 [val, freqind2] = min(abs(IMA.freqvec-g.freqlim(2)));
 
 if ~isfield(IMA, 'precluster'), disp('pop_clusterIMAtemplates: Preclustering must be performed'); return; end;
-templates = [templates IMA.precluster.templates(:,freqind1:freqind2)];
-IMICindex = [IMICindex [repmat(sujnum,1,size(IMA.precluster.IMICindex,1))' IMA.precluster.IMICindex]]; %% add subject index
+templates = [templates; IMA.precluster.templates(:,freqind1:freqind2)];
+IMICindex = [IMICindex; [repmat(sujnum,1,size(IMA.precluster.IMICindex,1))' IMA.precluster.IMICindex]]; %% add subject index
 if strcmp(g.dipole_locs, 'on')
     dipsources = [dipsources IMA.precluster.dipsources];
 else
     dipsources = struct;
+end
+
 end
 
 [clustidx, distance]...

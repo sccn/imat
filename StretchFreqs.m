@@ -50,9 +50,14 @@ AV_tempFreq = median(PeakFreqTemplates);
 PeakFreqTemplatesWARPED = [];
 for ki= 1:size(Freqtw,1);
 [PKS, LOCS] = findpeaks(Freqtw(ki,peakfreqind1:peakfreqind2));
+if isempty(LOCS)
+    [maxPKS, indPK] = max(Freqtw(ki,peakfreqind1:peakfreqind2));
+    PeakFreqTemplatesWARPED(ki) = freqvecpeaklim(indPK);
+else
 [maxPKS, ind] = max(PKS);
 indPK = find(PKS == maxPKS);
 PeakFreqTemplatesWARPED(ki) = freqvecpeaklim(LOCS(indPK));
+end
 end
 
 warpedfreq = median(PeakFreqTemplatesWARPED);

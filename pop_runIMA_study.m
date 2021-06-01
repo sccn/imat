@@ -264,9 +264,12 @@ ncond = length({STUDY.datasetinfo.subject})/length(unique({STUDY.datasetinfo.sub
 nsubj = length(STUDY.subject);
 
 for iko = 1:nsubj
-    indsj = find(ismember({STUDY.datasetinfo.subject}, STUDY(iko).subject));
+    indsj = find(ismember({STUDY.datasetinfo.subject}, STUDY.subject(iko)));
+    eind = 1;
+    clear EEGtmp
     for ika = indsj;
-        EEGtmp{ika} = pop_loadset('filename',STUDY.datasetinfo(ika).filename,'filepath',STUDY.datasetinfo(ika).filepath);
+        EEGtmp{eind} = pop_loadset('filename',STUDY.datasetinfo(ika).filename,'filepath',STUDY.datasetinfo(ika).filepath);
+    eind = eind+1;
     end
     
     %% check if IC label plugin is installed
@@ -342,8 +345,8 @@ for iko = 1:nsubj
     
     %% if data is not epoched - estimate overlap of epochs
     if isempty(g.epochlength)
-    if size(EEGc.icaact) == 3;
-        g.epochlength = EEG.xmax - EEG.xmin;
+    if size(EEGtmp{1}.icaact) == 3;
+        g.epochlength = EEGtmp{1}.xmax - EEGtmp{1}.xmin;
     else
         g.epochlength = 6;
     end
@@ -414,7 +417,7 @@ end
             EEGcurr = pop_epoch( EEGcurr, {  num2str(inc*100) }, [0  g.epochlength], 'epochinfo', 'yes');
             EEGcurr = eeg_checkset( EEGcurr );
             eegdata{inc} = EEGcurr.icaact; % save icaactivity of dataset in cell array
-            timevecproc{inc} =  EEGcurr.data(end,:,:); % save timevector of processed epoched data to cell array
+            timevecproc{inc} =  squeeze(EEGcurr.data(end,:,:)); % save timevector of processed epoched data to cell array
             EEGcurr = pop_select( EEGcurr,'nochannel',size(EEGcurr.data,1)); %delete perviously created timevector channel
             EEGtemp{inc} = EEGcurr;
             
@@ -423,7 +426,9 @@ end
         for inc = 1:length(EEGtmp)
             EEGtemp{inc} = EEGtmp{inc};
             eegdata{inc} = EEGtmp{inc}.icaact;
-            timevecproc{inc} = repmat(EEGtmp{inc}.times, EEGtmp{inc}.trials,1)';
+            timevecproc_temp = linspace(0,(EEGtmp{inc}.pnts*EEGtmp{inc}.trials)/EEGtmp{inc}.srate,EEGtmp{inc}.pnts*EEGtmp{inc}.trials);
+            timevecproc{inc} = reshape(timevecproc_temp*1000,[EEGtmp{inc}.pnts,EEGtmp{inc}.trials]);
+            %repmat(EEGtmp{inc}.times, EEGtmp{inc}.trials,1)';        
         end
     end
     
@@ -437,9 +442,9 @@ end
     
     %%%%%  downsample the previously saved timevector of the processed dataset to the number of time frequency output timepoints of IMA
     timevec_res = [];
-    if length(size(EEGtmp{1}.data)) == 2;
+   % if length(size(EEGtmp{1}.data)) == 2;
         for inc = 1:length(EEGtmp)
-            timevec_res{inc} = downsample(squeeze(timevecproc{inc}(1,1:end-overlapframes,:)),round(size(squeeze(timevecproc{inc}(1,1:end-overlapframes,:)),1)/ntw_trials));
+            timevec_res{inc} = downsample(squeeze(timevecproc{inc}(1:end-overlapframes,:)),round(size(squeeze(timevecproc{inc}(1:end-overlapframes,:)),1)/ntw_trials));
         end
         
         % for inc = 1:length(EEGtmp)
@@ -463,7 +468,7 @@ end
         end
         timefreq = timefreqtmp;
         eigvec = eigvectmp;
-    end
+  %  end
     
     
     %% save IMA results in IMA structure
@@ -488,10 +493,10 @@ end
     IMA.timefreq = timefreqtmp;
     IMA.meanpwrCond = meanpwrCond;
     IMA.timepntCond = timepntcond;
-    IMA.condition = STUDY.condition;
+    IMA.condition = unique({STUDY.datasetinfo.condition},'stable');
     IMA.STUDYname = STUDY.filename;
     IMA.STUDYfilepath = STUDY.filepath;
-    IMA.subj = STUDY(iko).subject;
+    IMA.subj = STUDY.subject(iko);
     IMA.subjfilename = {STUDY.datasetinfo(indsj).filename};
     IMA.subjfilepath = {STUDY.datasetinfo(indsj).filepath};
 

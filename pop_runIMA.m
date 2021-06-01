@@ -444,14 +444,16 @@ end
         EEGcurr = pop_epoch( EEGcurr, {  num2str(100) }, [0  g.epochlength], 'epochinfo', 'yes'); % epoch EEG data
         EEGcurr = eeg_checkset( EEGcurr );
         eegdata{1} = EEGcurr.icaact;             % save IC activities of dataset in cell array
-        timevecproc =  EEGcurr.data(end,:,:);    % save processed version of original timevector in variable
+        timevecproc =  squeeze(EEGcurr.data(end,:,:));    % save processed version of original timevector in variable
         EEGcurr = pop_select( EEGcurr,'nochannel',size(EEGcurr.data,1)); % remove previously added data channel with timevector from EEG structure
          
 else
     EEGcurr = EEGc;
     eegdata{1} = EEGc.icaact;
      %timevecproc = [0:EEG.pnts*EEG.trials:(EEG.pnts*EEG.trials)/EEG.srate 
-     timevecproc = repmat(EEGcurr.times, EEGcurr.trials,1)'; %linspace(0,(EEG.pnts*EEG.trials)/EEG.srate,EEG.pnts*EEG.trials);
+     %timevecproc_temp = repmat(EEGcurr.times, EEGcurr.trials,1)'; %linspace(0,(EEG.pnts*EEG.trials)/EEG.srate,EEG.pnts*EEG.trials);
+     timevecproc_temp = linspace(0,(EEGc.pnts*EEGc.trials)/EEGc.srate,EEGc.pnts*EEGc.trials);
+     timevecproc = reshape(timevecproc_temp*1000,[EEGc.pnts,EEGc.trials]);
 end
 
 

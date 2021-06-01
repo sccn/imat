@@ -98,6 +98,12 @@ if nargin ==1
    
     [result, ~, ~, resstruct, ~] = inputgui('title','Plot IM decomposition -- pop_plotspecdecomp', 'geom', geom, 'uilist',uilist, 'helpcom','pophelp(''pop_plotspecdecomp'');');
     if isempty(result), return; end;
+    g.subject = subj_list{resstruct.subjname};
+    
+    indsj = find(ismember(STUDY.subject, g.subject));
+    %% load IMA file
+    tmpIMA = load([STUDY.etc.IMA.imafilepath{indsj} filesep STUDY.etc.IMA.imafilename{indsj}], '-mat' );  
+    
     g.comps = tmpIMA.IMA.complist(resstruct.icindx);
     g.factors = resstruct.imindx;
     g.frqlim = str2num(resstruct.freqlimits);
@@ -105,39 +111,42 @@ if nargin ==1
 end
 
 %% check which subject/s to plot
+%% getting activations
 if isempty(g.subject)
-    subjcode = STUDY.subject;
+    subjcode = STUDY.subject{1};
 else
     subjcode = {g.subject};
 end
 
 
-%% run over specified subjects
-for iko = 1:length(subjcode)
-indsj = find(ismember({STUDY.datasetinfo.subject}, STUDY(iko).subject));
+%% allows plotting only one subject at a time
 
-%% load IMA file
-load([STUDY.etc.IMA.imafilepath{iko} filesep STUDY.etc.IMA.imafilename{iko}], '-mat' );
-  
-EEG = pop_loadset('filename',IMA.subjfilename{1},'filepath',IMA.subjfilepath{1});
-
-
-%% check if frequency limits, comps and IMs are empty 
-if isempty(g.frqlim)
-    g.frqlim = IMA.freqlim;
-end
-
-if isempty(g.comps)
-    g.comps = IMA.complist;
-end
-
-if isempty(g.factors)
-    g.factors = 1:IMA.npcs;
-end
-
-plotIMtimecourse(tmpIMA.IMA, EEG, 'comps',g.comps, 'factors', g.factors, 'frqlim', g.frqlim,...
-                 'smoothing', g.smoothing,...
-                 'plotICtf',plotopt{1}, 'plotPCtf', plotopt{2},...
-                 'plotIMtf', plotopt{3}, 'plotIMtime', plotopt{4}, 'plotcond','on');             
-             
+%for iko = 1:length(subjcode)
+    %indsj = find(ismember(STUDY.subject, subjcode{iko}));
+    indsj = find(ismember(STUDY.subject, subjcode));
+    
+    %% load IMA file
+   load([STUDY.etc.IMA.imafilepath{indsj} filesep STUDY.etc.IMA.imafilename{indsj}], '-mat' );
+      
+    EEG = pop_loadset('filename',IMA.subjfilename{1},'filepath',IMA.subjfilepath{1});
+    
+    
+    %% check if frequency limits, comps and IMs are empty
+    if isempty(g.frqlim)
+        g.frqlim = IMA.freqlim;
+    end
+    
+    if isempty(g.comps)
+        g.comps = IMA.complist;
+    end
+    
+    if isempty(g.factors)
+        g.factors = 1:IMA.npcs;
+    end
+    
+    plotIMtimecourse(tmpIMA.IMA, EEG, 'comps',g.comps, 'factors', g.factors, 'frqlim', g.frqlim,...
+        'smoothing', g.smoothing,...
+        'plotICtf',plotopt{1}, 'plotPCtf', plotopt{2},...
+        'plotIMtf', plotopt{3}, 'plotIMtime', plotopt{4}, 'plotcond','on');
+    
 end

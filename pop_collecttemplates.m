@@ -81,10 +81,12 @@ subjcode = STUDY.subject;
 
 
 for iko = 1:length(subjcode)
-indsj = find(ismember({STUDY.datasetinfo.subject}, STUDY(iko).subject));
+indsj = find(ismember(STUDY.subject, subjcode{iko}));
+ 
+%% load IMA file for curent subject
+% load([STUDY.etc.IMA.imafilepath{iko} filesep STUDY.etc.IMA.imafilename{iko}], '-mat' );
+load([STUDY.etc.IMA.imafilepath{indsj} filesep STUDY.etc.IMA.imafilename{indsj}], '-mat' );  
 
-%% load IMA file for current subject
-load([STUDY.etc.IMA.imafilepath{iko} filesep STUDY.etc.IMA.imafilename{iko}], '-mat' );
 
 EEG = pop_loadset('filename',IMA.subjfilename{1},'filepath',IMA.subjfilepath{1});
 
