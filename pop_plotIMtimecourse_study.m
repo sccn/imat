@@ -96,7 +96,7 @@ if nargin ==1
             {wt ht [0 4]  [1 3]} {wt ht [1 4]  [1 3]}...
             {wt ht [0 5]  [1 3]}};
    
-    [result, ~, ~, resstruct, ~] = inputgui('title','Plot IM decomposition -- pop_plotspecdecomp', 'geom', geom, 'uilist',uilist, 'helpcom','pophelp(''pop_plotspecdecomp'');');
+    [result, ~, ~, resstruct, ~] = inputgui('title','Plot IM timecourse -- pop_plotIMtimecourse_study', 'geom', geom, 'uilist',uilist, 'helpcom','pophelp(''pop_plotspecdecomp'');');
     if isempty(result), return; end;
     g.subject = subj_list{resstruct.subjname};
     

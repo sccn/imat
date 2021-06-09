@@ -99,11 +99,12 @@ dipsources = [];
 scalpmaps = [];
 
 for iko = 1:length(subjcode)
-    indsj = find(ismember({STUDY.datasetinfo.subject}, STUDY.subject(iko)));
+    indsj = find(ismember(STUDY.subject, subjcode{iko}));
     
     %% load IMA file for curent subject
-    load([STUDY.etc.IMA.imafilepath{iko} filesep STUDY.etc.IMA.imafilename{iko}], '-mat' );
-  
+    %load([STUDY.etc.IMA.imafilepath{indsj} filesep STUDY.etc.IMA.imafilename{indsj}], '-mat' );
+  load([STUDY.etc.IMA.imafilepath{indsj} filesep STUDY.etc.IMA.imafilename{indsj}], '-mat' );  
+
     str = string(STUDY.subject(iko));
     sujnum = sscanf(str,'S%d');
     

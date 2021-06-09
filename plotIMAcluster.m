@@ -129,7 +129,8 @@ if strcmp(g.plotclust, 'on');
     
     if strcmp(g.plottemplates, 'on') && ~isempty(g.templates)
         
-        plotdatascale = [];
+        %% get scale
+        plotdatascale = []; 
         for dind = 1:length(g.clust);
             indclus = find(clustidx(:,4) == g.clust(dind));
             templates_clus = g.templates(indclus,:);
@@ -139,6 +140,7 @@ if strcmp(g.plotclust, 'on');
         maxl = max((plotdatascale(:)))+1; %% changed colorscale min max
         minl = min((plotdatascale(:)))-1;
         
+        %% get indices of templates to plot 
         figure;
         for dind = 1:length(g.clust);
             
@@ -165,21 +167,21 @@ if strcmp(g.plotclust, 'on');
                 realx = get(gca,'xtick'); labelx = get(gca,'xticklabel');
                 xlabel('Frequency Hz');
             end;
-            set(gca,'ylim',[minl maxl])
+            set(gca,'ylim',[minl maxl]);
             set(gca,'ticklength',[.05 .05]);
             plot([get(gca,'xlim')],[0 0],'k-'); hold on;
             plot([10 10],[get(gca,'ylim')],'g-', 'LineWidth',2); hold on;
             plot([20 20],[get(gca,'ylim')],'g-', 'LineWidth',2); hold on;
-            if dind == (row-1)*col+1
+            if dind == (row-1)*col+1;
                 xlabel('Frequency (Hz)'); ylabel('Relative Power');
-            elseif dind > (row-1)*col+1
+            elseif dind > (row-1)*col+1;
                 xlabel('Frequency (Hz)');
             end;
-            if dind <= col*(row-1)
+            if dind <= col*(row-1);
                 set(gca,'xticklabel',[]);
             end;
             t = title(['cluster ' num2str(g.clust(dind)) ' (SJs ' num2str(length(unique(clustidx(indclus,1))))...
-                '  STs ' num2str(length(clustidx(indclus,2))) ')'], 'FontSize', 16)
+                '  STs ' num2str(length(clustidx(indclus,2))) ')'], 'FontSize', 16);
             
         end
     end
