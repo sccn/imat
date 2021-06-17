@@ -13,7 +13,7 @@
 % of the tf decomposition using pfac 8 (for a description of pfac see
 % below), and using AMICA as the ica algorithm for IMA
 % 
-%  >>  [EEG] = pop_runIMA_study(EEG, 'selectICs', {'brain' 'muscle'}, 'freqscale', 'log', 'frqlim', [6 120], 'cycles', [6 0.5], 'pcfac', 8,...
+%  >>  [EEG] = pop_runIMA(EEG, 'selectICs', {'brain'}, 'freqscale', 'log', 'frqlim', [6 120], 'cycles', [6 0.5], 'pcfac', 8,...
 %      'icatype', 'amica') 
 
 %

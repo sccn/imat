@@ -13,7 +13,7 @@
 %           - plot only IC time-frequency decomposition and PC time-frequency backprojections 
 %
 % >>  pop_plotIMtimecourse(EEG, 'comps', [1 5 8],...
-%      'frqlim', [6 40], 'smoothing', 0.1, 'plotICtf', 'on', 'plotPCtf', 'on')
+%      'frqlim', [6 40], 'smoothing', 40, 'plotICtf', 'on', 'plotPCtf', 'on')
 %
 %
 % Example: plot components 3, 5 and 6 and IMs 2, 6 and 9 with frequency limit 6-40Hz and smoothing 0.1
@@ -21,7 +21,7 @@
 %           timecourses
 %
 % >>  pop_plotIMtimecourse(EEG, 'comps', [3 5 6], 'factors', [2 6 9],...
-%      'frqlim', [6 40], 'smoothing', 0.1, 'plotIMtf', 'on', 'plotIMtime', 'on')
+%      'frqlim', [6 40], 'smoothing', 40, 'plotIMtf', 'on', 'plotIMtime', 'on')
 %
 %
 % INPUTS:

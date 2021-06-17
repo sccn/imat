@@ -21,7 +21,7 @@
 %           timecourses
 %
 % >>  pop_plotIMtimecourse_study(STUDY, 'subject', 'S5','comps', [3 5 6], 'factors', [2 6 9],...
-%      'frqlim', [6 40], 'plotcond', 'on','smoothing', 0.1, 'plotIMtf', 'on', 'plotIMtime', 'on')
+%      'frqlim', [6 40], 'plotcond', 'on','smoothing', 40, 'plotIMtf', 'on', 'plotIMtime', 'on')
 %
 % INPUTS:
 % STUDY - STUDY structure pointing to precomputed IMA information and EEG
