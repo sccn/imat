@@ -268,7 +268,7 @@ Here we are computing IMA on the subject data contained in the STUDY set; a sepa
 *pop\_runIMA_study* saves the IMA results in the IMA structure which is associated with the subject-specific EEG files and saved in the same folder as the EEG files it is run on. 
  
 The filenames of the subject-specific IMA files are saved in:
-
+{% raw %}
 *STUDY.etc.IMA*
    
      subjfilename: {{1×2 cell}}
@@ -279,7 +279,7 @@ The filenames of the subject-specific IMA files are saved in:
          clustidx: [15×4 double]
          distance: [15×3 double]
      
- 
+{% endraw %} 
 The subject-specific IMA file can be loaded using   
 
 *IMA = load([ STUDY.etc.IMA.imafilepath{subjectindex} filesep STUDY.etc.IMA.imafilename{subjectindex}], '-mat' );*
